@@ -19,7 +19,7 @@ import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.validators.AccountValidator;
 import edu.depaul.se491.validators.AddressValidator;
-import edu.depaul.se491.validators.CredentialValidator;
+import edu.depaul.se491.validators.CredentialsValidator;
 import edu.depaul.se491.validators.UserValidator;
 
 /**
@@ -255,7 +255,7 @@ public class AccountModel extends BaseModel {
 	
 	
 	private boolean isValidUsername(String username){
-		CredentialValidator credentialValidator = new CredentialValidator();
+		CredentialsValidator credentialValidator = new CredentialsValidator();
 		boolean isValid = credentialValidator.isValidUsername(username);
 		
 		if (!isValid) {
@@ -276,7 +276,7 @@ public class AccountModel extends BaseModel {
 		
 		// validate credentials bean for the account
 		if (isValid) {
-			isValid = new CredentialValidator().validate(bean.getCredentials());
+			isValid = new CredentialsValidator().validate(bean.getCredentials());
 			if (!isValid)
 				message = "Invalid credentials data";
 		}

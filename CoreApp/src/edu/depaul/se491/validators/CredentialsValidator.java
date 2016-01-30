@@ -3,7 +3,7 @@ package edu.depaul.se491.validators;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.utils.ParamLengths;
 
-public class CredentialValidator extends BeanValidator {
+public class CredentialsValidator extends BeanValidator {
 
 	
 	public boolean validate(CredentialsBean bean) {

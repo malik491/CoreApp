@@ -26,13 +26,6 @@ public class ParamLengths {
 		public static final int MAX_CC_HOLDER_NAME = 100;
 	}
 	
-	public static final class Account {
-		public static final int MIN_USERNAME = 3; 
-		public static final int MIN_PASSWORD = 3; 	
-
-		public static final int MAX_USERNAME = 30; 
-		public static final int MAX_PASSWORD = 60; 	
-	}
 	
 	public static final class MenuItem {
 		public static final int MIN_DESC = 1; 
@@ -77,11 +70,11 @@ public class ParamLengths {
 		
 	}
 	public static final class Credentials {
-		public static final int MIN_USERNAME = ParamLengths.Account.MIN_USERNAME;
-		public static final int MIN_PASSWORD = ParamLengths.Account.MIN_PASSWORD;	
+		public static final int MIN_USERNAME = 3;
+		public static final int MIN_PASSWORD = 3;	
 
-		public static final int MAX_USERNAME = ParamLengths.Account.MAX_USERNAME;
-		public static final int MAX_PASSWORD = ParamLengths.Account.MAX_PASSWORD;	
+		public static final int MAX_USERNAME = 30;
+		public static final int MAX_PASSWORD = 60;	
 	}
 
 }

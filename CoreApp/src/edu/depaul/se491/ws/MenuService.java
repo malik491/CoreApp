@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response.Status;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.beans.RequestBean;
 import edu.depaul.se491.models.MenuModel;
-import edu.depaul.se491.validators.CredentialValidator;
+import edu.depaul.se491.validators.CredentialsValidator;
 
 /**
  * @author Malik
@@ -149,7 +149,7 @@ public class MenuService {
 		boolean isValid = false;
 		
 		isValid  = request != null;
-		isValid &= isValid? new CredentialValidator().validate(request.getCredentials()) : false;
+		isValid &= isValid? new CredentialsValidator().validate(request.getCredentials()) : false;
 		isValid &= isValid && !extraCanBeNull? request.getExtra() != null : true;
 		
 		return isValid;

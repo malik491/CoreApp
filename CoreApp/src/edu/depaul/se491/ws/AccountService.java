@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response.Status;
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.RequestBean;
 import edu.depaul.se491.models.AccountModel;
-import edu.depaul.se491.validators.CredentialValidator;
+import edu.depaul.se491.validators.CredentialsValidator;
 
 /**
  * @author Malik
@@ -147,7 +147,7 @@ public class AccountService {
 		boolean isValid = false;
 		
 		isValid  = request != null;
-		isValid &= isValid? new CredentialValidator().validate(request.getCredentials()) : false;
+		isValid &= isValid? new CredentialsValidator().validate(request.getCredentials()) : false;
 		isValid &= isValid && !extraCanBeNull? request.getExtra() != null : true;
 		
 		return isValid;
