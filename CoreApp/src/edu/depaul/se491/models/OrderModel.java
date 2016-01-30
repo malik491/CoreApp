@@ -58,7 +58,7 @@ public class OrderModel extends BaseModel {
 		if (isValid) {
 			createdOrder = getDAOFactory().getOrderDAO().add(bean);
 			if (createdOrder == null)
-				addErrorMessage("New order could not be added (check order details)");
+				setResponseMessage("New order could not be added (check order details)");
 		}
 		
 		return createdOrder;
@@ -127,7 +127,7 @@ public class OrderModel extends BaseModel {
 		if (isValid) {
 			orderBean = getDAOFactory().getOrderDAO().get(id);
 			if (orderBean == null)
-				addErrorMessage(String.format("No order found (id = %d)", id));
+				setResponseMessage(String.format("No order found (id = %d)", id));
 		}
 		
 		return orderBean;
@@ -150,7 +150,7 @@ public class OrderModel extends BaseModel {
 		if (isValid) {
 			orderBean = getDAOFactory().getOrderDAO().get(confirmation);
 			if (orderBean == null)
-				addErrorMessage(String.format("No order found (confirmation = %s)", confirmation));
+				setResponseMessage(String.format("No order found (confirmation = %s)", confirmation));
 		}
 		
 		return orderBean;
@@ -199,7 +199,7 @@ public class OrderModel extends BaseModel {
 		OrderValidator orderValidtor = new OrderValidator();
 		boolean isValid = orderValidtor.validateId(id, false);
 		if (!isValid)
-			addErrorMessage(orderValidtor.getValidationMessages());
+			setResponseMessage(orderValidtor.getValidationMessages().toString());
 		
 		return isValid;
 	}
@@ -210,7 +210,7 @@ public class OrderModel extends BaseModel {
 		boolean isValid = orderValidtor.validateConfirmation(confirmation);
 		
 		if (!isValid)
-			addErrorMessage(orderValidtor.getValidationMessages());
+			setResponseMessage(orderValidtor.getValidationMessages().toString());
 		
 		return isValid;
 	}
@@ -219,7 +219,7 @@ public class OrderModel extends BaseModel {
 		boolean isValid = status != null;
 		
 		if (!isValid)
-			addErrorMessage("Invalid order status (NULL)");
+			setResponseMessage("Invalid order status (NULL)");
 		
 		return isValid;
 	}
@@ -228,7 +228,7 @@ public class OrderModel extends BaseModel {
 		boolean isValid = type != null;
 		
 		if (!isValid)
-			addErrorMessage("Invalid order type (NULL)");
+			setResponseMessage("Invalid order type (NULL)");
 		
 		return isValid;
 	}
@@ -238,7 +238,7 @@ public class OrderModel extends BaseModel {
 		boolean isValid = orderValidtor.validate(bean, isNewOrder);
 
 		if (!isValid) {
-			addErrorMessage(orderValidtor.getValidationMessages());
+			setResponseMessage(orderValidtor.getValidationMessages().toString());
 		} else {
 			// validate orderItem & menuItem
 			OrderItemValidator oiValidator = new OrderItemValidator();
@@ -247,13 +247,13 @@ public class OrderModel extends BaseModel {
 			for (OrderItemBean oi: bean.getItems()) {
 				isValid &= oiValidator.validate(oi);
 				if (!isValid) {
-					addErrorMessage(oiValidator.getValidationMessages());
+					setResponseMessage(oiValidator.getValidationMessages().toString());
 					break;
 				}
 				
 				isValid &= miValidator.validate(oi.getMenuItem(), false);
 				if (!isValid) {
-					addErrorMessage(miValidator.getValidationMessages());
+					setResponseMessage(miValidator.getValidationMessages().toString());
 					break;
 				}
 			}

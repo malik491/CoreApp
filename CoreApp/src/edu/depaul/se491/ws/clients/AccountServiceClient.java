@@ -6,6 +6,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.CredentialsBean;
@@ -30,7 +31,14 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
 		
-		AccountBean responseBean = response.readEntity(AccountBean.class);
+		AccountBean responseBean = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			responseBean =  response.readEntity(AccountBean.class);
+		}
+		
 		response.close();
 		
 		return responseBean;
@@ -44,7 +52,14 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
 		
-		AccountBean responseBean = response.readEntity(AccountBean.class);
+		AccountBean responseBean = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			responseBean =  response.readEntity(AccountBean.class);
+		}
+		
 		
 		response.close();
 		
@@ -59,7 +74,13 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
 		
-		Boolean updated = response.readEntity(Boolean.class);
+		Boolean updated = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			updated =  response.readEntity(Boolean.class);
+		}
 		
 		response.close();
 		
@@ -74,8 +95,13 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
 		
-		Boolean deleted = response.readEntity(Boolean.class);
+		Boolean deleted = null;
 		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			deleted =  response.readEntity(Boolean.class);
+		}
 		response.close();
 		
 		return deleted;
@@ -90,7 +116,13 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
 		
-		AccountBean[] responseBeans = response.readEntity(AccountBean[].class);
+		AccountBean[] responseBeans = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			responseBeans =  response.readEntity(AccountBean[].class);
+		}
 		
 		response.close();
 		

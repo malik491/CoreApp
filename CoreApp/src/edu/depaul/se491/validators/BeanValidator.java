@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import edu.depaul.se491.utils.ValidatorUtil;
-
 /**
  * @author Malik
  *
@@ -48,7 +46,7 @@ public abstract class BeanValidator {
 	 */
 	protected boolean isValidString(String s, int minLength, int maxLength, String invalidMsg) {
 		boolean isValid = StringUtils.isNotBlank(s);
-		isValid &= ValidatorUtil.isValidLength(s, minLength, maxLength);
+		isValid &= isValidLength(s, minLength, maxLength);
 		
 		if (!isValid)
 			addMessage(invalidMsg);		
@@ -107,7 +105,7 @@ public abstract class BeanValidator {
 	 * @return
 	 */
 	protected boolean isValidValue(double value, double min, double max, String invalidMsg) {
-		boolean isValid = ValidatorUtil.isValidValue(value, min, max);
+		boolean isValid = isValidValue(value, min, max);
 
 		if (!isValid)
 			addMessage(invalidMsg);
@@ -125,7 +123,7 @@ public abstract class BeanValidator {
 	 * @return
 	 */
 	protected boolean isValidValue(int value, int min, int max, String invalidMsg) {
-		boolean isValid = ValidatorUtil.isValidValue(value, min, max);
+		boolean isValid = isValidValue(value, min, max);
 
 		if (!isValid)
 			addMessage(invalidMsg);
@@ -146,5 +144,39 @@ public abstract class BeanValidator {
 			addMessage(invalidMsg);		
 		
 		return isValid;		
+	}
+	
+	
+	/**
+	 * return true is (minLength <= s.length <= maxLength). null safe
+	 * @param s
+	 * @param minLength
+	 * @param maxLength
+	 * @return
+	 */
+	private boolean isValidLength(String s, int minLength, int maxLength) {
+		return s == null? false : (minLength <= s.length() && s.length() <= maxLength);
+	}
+	
+	/**
+	 * return true is (min <= value <= max).
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	private boolean isValidValue(double value, double min, double max) {
+		return Double.compare(min, value) <= 0 && Double.compare(value, max) <= 0;
+	}
+
+	/**
+	 *  return true is (min <= value <= max).
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	private boolean isValidValue(int value, int min, int max) {
+		return min <= value && value <= max;
 	}
 }

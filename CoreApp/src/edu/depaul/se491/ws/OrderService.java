@@ -5,13 +5,11 @@ package edu.depaul.se491.ws;
 
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import edu.depaul.se491.utils.ParamLabels;
+import javax.ws.rs.core.Response;
 
 /**
  * @author Malik
@@ -22,33 +20,33 @@ public class OrderService {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/x-www-form-urlencoded")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/get")
-	public String get(@FormParam(ParamLabels.Request.REQUEST)String jsonFormatedParamList) {
+	public Response get() {
 		return null;
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/x-www-form-urlencoded")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/put")
-	public String put(@FormParam(ParamLabels.Request.REQUEST)String jsonFormatedParamList) {
+	public Response put() {
 		return null;
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/x-www-form-urlencoded")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/update")
-	public String update(@FormParam(ParamLabels.Request.REQUEST)String jsonFormatedParamList) {
+	public Response update() {
 		return null;
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/x-www-form-urlencoded")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/delete")
-	public String delete(@FormParam(ParamLabels.Request.REQUEST)String jsonFormatedParamList) {
+	public Response delete() {
 		return null;
 	}
 }

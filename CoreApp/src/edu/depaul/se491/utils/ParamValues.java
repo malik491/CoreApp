@@ -4,10 +4,22 @@ import java.time.Year;
 
 public abstract class ParamValues {
 	
+	public static final class MenuItem {
+		public static final double MIN_PRICE = 0; /*MySQL Decimal(5,2) ---.--*/
+
+		public static final double MAX_PRICE = 999.99; /*MySQL Decimal(5,2) ---.--*/
+	}
+	
 	public static final class Order {
 		public static final int MIN_ORDER_ITEMS = 1;
 		
 		public static final int MAX_ORDER_ITEMS = 100;
+	}
+	
+	public static final class OrderItem {
+		public static final int MIN_QTY = 1; 	
+
+		public static final int MAX_QTY = 65535; 		/*MySQL unsigned smallInt*/ 
 	}
 	
 	public static final class Payment {
@@ -25,23 +37,5 @@ public abstract class ParamValues {
 		
 		public static final int MAX_CC_EXP_MONTH = 12;				 /* December = 12*/
 		public static final int MAX_CC_EXP_YEAR = CURRENT_YEAR + 20; /* no standard among CC issuer so use 20 years from now */
-	}
-	
-	public static final class OrderItem {
-		public static final int MIN_QTY = 1; 	
-		public static final int MAX_QTY = 65535; /*MySQL unsigned smallInt*/ 
-	}
-	
-	public static final class MenuItem {
-		public static final double MIN_PRICE = 0; /*MySQL Decimal(5,2) ---.--*/
-		public static final double MAX_PRICE = 999.99; /*MySQL Decimal(5,2) ---.--*/
-	}
-	
-	public static final class IDs {
-		public static final long UNKNOWN = 0;
-	}
-	
-	public static final class Strings {
-		public static final String EMPTY = "";
-	}
+	}	
 }

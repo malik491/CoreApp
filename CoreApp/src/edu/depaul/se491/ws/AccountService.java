@@ -11,12 +11,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.RequestBean;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.models.AccountModel;
+import edu.depaul.se491.validators.CredentialValidator;
 
 /**
  * @author Malik
@@ -31,23 +32,19 @@ public class AccountService {
 	@Path("/get")
 	public Response get(RequestBean<String> request) {
 		Response response = null;
-		boolean isValid = (request != null && request.getCredentials() != null && request.getExtra() != null);
+		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			try {
-				AccountModel model = new AccountModel(request.getCredentials());	
-				AccountBean accountBean = model.read(request.getExtra());
-				if (accountBean == null)
-					response = Response.noContent().build();
-				else
-					response = Response.ok(accountBean, MediaType.APPLICATION_JSON).build();
-			} catch (DBException e) {
-				response = Response.serverError().build();
+			AccountModel model = new AccountModel(request.getCredentials());	
+			AccountBean accountBean = model.read(request.getExtra());
+			if (accountBean == null) {
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			} else {
+				response = getResponse(Status.OK, accountBean);
 			}
 		} else {
-			response = Response.status(Status.BAD_REQUEST).build();
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
 		}
-		
 		return response;
 	}
 		
@@ -58,21 +55,17 @@ public class AccountService {
 	@Path("/post")
 	public Response post(RequestBean<AccountBean> request) {
 		Response response = null;
-		boolean isValid = (request != null && request.getCredentials() != null && request.getExtra() != null);
+		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			try {
-				AccountModel model = new AccountModel(request.getCredentials());	
-				AccountBean createdAccount  = model.create(request.getExtra());
-				if (createdAccount == null)
-					response = Response.noContent().build();
-				else
-					response = Response.ok(createdAccount, MediaType.APPLICATION_JSON).build();
-			} catch (DBException e) {
-				response = Response.serverError().build();
-			}
+			AccountModel model = new AccountModel(request.getCredentials());	
+			AccountBean createdAccount  = model.create(request.getExtra());
+			if (createdAccount == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, createdAccount);
 		} else {
-			response = Response.status(Status.BAD_REQUEST).build();
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
 		}
 		
 		return response;
@@ -87,21 +80,17 @@ public class AccountService {
 	@Path("/update")
 	public Response update(RequestBean<AccountBean> request) {
 		Response response = null;
-		boolean isValid = (request != null && request.getCredentials() != null && request.getExtra() != null);
+		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			try {
-				AccountModel model = new AccountModel(request.getCredentials());
-				Boolean updated  = model.update(request.getExtra());
-				if (updated == null)
-					response = Response.noContent().build();
-				else
-					response = Response.ok(updated, MediaType.APPLICATION_JSON).build();
-			} catch (DBException e) {
-				response = Response.serverError().build();
-			}
+			AccountModel model = new AccountModel(request.getCredentials());
+			Boolean updated  = model.update(request.getExtra());
+			if (updated == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, updated);
 		} else {
-			response = Response.status(Status.BAD_REQUEST).build();
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
 		}
 		
 		return response;
@@ -115,21 +104,17 @@ public class AccountService {
 	@Path("/delete")
 	public Response delete(RequestBean<String> request) {
 		Response response = null;
-		boolean isValid = (request != null && request.getCredentials() != null && request.getExtra() != null);
+		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			try {
-				AccountModel model = new AccountModel(request.getCredentials());	
-				Boolean deleted  = model.delete(request.getExtra());
-				if (deleted == null)
-					response = Response.noContent().build();
-				else
-					response = Response.ok(deleted, MediaType.APPLICATION_JSON).build();
-			} catch (DBException e) {
-				response = Response.serverError().build();
-			}
+			AccountModel model = new AccountModel(request.getCredentials());	
+			Boolean deleted  = model.delete(request.getExtra());
+			if (deleted == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, deleted);
 		} else {
-			response = Response.status(Status.BAD_REQUEST).build();
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
 		}
 		
 		return response;
@@ -142,24 +127,39 @@ public class AccountService {
 	@Path("/get/all")
 	public Response getAll(RequestBean<Object> request) {
 		Response response = null;
-		boolean isValid = (request != null && request.getCredentials() != null && request.getExtra() == null);
+		boolean isValid = isValidRequest(request, true);
 		
 		if (isValid) {	
-			try {
-				AccountModel model = new AccountModel(request.getCredentials());	
-				List<AccountBean> accounts  = model.readAll();
-				if (accounts == null)
-					response = Response.noContent().build();
-				else
-					response = Response.ok(accounts, MediaType.APPLICATION_JSON).build();
-			} catch (DBException e) {
-				response = Response.serverError().build();
-			}
+			AccountModel model = new AccountModel(request.getCredentials());	
+			List<AccountBean> accounts  = model.readAll();
+			if (accounts == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, accounts);
 		} else {
-			response = Response.status(Status.BAD_REQUEST).build();
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
 		}
 		
 		return response;
 	}
+	
+	private <T> boolean isValidRequest(RequestBean<T> request, boolean extraCanBeNull) {
+		boolean isValid = false;
 		
+		isValid  = request != null;
+		isValid &= isValid? new CredentialValidator().validate(request.getCredentials()) : false;
+		isValid &= isValid && !extraCanBeNull? request.getExtra() != null : true;
+		
+		return isValid;
+	}
+	
+	
+	private <T> Response getResponse(Response.Status status, T entity) {
+		ResponseBuilder responseBuilder = Response.status(status);
+		responseBuilder = responseBuilder.entity(entity);
+		return responseBuilder.build();
+	}
+	
+	
+	private static final String INVALID_RQST_MSG = "Invalid Web Service Request";
 }

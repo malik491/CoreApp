@@ -8,10 +8,15 @@ import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.beans.RequestBean;
 
 public abstract class BaseWebServiceClient {
+	private String responseMessage;
 	
 	protected BaseWebServiceClient() {
 	}
-	
+
+	public String getResponseMessage() {
+		return responseMessage;
+	}
+
 	
 	protected <T> RequestBean<T> getRequestBean(CredentialsBean credentials, T extra) {
 		RequestBean<T> requestBean = new RequestBean<>();
@@ -23,5 +28,10 @@ public abstract class BaseWebServiceClient {
 	
 	protected Invocation.Builder getJsonInvocationBuilder(Client client, String target) {
 		return client.target(target).request(MediaType.APPLICATION_JSON); 
+	}
+
+
+	protected void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
 	}
 }

@@ -71,7 +71,7 @@ public class MSClientTest {
 		Boolean isUpdated = menuServiceClient.update(oldItem);
 		
 		System.out.println("menuServiceClient.testUpdate():");
-		System.out.println(" -- update: " + isUpdated);
+		System.out.println(" -- update: " +  (isUpdated != null? isUpdated : menuServiceClient.getResponseMessage()));
 		System.out.println();
 	}
 
@@ -79,14 +79,14 @@ public class MSClientTest {
 		Boolean isDeleted = menuServiceClient.delete(1);
 		
 		System.out.println("menuServiceClient.testDelete():");
-		System.out.println(" -- deleted: " + isDeleted);
+		System.out.println(" -- deleted: " + (isDeleted != null? isDeleted : menuServiceClient.getResponseMessage()));
 		System.out.println();
 
 	}
 	
 	private void report(MenuItemBean bean) {
 		if (bean == null) {
-			System.out.println("-- null menu item bean --");
+			System.out.println("-- null menu item bean -- [ " + menuServiceClient.getResponseMessage() + "]");
 		} else {
 			System.out.println("-- Menu Item Bean --");
 			System.out.println("bean.id = " + bean.getId());

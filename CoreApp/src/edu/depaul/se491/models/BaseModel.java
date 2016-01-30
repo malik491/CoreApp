@@ -3,16 +3,13 @@
  */
 package edu.depaul.se491.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.exceptions.DBException;
-import edu.depaul.se491.utils.ErrorCodes;
-import edu.depaul.se491.validators.CredentialValidator;
 
 /**
  * @author Malik
@@ -20,71 +17,70 @@ import edu.depaul.se491.validators.CredentialValidator;
  */
 public abstract class BaseModel {
 	private DAOFactory daoFactory;
-	private List<String> messages;
+	private String message;
+	private Status responseStatus;
 	
 	private CredentialsBean credentials;
 	private AccountBean loggedinAccount;
 	private boolean lookupAccount;
 	
-	
 	protected BaseModel(DAOFactory daoFactory, CredentialsBean credentials) {
 		this.daoFactory = daoFactory;
-		this.messages = new ArrayList<>();
-		
-		CredentialValidator validator = new CredentialValidator();
-		if (validator.validate(credentials)) {
-			this.credentials = credentials;
-			lookupAccount = true;
-		} else {
-			messages.addAll(validator.getValidationMessages());
-		}
+		this.message = "";
+		this.credentials = credentials;
+		this.lookupAccount = true;
 	}
 	
-	public String getErrorMessage() {
-		StringBuilder sb = new StringBuilder();
-		for(String msg: messages) {
-			sb.append(msg); sb.append(NEW_LINE);
-		}
-		return sb.toString();
+	public String getResponseMessage() {
+		return message;
+	}
+	
+	public Status getResponseStatus() {
+		return responseStatus;
+	}
+	
+	protected void setResponseMessage(String message) {
+		this.message = message;
+	}
+	
+	protected void setResponseStatus(Status responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+
+	protected void setResponseAndMeessageForDBError() {
+		this.responseStatus = Status.INTERNAL_SERVER_ERROR;
+		this.message = GENERIC_SERVER_ERR_MSG;
 	}
 	
 	protected DAOFactory getDAOFactory() {
 		return this.daoFactory;
 	}
 	
-	protected AccountBean getLoggedinAccount() throws DBException {
+	protected AccountBean getLoggedinAccount() {
 		if (lookupAccount) {
-			AccountBean existingAccount = daoFactory.getAccountDAO().get(credentials.getUsername());
-			
-			boolean accountFound = (existingAccount != null);
-			if (accountFound) {
-				
-				String existingPassword = existingAccount.getCredentials().getPassword();
-
-				if (credentials.getPassword().equals(existingPassword)) {
-					loggedinAccount = existingAccount;
+			try {
+				AccountBean existingAccount = daoFactory.getAccountDAO().get(credentials.getUsername());
+				boolean accountFound = (existingAccount != null);
+				if (accountFound) {				
+					String existingPassword = existingAccount.getCredentials().getPassword();
+					if (credentials.getPassword().equals(existingPassword)) {
+						loggedinAccount = existingAccount;
+					} else {
+						responseStatus = Status.NOT_FOUND;
+						message = "Incorrect Password (check password)";
+					}
 				} else {
-					addErrorMessage(String.format("Wrong account password (password = %s)", credentials.getPassword()));
-				}
-			} else {
-				addErrorMessage(String.format("No account found (username = %s)", credentials.getUsername()));
+					responseStatus = Status.NOT_FOUND;
+					message = "Account Not Found (check username)";
+				}	
+			} catch (DBException e) {
+				setResponseAndMeessageForDBError();
 			}
-			
 			lookupAccount = false;
 		}
 		
 		return loggedinAccount;
 	}
-	
-	protected void addErrorMessage(String errorMsg) {
-		messages.add(errorMsg);
-	}
-	
-	protected void addErrorMessage(List<String> errorMsgList) {
-		for (String msg: errorMsgList)
-			messages.add(msg);
-	}
-	
 	
 	protected boolean hasPermission(AccountRole[] allowedRoles) {
 		AccountBean loggedInAccount = getLoggedinAccount();
@@ -98,15 +94,21 @@ public abstract class BaseModel {
 			for (AccountRole role: allowedRoles) {
 				isValid |= (loggedInRole == role);
 			}	
-			if (!isValid)
-				addErrorMessage(String.format("Access Denied (Error code %d)", ErrorCodes.Access.INSUFFICIENT_ROLE));
+			if (!isValid) {
+				responseStatus = Status.UNAUTHORIZED;
+				message = "Access Denied (unauthorized)";
+			}
 		}
 		
 		return isValid;
 	}
 
-	
-	
-	private static final String NEW_LINE = "\n";
+	protected static final AccountRole ADMIN = AccountRole.ADMIN;
+	protected static final AccountRole MANAGER = AccountRole.MANAGER;
+	protected static final AccountRole EMPLOYEE = AccountRole.EMPLOYEE;
+	protected static final AccountRole VENDOR = AccountRole.VENDOR;
+	protected static final AccountRole CUSTOMER_APP = AccountRole.CUSTOMER_APP;
+
+	private static final String GENERIC_SERVER_ERR_MSG = "Internal Server Error. Contact the site admin for details";
 	
 }
