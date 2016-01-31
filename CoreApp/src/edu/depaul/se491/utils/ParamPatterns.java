@@ -3,8 +3,8 @@ package edu.depaul.se491.utils;
 public abstract class ParamPatterns {
 
 	public static final class MenuItem {
-		public static final String NAME 		= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.Address.MIN_LINE1, ParamLengths.Address.MAX_LINE1);
-		public static final String DESCRIPTION 	= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.Address.MIN_LINE2, ParamLengths.Address.MAX_LINE2);
+		public static final String NAME 		= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.MenuItem.MIN_NAME, ParamLengths.MenuItem.MAX_NAME);
+		public static final String DESCRIPTION 	= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.MenuItem.MIN_DESC, ParamLengths.MenuItem.MAX_DESC);
 	}
 	
 	
