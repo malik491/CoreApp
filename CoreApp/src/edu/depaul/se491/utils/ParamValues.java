@@ -7,7 +7,7 @@ public abstract class ParamValues {
 	public static final class MenuItem {
 		public static final double MIN_PRICE = 0; /*MySQL Decimal(5,2) ---.--*/
 
-		public static final double MAX_PRICE = 999.99; /*MySQL Decimal(5,2) ---.--*/
+		public static final double MAX_PRICE = 999.9; /*MySQL Decimal(5,2) ---.--*/
 	}
 	
 	public static final class Order {
