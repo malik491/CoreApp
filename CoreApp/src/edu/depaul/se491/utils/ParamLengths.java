@@ -64,11 +64,12 @@ public class ParamLengths {
 		public static final int MIN_SUBJECT = 1; 
 		public static final int MIN_TEXT = 1; 
 		
-		public static final int MAX_ADDR = 30;
+		public static final int MAX_ADDR = 50;
 		public static final int MAX_SUBJECT = 5; 
 		public static final int MAX_TEXT = 5; 
 		
 	}
+	
 	public static final class Credentials {
 		public static final int MIN_USERNAME = 3;
 		public static final int MIN_PASSWORD = 3;	

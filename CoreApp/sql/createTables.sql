@@ -43,7 +43,7 @@ CREATE TABLE payments (
     
     p_type						ENUM ('CASH', 'CREDIT_CARD') NOT NULL,
     p_total  					DECIMAL(7, 2) NOT NULL,
-    p_cc_transaction_confm   	VARCHAR(50) NOT NULL,
+    p_cc_transaction_confm   	VARCHAR(50) DEFAULT 'N/A',
     
     PRIMARY KEY(p_id)
 );
@@ -124,8 +124,8 @@ CREATE TABLE recipe_items (
 CREATE TABLE emails (
 	email_id			BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     
-    email_to			VARCHAR(30) NOT NULL,
-    email_from			VARCHAR(30) NOT NULL,
+    email_to			VARCHAR(50) NOT NULL,
+    email_from			VARCHAR(50) NOT NULL,
 	email_subject		VARCHAR(100) NOT NULL,
     email_text			VARCHAR(300) NOT NULL,
     email_sent_status   TINYINT NOT NULL DEFAULT 0,	

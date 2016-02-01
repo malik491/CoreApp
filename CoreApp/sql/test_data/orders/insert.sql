@@ -1,3 +1,4 @@
-INSERT INTO orders (order_status, order_type, order_timestamp, order_total, order_confirmation, address_id) VALUES ('SUBMITTED', 'PICKUP', current_timestamp(), 8.49, 'conf#100', NULL);
-INSERT INTO orders (order_status, order_type, order_timestamp, order_total, order_confirmation, address_id) VALUES ('SUBMITTED', 'DELIVERY', current_timestamp(), 10.99, 'conf#200', 5);
-INSERT INTO orders (order_status, order_type, order_timestamp, order_total, order_confirmation, address_id) VALUES ('SUBMITTED', 'PICKUP', current_timestamp(), 4.00, 'conf#300', NULL);
+/*id = 1*/ INSERT INTO orders (o_type, o_status, o_confirmation, o_timestamp, p_id) 
+							   VALUES ('PICKUP', 'SUBMITTED', 'order-confirmation-123', current_timestamp(), 1);
+/*id = 2*/ INSERT INTO orders (o_type, o_status, o_confirmation, o_timestamp, p_id, o_notification_email, addr_id)  
+							   VALUES ('DELIVERY', 'SUBMITTED', 'order-confirmation-456', current_timestamp(), 2, 'notificationEmail@email.com',  6);

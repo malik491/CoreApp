@@ -54,12 +54,16 @@ public class TestDataGenerator {
 		generateUsers();    	// after Addresss
 		generateAccounts(); 	// after Users
 
-//		generateInventoryItems();
-//		generateRecipes();     // associated with an MenuItem
-//		generateRecipeItems(); // associated with a Recipe & InventoryItem
+		
+		generatePayments();
+		generateOrders();     	// after Addresses and Payments
+		generateOrderItems(); 	// after Orders and MenuItems
 
-//		generateOrders();     // maybe associated with an Address (delivery)
-//		generateOrderItems(); // associated with an Order & MenuItems
+		
+//		generateInventoryItems();
+//		generateRecipes();     // after MenuItems
+//		generateRecipeItems(); // after Recipes and InventoryItems
+
 		
 		
 	}	
@@ -79,7 +83,11 @@ public class TestDataGenerator {
 	public void generateAccounts() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/accounts/insert.sql");
 	}
-	
+
+	public void generatePayments() throws FileNotFoundException, SQLException, IOException {
+		executeSQLFile(dataDIR + "/payments/insert.sql");
+	}
+
 	public void generateOrders() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/orders/insert.sql");
 	}
