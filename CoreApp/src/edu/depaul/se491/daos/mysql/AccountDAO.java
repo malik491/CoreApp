@@ -293,11 +293,11 @@ public class AccountDAO {
 	
 	private static final String INSERT_ACC_QUERY = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?,?,?,?)",
 																DBLabels.Account.TABLE, DBLabels.Account.USERNAME, 
-																DBLabels.Account.PASSWORD, DBLabels.Account.ROLE, DBLabels.Account.USER);
+																DBLabels.Account.PASSWORD, DBLabels.Account.ROLE, DBLabels.Account.USER_ID);
 	
 	private static final String UPADTE_ACC_QUERY = String.format("UPDATE %s SET %s=?, %s=?, %s=? WHERE (%s = ?)", 
 																DBLabels.Account.TABLE, DBLabels.Account.PASSWORD, DBLabels.Account.ROLE,
-																DBLabels.Account.USER, DBLabels.Account.USERNAME);
+																DBLabels.Account.USER_ID, DBLabels.Account.USERNAME);
 	
 	
 	private static final String DELETE_ACC_QUERY = String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.Account.TABLE, DBLabels.Account.USERNAME);

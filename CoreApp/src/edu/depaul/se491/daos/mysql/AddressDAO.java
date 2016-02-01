@@ -29,6 +29,7 @@ public class AddressDAO {
 	private AddressBeanLoader loader;
 	
 	public  AddressDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
+		this.connFactory = connFactory;
 		this.loader = new AddressBeanLoader();
 	}
 	
@@ -112,7 +113,7 @@ public class AddressDAO {
 	 * @return address
 	 * @throws SQLException
 	 */
-	public AddressBean transactionAdd(Connection conn, AddressBean address) throws DBException {
+	public AddressBean transactionAdd(final Connection conn, AddressBean address) throws DBException {
 		PreparedStatement ps = null;
 		AddressBean addedAddr = null;
 		try {
@@ -148,7 +149,7 @@ public class AddressDAO {
 	 * @return true if the address in database is updated
 	 * @throws SQLException
 	 */
-	public boolean transactionUpdate(Connection conn, AddressBean address) throws DBException {
+	public boolean transactionUpdate(final Connection conn, AddressBean address) throws DBException {
 		PreparedStatement ps = null;
 		boolean updated = false;
 		try {
@@ -179,7 +180,7 @@ public class AddressDAO {
 	 * @return true if address is deleted
 	 * @throws SQLException
 	 */
-	public boolean transactionDelete(Connection conn, long addressId) throws DBException {
+	public boolean transactionDelete(final Connection conn, long addressId) throws DBException {
 		PreparedStatement ps = null;
 		boolean deleted = false;
 		try {

@@ -43,7 +43,7 @@ CREATE TABLE payments (
     
     p_type						ENUM ('CASH', 'CREDIT_CARD') NOT NULL,
     p_total  					DECIMAL(7, 2) NOT NULL,
-    p_cc_transaction_confm   	VARCHAR(50) DEFAULT 'N/A',
+    p_cc_transaction_confm   	VARCHAR(50) NOT NULL,
     
     PRIMARY KEY(p_id)
 );
@@ -82,7 +82,7 @@ CREATE TABLE order_items (
 	m_item_id		BIGINT UNSIGNED NOT NULL,
 	
 	o_item_qty		SMALLINT UNSIGNED NOT NULL,
-	o_item_status   ENUM ('READY', 'NOT_READY') NOT NULL DEFAULT 'NOT_READY',
+	o_item_status   ENUM ('READY', 'NOT_READY') NOT NULL,
     
 	PRIMARY KEY (o_id, m_item_id),
 	FOREIGN KEY (o_id) REFERENCES orders (o_id),

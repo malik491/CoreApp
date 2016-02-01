@@ -61,11 +61,11 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 		
 		
 		OrderBean bean = new OrderBean();
-		bean.setType(type);
 		bean.setId(rs.getLong(DBLabels.Order.ID));	
+		bean.setType(type);
 		bean.setStatus(OrderStatus.valueOf(rs.getString(DBLabels.Order.STATUS)));
-		bean.setTimestamp(rs.getTimestamp(DBLabels.Order.TIMESTAMP));			
 		bean.setConfirmation(rs.getString(DBLabels.Order.CONFIRMATION));
+		bean.setTimestamp(rs.getTimestamp(DBLabels.Order.TIMESTAMP));			
 		bean.setPayment(paymentLoader.loadSingle(rs));		
 		
 		if (type == OrderType.DELIVERY) {
@@ -84,12 +84,12 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 	 */
 	@Override
 	public void loadParameters(PreparedStatement ps, OrderBean bean, int paramIndex) throws SQLException {		
-		ps.setString(paramIndex++, bean.getStatus().name());
 		ps.setString(paramIndex++, bean.getType().name());
-
-		ps.setTimestamp(paramIndex++, bean.getTimestamp());		
+		ps.setString(paramIndex++, bean.getStatus().name());
 		ps.setString(paramIndex++, bean.getConfirmation());
-				
+		ps.setTimestamp(paramIndex++, bean.getTimestamp());		
+		ps.setLong(paramIndex++, bean.getPayment().getId());
+
 		String notificaionEmail = bean.getNotificationEmail();
 		if (notificaionEmail != null) {
 			ps.setString(paramIndex++, notificaionEmail);
@@ -103,9 +103,5 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 		} else {
 			ps.setNull(paramIndex++, java.sql.Types.NULL);		
 		}
-		
-		ps.setLong(paramIndex++, bean.getPayment().getId());
-
-		
 	}
 }

@@ -27,20 +27,18 @@ public class PaymentBeanLoader implements BeanLoader<PaymentBean> {
 		
 		PaymentBean bean = new PaymentBean();
 		bean.setType(type);
-		
-		if (type == PaymentType.CREDIT_CARD) {
-			bean.setTransactionConfirmation(rs.getString(DBLabels.Payment.CC_TRANSACTION_CONFIRMATION));
-		}
-
 		bean.setId(rs.getLong(DBLabels.Payment.ID));
 		bean.setTotal(rs.getDouble(DBLabels.Payment.TOTAL));
+		bean.setTransactionConfirmation(rs.getString(DBLabels.Payment.CC_TRANSACTION_CONFIRMATION));
 		
 		return bean;
 	}
 
 	@Override
 	public void loadParameters(PreparedStatement ps, PaymentBean bean, int paramIndex) throws SQLException {
-		
+		ps.setString(paramIndex++, bean.getType().name());
+		ps.setDouble(paramIndex++, bean.getTotal());
+		ps.setString(paramIndex++, (bean.getType() == PaymentType.CASH)? "N/A" : bean.getTransactionConfirmation());
 	}
 
 }

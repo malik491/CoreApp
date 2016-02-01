@@ -14,6 +14,8 @@ import java.util.List;
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.OrderItemBean;
+import edu.depaul.se491.beans.PaymentBean;
+import edu.depaul.se491.builders.OrderBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.enums.OrderStatus;
@@ -21,6 +23,7 @@ import edu.depaul.se491.enums.OrderType;
 import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.OrderBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
+import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
  * @author Malik
@@ -31,11 +34,13 @@ public class OrderDAO {
 	private OrderBeanLoader loader;
 	private AddressDAO addressDAO;
 	private OrderItemDAO orderItemDAO;
-
+	private PaymentDAO paymentDAO;
+	
 	public OrderDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.addressDAO = daoFactory.getAddressDAO();
 		this.orderItemDAO = daoFactory.getOrderItemDAO();
+		this.paymentDAO = daoFactory.getPaymentDAO();
 		this.loader = new OrderBeanLoader();
 	}
 	
@@ -46,7 +51,7 @@ public class OrderDAO {
 	 * @throws SQLException
 	 */
 	public List<OrderBean> getAll() throws DBException {
-		return getMultiple(SELECT_ALL_WITH_ORDER_QUERY, null);
+		return getMultiple(SELECT_ALL_WITH_ORDER_BY_QUERY, null);
 	}
 	
 	/**
@@ -57,7 +62,7 @@ public class OrderDAO {
 	 * @throws SQLException
 	 */
 	public List<OrderBean> getAllWithStatus(final OrderStatus status) throws DBException {
-		return getMultiple(SELECT_BY_STATUS_QUERY, status.toString());
+		return getMultiple(SELECT_ALL_BY_STATUS_QUERY, status.toString());
 	}
 	
 	/**
@@ -68,7 +73,7 @@ public class OrderDAO {
 	 * @throws SQLException
 	 */
 	public List<OrderBean> getAllWithType(final OrderType type) throws DBException {
-		return getMultiple(SELECT_BY_TYPE_QUERY, type.toString());
+		return getMultiple(SELECT_ALL_BY_TYPE_QUERY, type.toString());
 	}
 	
 	/**
@@ -86,7 +91,7 @@ public class OrderDAO {
 		OrderBean order = null;
 		try {
 			conn = connFactory.getConnection();
-			ps = conn.prepareStatement(SELECT_BY_ID_QUERY);
+			ps = conn.prepareStatement(SELECT_ORDER_BY_ID_QUERY);
 			
 			ps.setLong(1, orderId);
 			
@@ -97,11 +102,9 @@ public class OrderDAO {
 			if (order != null)
 				order.setItems(orderItemDAO.getOrderItems(order.getId()));
 			
-		} catch (SQLException e) {
+		} catch (SQLException | DBException e) {
 			e.printStackTrace();
 			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
-			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
@@ -140,11 +143,9 @@ public class OrderDAO {
 			if (order != null)
 				order.setItems(orderItemDAO.getOrderItems(order.getId()));
 			
-		} catch (SQLException e) {
+		} catch (SQLException | DBException e) {
 			e.printStackTrace();
 			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
-			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
@@ -171,10 +172,11 @@ public class OrderDAO {
 		OrderBean result = null;
 		try {
 			boolean added = false;
-			OrderBean addedOrder = null;// new DeliveryOrderBuilder(order).build(); // copied so not to modify the caller's order
+			OrderBean addedOrder = new OrderBuilder(order).build();
 			
 			/* Transaction :
-			 * - add address (if any)
+			 * - add payment
+			 * - add address (if delivery order)
 			 * - add order
 			 * - add order items
 			 */
@@ -182,23 +184,32 @@ public class OrderDAO {
 			conn.setAutoCommit(false);
 			ps = conn.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
 			
-			// handle address
-			final AddressBean address = null;// order.getDeliveryAddress();
 			
-			if (address == null) {
-				added = true;
-			} else {
-				AddressBean addedAddress = addressDAO.transactionAdd(conn, address);
-				added = (addedAddress != null);
-				//addedOrder.setDeliveryAddress(addedAddress);	
-			}
+			final PaymentBean addedPayment = paymentDAO.transactionAdd(conn, order.getPayment());
+			added = (addedPayment != null);
 			
 			if (added) {
+				addedOrder.setPayment(addedPayment);
+
+				// then handle address
+				if (order.getType() == OrderType.PICKUP) {
+					added = true;
+				} else {
+					final AddressBean addedAddress = addressDAO.transactionAdd(conn, order.getAddress());
+					added = (addedAddress != null);
+					if (added)
+						addedOrder.setAddress(addedAddress);	
+				}
+			}
+						
+			if (added) {
+				// add order
 				loader.loadParameters(ps, addedOrder, 1);
 				added = DAOUtil.validInsert(ps.executeUpdate());
 			}
 			
 			if (added) {
+				// add order items
 				addedOrder.setId(DAOUtil.getAutGeneratedKey(ps));
 				added = orderItemDAO.transactionAdd(conn, addedOrder);				
 			}
@@ -212,11 +223,9 @@ public class OrderDAO {
 				conn.rollback();
 			}			
 
-		} catch (SQLException e) {
+		} catch (SQLException | DBException e) {
 			e.printStackTrace();
 			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
-			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
@@ -253,6 +262,7 @@ public class OrderDAO {
 			 * - delete order items
 			 * - delete order
 			 * - delete address (if any)
+			 * we don't delete payments
 			 */
 			conn = connFactory.getConnection();
 			conn.setAutoCommit(false);
@@ -268,24 +278,21 @@ public class OrderDAO {
 				deleted = DAOUtil.validDelete(ps.executeUpdate());
 
 			// finally you can delete the address
-			if (deleted) {
-				AddressBean address = null;//order.getDeliveryAddress();
-				deleted = address != null? addressDAO.transactionDelete(conn, address.getId()) : true;
-			}
+			if (deleted)
+				deleted = order.getType() != OrderType.DELIVERY? addressDAO.transactionDelete(conn, order.getAddress().getId()) : true;
+
 			
 			if (deleted) {
 				// commit
-				conn.commit();				
+				conn.commit();
 			} else {
 				/*try to rollback*/
 				conn.rollback();
 			}
 			
-		} catch (SQLException e) {
+		} catch (SQLException | DBException e) {
 			e.printStackTrace();
 			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
-			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
@@ -311,79 +318,91 @@ public class OrderDAO {
 	public boolean update(final OrderBean updatedOrder) throws DBException {
 		Connection conn = null;
 		PreparedStatement ps = null;		
+		
 		boolean updated = false;
+		
 		try {
 			final long orderId = updatedOrder.getId();
 			final OrderBean oldOrder = get(orderId);
-			if (oldOrder == null)
-				return false;
-
+			if (oldOrder == null || oldOrder.getPayment().getId() != updatedOrder.getPayment().getId())
+				return updated;
+		
+			OrderBean updatedOrderCopy = new OrderBuilder(updatedOrder).build();
+			
 			/*
 			 * transaction:
 			 * - update order items
-			 * - update order and order address
+			 * - update order
 			 */
 			conn = connFactory.getConnection();
 			conn.setAutoCommit(false);
 			ps = conn.prepareStatement(UPDATE_ORDER_QUERY);
+			
+			
+			OrderType pickup = OrderType.PICKUP;
+			OrderType delivery = OrderType.DELIVERY;
+			
+			
+			OrderType oldType = oldOrder.getType();
+			OrderType updatedType = updatedOrderCopy.getType();
+			
+			boolean deletedOldAddress = false;
+			
+			if (oldType == pickup && updatedType == pickup) {
+				// no address
+				updated = true;
+				
+			} else if (oldType == delivery && updatedType == delivery){
+				// addresses must have the same id
+				final AddressBean oldAddr = oldOrder.getAddress();
+				final AddressBean updatedAddr = updatedOrderCopy.getAddress();
 
-			
-			final AddressBean oldAddr = null;//oldOrder.getDeliveryAddress();
-			final AddressBean updatedAddr = null;//updatedOrder.getDeliveryAddress();
-			
-			boolean isNullOldAddr = (oldAddr == null);
-			boolean isNullNewAddr = (updatedAddr == null);
-			boolean deleteOldAddr = false;
-			
-			if ( isNullOldAddr && isNullNewAddr) {
-				// both addresses are null, no address to update
-				updated = true;	
-			} else {
-				// some address or both are not null
+				updated = (oldAddr.getId() == updatedAddr.getId());
 				
-				if (isNullOldAddr && !isNullNewAddr) {
-					// add a new delivery address to a saved order with no address
-					
-					AddressBean addedAddr = addressDAO.transactionAdd(conn, updatedAddr);
-					updated = (addedAddr != null);
-					//if (updated)
-					//	updatedOrder.setDeliveryAddress(addedAddr);
-					
-				} else if (!isNullOldAddr && isNullNewAddr) {
-					// remove a saved old address for this order (the updated order basically removed the old address)
-					// we can't delete it now/here (we must wait until the order.address_id (foreign key) is set to NULL first.
-					
-					updated = true;
-					deleteOldAddr = true;
-				
-				} else {
-					// both addresses not null so both must have the same id. If that's the case, then update the saved address data
-				
-					updated = (oldAddr.getId() == updatedAddr.getId());
-					if (updated) {
-						boolean isDifferent = hasDifferentData(oldAddr, updatedAddr);
-						updated = isDifferent? addressDAO.transactionUpdate(conn, updatedAddr) : true;
-					}
+				if (updated) {
+					// update address data if different
+					boolean isDifferent = hasDifferentData(oldAddr, updatedAddr);
+					updated = isDifferent? addressDAO.transactionUpdate(conn, updatedAddr) : true;
 				}
-								
+				
+			} else {
+				// add new address (order type changed to delivery) or remove address (type changed to pickup)
+				
+				if (oldType == pickup && updatedType == delivery) {
+					// add new address
+					
+					AddressBean addedAddress = addressDAO.transactionAdd(conn, updatedOrderCopy.getAddress());
+					updated = (addedAddress != null);
+					
+					if (updated)
+						updatedOrderCopy.setAddress(addedAddress);
+					
+				} else if (oldType == delivery && updatedType == pickup) {
+					// remove existing address
+					// can't do it here because of foreign key constrain 
+					deletedOldAddress = true;
+					updatedOrderCopy.setAddress(null);
+					updatedOrderCopy.setNotificationEmail(null);
+				} else {
+					updated = false;
+				}
 			}
-		
+
 			// update order items
 			if (updated)
-				updated = updateOrderItems(conn, oldOrder, updatedOrder);
+				updated = updateOrderItems(conn, oldOrder, updatedOrderCopy);
 						
 			// update order
 			if (updated) {
 				int paramIndex = 1;
-				loader.loadParameters(ps, updatedOrder, paramIndex);
+				loader.loadParameters(ps, updatedOrderCopy, paramIndex);
 				ps.setLong(paramIndex + ORDER_COLUMNS_COUNT, orderId);
 				
 				updated = DAOUtil.validUpdate(ps.executeUpdate());
 
 				// if this update deletes an old address, we can only do it now (after setting the order's address_id (foreign key) to NULL)
-				if (updated && deleteOldAddr)
-					updated = addressDAO.transactionDelete(conn, oldAddr.getId());
-
+				if (updated && deletedOldAddress)
+					updated = addressDAO.transactionDelete(conn, oldOrder.getAddress().getId());
 			}
 				
 			if (updated) {
@@ -393,11 +412,9 @@ public class OrderDAO {
 				conn.rollback();				
 			}
 			
-		} catch (SQLException e) {
+		} catch (SQLException | DBException e) {
 			e.printStackTrace();
 			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
-			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
@@ -434,13 +451,13 @@ public class OrderDAO {
 			rs = ps.executeQuery();
 			orders = loader.loadList(rs);
 			
+			// for each order, set order items
 			for (OrderBean order: orders)
 				order.setItems(orderItemDAO.getOrderItems(order.getId()));
-		} catch (SQLException e) {
+			
+		} catch (SQLException | DBException e) {
 			e.printStackTrace();
 			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
-			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
@@ -519,22 +536,42 @@ public class OrderDAO {
 	
 	
 	private static final String SELECT_ALL_QUERY = 
-			"SELECT o.*, a.line1, a.line2, a.city, a.state, a.zipcode FROM orders as o LEFT JOIN addresses as a ON (o.address_id = a.address_id)";
+			String.format("SELECT o.*, p.*, a.%s, a.%s, a.%s, a.%s, a.%s "
+						+ "FROM %s AS o NATURAL JOIN %s AS p LEFT JOIN %s AS a ON o.%s = a.%s",
+						DBLabels.Address.LINE_1, DBLabels.Address.LINE_2, DBLabels.Address.CITY, 
+						DBLabels.Address.STATE, DBLabels.Address.ZIPCODE, DBLabels.Order.TABLE,
+						DBLabels.Payment.TABLE, DBLabels.Address.TABLE, DBLabels.Order.ADDRESS_ID,
+						DBLabels.Address.ID);
 	
-	private static final String SELECT_ALL_WITH_ORDER_QUERY = 	SELECT_ALL_QUERY + " ORDER BY (o.order_id)";
-	private static final String SELECT_BY_ID_QUERY =			SELECT_ALL_QUERY + " WHERE (o.order_id = ?)";
-	private static final String SELECT_BY_STATUS_QUERY = 		SELECT_ALL_QUERY + " WHERE (o.order_status = ?) ORDER BY order_timestamp ASC";
-	private static final String SELECT_BY_TYPE_QUERY = 	 		SELECT_ALL_QUERY + " WHERE (o.order_type = ?) ORDER BY order_type ASC";
-	private static final String SELECT_BY_CONFIRMATION_QUERY = 	SELECT_ALL_QUERY + " WHERE (o.order_confirmation = ?)";
+	private static final String SELECT_ALL_WITH_ORDER_BY_QUERY = 
+			String.format("%s ORDER BY o.%s", SELECT_ALL_QUERY, DBLabels.Order.ID);
+	
+	private static final String SELECT_ORDER_BY_ID_QUERY = 
+			String.format("%s WHERE (o.%s = ?)", SELECT_ALL_QUERY, DBLabels.Order.ID);
+	
+	private static final String SELECT_ALL_BY_STATUS_QUERY = 
+			String.format("%s WHERE (o.%s = ?) ORDER BY o.%s ASC", SELECT_ALL_QUERY, DBLabels.Order.STATUS, DBLabels.Order.TIMESTAMP);
+	
+	private static final String SELECT_ALL_BY_TYPE_QUERY = 
+			String.format("%s WHERE (o.%s = ?) ORDER BY o.%s ASC", SELECT_ALL_QUERY, DBLabels.Order.TYPE, DBLabels.Order.ID);
+	
+	private static final String SELECT_BY_CONFIRMATION_QUERY = 	
+			String.format("%s WHERE (UPPER(o.%s) = UPPER(?))", SELECT_ALL_QUERY, DBLabels.Order.CONFIRMATION);
 	
 	private static final String INSERT_ORDER_QUERY = 
-			"INSERT INTO orders (order_status, order_type, order_timestamp, order_total, order_confirmation, address_id) VALUES (?, ?, ?, ?, ?, ?)";	
+			String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+						  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
+						  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID, 
+						  DBLabels.Order.NOTIFICATION_EMAIL, DBLabels.Order.ADDRESS_ID);	
 	
 	private static final String UPDATE_ORDER_QUERY = 
-			"UPDATE orders SET order_status=?, order_type=?, order_timestamp=?, order_total=?, order_confirmation=?, address_id=? WHERE (order_id = ?)";
+			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
+					  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
+					  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID, 
+					  DBLabels.Order.NOTIFICATION_EMAIL, DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
 	
 	private static final String DELETE_ORDER_QUERY = 
-			"DELETE FROM orders WHERE (order_id = ?)";
+			String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.Order.TABLE, DBLabels.Order.ID);
 	
-	private static final int ORDER_COLUMNS_COUNT = 6;
+	private static final int ORDER_COLUMNS_COUNT = 7;
 }

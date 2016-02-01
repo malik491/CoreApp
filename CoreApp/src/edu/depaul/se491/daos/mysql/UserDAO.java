@@ -235,11 +235,11 @@ public class UserDAO {
 	
 	private static final String INSERT_USER_QUERY = String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?,?,?,?,?)",
 																DBLabels.User.TABLE, DBLabels.User.F_NAME, DBLabels.User.L_NAME,
-																DBLabels.User.EMAIL, DBLabels.User.PHONE, DBLabels.User.ADDRESS);
+																DBLabels.User.EMAIL, DBLabels.User.PHONE, DBLabels.User.ADDRESS_ID);
 	
 	private static final String UPDATE_USER_QUERY = String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)",
 																DBLabels.User.TABLE, DBLabels.User.F_NAME, DBLabels.User.L_NAME,
-																DBLabels.User.EMAIL, DBLabels.User.PHONE, DBLabels.User.ADDRESS, 
+																DBLabels.User.EMAIL, DBLabels.User.PHONE, DBLabels.User.ADDRESS_ID, 
 																DBLabels.User.ID);
 	
 	private static final String DELETE_USER_QUERY = String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.User.TABLE, DBLabels.User.ID);

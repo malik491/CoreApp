@@ -17,6 +17,7 @@ import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.OrderItemBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
+import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
  * @author Malik
@@ -108,7 +109,7 @@ public class OrderItemDAO {
 				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
 			}
 		}
-		return true;
+		return added;
 	}
 
 	/**
@@ -141,22 +142,32 @@ public class OrderItemDAO {
 			for(OrderItemBean oItem: items) {
 				int newQuantity = oItem.getQuantity();
 				long menuItemId = oItem.getMenuItem().getId();
+				String status = oItem.getStatus().name();
+				
 				if (newQuantity > 0) {
 					// batch update statement (update quantity query)
 					batchStatement = String.format(
-							"UPDATE order_items SET quantity=%d WHERE (order_id = %d AND menu_item_id= %d)",
-							newQuantity, orderId, menuItemId);
+							"UPDATE %s SET %s=%d, %s=%s WHERE (%s = %d AND %s= %d)",
+							DBLabels.OrderItem.TABLE, 
+							DBLabels.OrderItem.QUANTITY, newQuantity,
+							DBLabels.OrderItem.STATUS, status,
+							DBLabels.OrderItem.ORDER_ID, orderId, 
+							DBLabels.OrderItem.MENU_ITEM_ID, menuItemId);
+					
 					batchedUpateStatement.addBatch(batchStatement);
 				} else {
 					//batch update statement (delete orderItem query / quantity must be 0)
 					batchStatement = String.format(
-							"DELETE FROM order_items WHERE (order_id = %d AND menu_item_id= %d)",
-							orderId, menuItemId);
+							"DELETE FROM %s WHERE (%s = %d AND %s= %d)",
+							DBLabels.OrderItem.TABLE, 
+							DBLabels.OrderItem.ORDER_ID, orderId,
+							DBLabels.OrderItem.MENU_ITEM_ID, menuItemId);
+					
 					batchedUpateStatement.addBatch(batchStatement);
 				}
 			}
 			
-			updated &= executeBatch(batchedUpateStatement);
+			updated = executeBatch(batchedUpateStatement);
 					
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -169,7 +180,7 @@ public class OrderItemDAO {
 				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
 			}
 		}
-		return true;
+		return updated;
 	}
 	
 	
@@ -218,7 +229,8 @@ public class OrderItemDAO {
 		
 		for(int affectedRowsPerBatchStatement: statement.executeBatch()) {
 			if (affectedRowsPerBatchStatement == Statement.EXECUTE_FAILED) {
-				return false;
+				updated = false;
+				break;
 			}
 		}
 		return updated;
@@ -233,19 +245,24 @@ public class OrderItemDAO {
 	private String getMultipleRowInsert(int numOfRows) {
 		StringBuilder sb = new StringBuilder(INSERT_ORDER_ITEM_QUERY);
 		for (int i=1; i < numOfRows; i++) {
-			sb.append(MULTIPLE_INSERT_ROW);
+			sb.append(MULTIPLE_ROW_INSERT);
 		}
 		return sb.toString();	
 	}
 	
 	
 	
-	private static final String SELECT_BY_ORDER_ID_QUERY = "SELECT * FROM order_items NATURAL JOIN menu_items WHERE (order_id = ?)";
-	private static final String INSERT_ORDER_ITEM_QUERY =  "INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES (?, ?, ?)";
-	private static final String DELETE_ORDER_ITEMS_QUERY = "DELETE FROM order_items WHERE (order_id = ?)";
+	private static final String SELECT_BY_ORDER_ID_QUERY = String.format("SELECT * FROM %s NATURAL JOIN %s WHERE (%s = ?)", 
+																		 DBLabels.OrderItem.TABLE, DBLabels.MenuItem.TABLE, DBLabels.OrderItem.ORDER_ID);
+
+	private static final String INSERT_ORDER_ITEM_QUERY =  String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
+																		 DBLabels.OrderItem.TABLE, DBLabels.OrderItem.ORDER_ID, DBLabels.OrderItem.MENU_ITEM_ID,
+																		 DBLabels.OrderItem.QUANTITY, DBLabels.OrderItem.STATUS);
+	
+	private static final String DELETE_ORDER_ITEMS_QUERY = String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.OrderItem.TABLE, DBLabels.OrderItem.ORDER_ID);
 
 	
-	private static final String MULTIPLE_INSERT_ROW = " ,(?,?,?)";
-	private static final int INSERT_ORDER_ITEM_COLUMNS_COUNT = 3;
+	private static final String MULTIPLE_ROW_INSERT = " ,(?,?,?,?)";
+	private static final int INSERT_ORDER_ITEM_COLUMNS_COUNT = 4;
 
 }

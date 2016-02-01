@@ -28,28 +28,28 @@ public abstract class DBLabels {
 		public static final String ZIPCODE = "addr_zipcode";
 	}
 	
-	public static final class Order {
-		public static final String TABLE = "orders";
+	public static final class User {
+		public static final String TABLE = "users";
 		
-		public static final String ID 		= "o_id";
-		public static final String STATUS 	= "o_status";
-		public static final String TYPE 	= "o_type";
-		public static final String CONFIRMATION = "o_confirmation";
-		public static final String TIMESTAMP = "o_timestamp";
-		public static final String NOTIFICATION_EMAIL = "o_notification_email";
-		public static final String ADDRESS = DBLabels.Address.ID;
-		public static final String PAYMENT = DBLabels.Payment.ID;
+		public static final String ID = "u_id";
+		public static final String F_NAME = "u_first_Name";
+		public static final String L_NAME = "u_last_Name";
+		public static final String EMAIL = "u_email";	
+		public static final String PHONE = "u_phone";
+		public static final String ADDRESS_ID = DBLabels.Address.ID;
+		
 	}
 	
-	public static final class Payment {
-		public static final String TABLE = "payments";
+	public static final class Account {
+		public static final String TABLE = "accounts";
 		
-		public static final String ID = "p_id";
-		public static final String TYPE = "p_type";
-		public static final String TOTAL = "p_total";
-		public static final String CC_TRANSACTION_CONFIRMATION = "p_cc_transaction_confm";
+		public static final String USERNAME = "acc_username";
+		public static final String PASSWORD = "acc_password";
+		public static final String ROLE = "acc_role";
+		public static final String USER_ID = DBLabels.User.ID;
 	}
-
+	
+	
 	public static final class MenuItem {
 		public static final String TABLE = "menu_items";
 		
@@ -60,43 +60,38 @@ public abstract class DBLabels {
 		public static final String CATEGORY = "m_item_category";
 	}
 	
+	public static final class Payment {
+		public static final String TABLE = "payments";
+		
+		public static final String ID = "p_id";
+		public static final String TYPE = "p_type";
+		public static final String TOTAL = "p_total";
+		public static final String CC_TRANSACTION_CONFIRMATION = "p_cc_transaction_confm";
+	}
+	
+	public static final class Order {
+		public static final String TABLE = "orders";
+		
+		public static final String ID 		= "o_id";
+		public static final String STATUS 	= "o_status";
+		public static final String TYPE 	= "o_type";
+		public static final String CONFIRMATION = "o_confirmation";
+		public static final String TIMESTAMP = "o_timestamp";
+		public static final String NOTIFICATION_EMAIL = "o_notification_email";
+		public static final String ADDRESS_ID = DBLabels.Address.ID;
+		public static final String PAYMENT_ID = DBLabels.Payment.ID;
+	}
+	
 	public static final class OrderItem {
 		public static final String TABLE = "order_items";
 		
-		public static final String MENU_ITEM = DBLabels.MenuItem.ID;
+		public static final String ORDER_ID = DBLabels.Order.ID;
+		public static final String MENU_ITEM_ID = DBLabels.MenuItem.ID;
 		public static final String QUANTITY = "o_item_qty";
 		public static final String STATUS = "o_item_status";
 		
 	}
 	
-	public static final class Account {
-		public static final String TABLE = "accounts";
-		
-		public static final String USERNAME = "acc_username";
-		public static final String PASSWORD = "acc_password";
-		public static final String ROLE = "acc_role";
-		public static final String USER = DBLabels.User.ID;
-	}
-	
-	public static final class User {
-		public static final String TABLE = "users";
-		
-		public static final String ID = "u_id";
-		public static final String F_NAME = "u_first_Name";
-		public static final String L_NAME = "u_last_Name";
-		public static final String EMAIL = "u_email";	
-		public static final String PHONE = "u_phone";
-		public static final String ADDRESS = DBLabels.Address.ID;
-		
-	}
-	
-	public static final class Recipe {
-		public static final String TABLE = "recipes";
-		
-		public static final String ID = "recipe_id";
-		public static final String MENU_ITEM = DBLabels.MenuItem.ID;
-		public static final String DESC = "recipe_desc";
-	}
 	
 	public static final class InventoryItem {
 		public static final String TABLE = "inventory_items";
@@ -107,10 +102,20 @@ public abstract class DBLabels {
 		
 	}
 	
+	public static final class Recipe {
+		public static final String TABLE = "recipes";
+		
+		public static final String ID = "recipe_id";
+		public static final String MENU_ITEM_ID = DBLabels.MenuItem.ID;
+		public static final String DESC = "recipe_desc";
+	}
+
+	
 	public static final class RecipeItem {
 		public static final String TABLE = "recipe_items";
 		
-		public static final String INVENTORY_ITEM = DBLabels.InventoryItem.ID;
+		public static final String RECIPE_ID = DBLabels.Recipe.ID;
+		public static final String INVENTORY_ITEM_ID = DBLabels.InventoryItem.ID;
 		public static final String QUANTITY  = "r_item_qty";
 		public static final String MEASUREMENT_UNIT = "r_item_measurement_unit";
 	}
@@ -125,12 +130,4 @@ public abstract class DBLabels {
 		public static final String TEXT = "email_text";
 	}
 	
-	public static final class WebServiceAuth {
-		public static final String TABLE = "web_service_auth";
-		
-		public static final String ID = "ws_id";
-		public static final String ACCESS_CODE = "ws_access_code";
-		public static final String ACCOUNT = DBLabels.Account.USERNAME;
-		public static final String ROLE = "ws_role";
-	}
 }

@@ -20,29 +20,35 @@ public abstract class DAOFactory {
 		this.connFactory = connFactory;
 	}
 	
-	public OrderDAO getOrderDAO(){
-		return new OrderDAO(this, connFactory);
+	
+	public MenuItemDAO getMenuItemDAO(){
+		return new MenuItemDAO(this, connFactory);
+	}
+
+	public AddressDAO getAddressDAO(){
+		return new AddressDAO(this, connFactory);
+	}
+	
+	public UserDAO getUserDAO() {
+		return new UserDAO(this, connFactory);
 	}
 	
 	public AccountDAO getAccountDAO(){
 		return new AccountDAO(this, connFactory);
 	}
 	
-	public AddressDAO getAddressDAO(){
-		return new AddressDAO(this, connFactory);
+	public PaymentDAO getPaymentDAO() {
+		return new PaymentDAO(this, connFactory);
 	}
 	
-	public MenuItemDAO getMenuItemDAO(){
-		return new MenuItemDAO(this, connFactory);
+	public OrderDAO getOrderDAO(){
+		return new OrderDAO(this, connFactory);
 	}
 
 	public OrderItemDAO getOrderItemDAO() {
 		return new OrderItemDAO(this, connFactory);
 	}
 	
-	public UserDAO getUserDAO() {
-		return new UserDAO(this, connFactory);
-	}
 	
 	public RecipeDAO getRecipeDAO() {
 		return new RecipeDAO(this, connFactory);
