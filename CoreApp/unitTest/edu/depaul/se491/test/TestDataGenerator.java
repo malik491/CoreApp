@@ -58,14 +58,7 @@ public class TestDataGenerator {
 		generatePayments();
 		generateOrders();     	// after Addresses and Payments
 		generateOrderItems(); 	// after Orders and MenuItems
-
-		
-//		generateInventoryItems();
-//		generateRecipes();     // after MenuItems
-//		generateRecipeItems(); // after Recipes and InventoryItems
-
-		
-		
+				
 	}	
 	
 	public void generateMenuItems() throws FileNotFoundException, SQLException, IOException {
@@ -96,17 +89,6 @@ public class TestDataGenerator {
 		executeSQLFile(dataDIR + "/orderItems/insert.sql");
 	}
 	
-	public void generateInventoryItems() throws FileNotFoundException, SQLException, IOException {
-		executeSQLFile(dataDIR + "/inventoryItems/insert.sql");
-	}
-	
-	public void generateRecipes() throws FileNotFoundException, SQLException, IOException {
-		executeSQLFile(dataDIR + "/recipes/insert.sql");
-	}
-	
-	public void generateRecipeItems() throws FileNotFoundException, SQLException, IOException {
-		executeSQLFile(dataDIR + "/recipeItems/insert.sql");
-	}
 	
 	private void executeSQLFile(String filePath) throws FileNotFoundException, SQLException, IOException {
 		DBUtil.executeSQLFile(connFactory, filePath);
