@@ -25,6 +25,12 @@ public class OrderItemBean implements Serializable {
 	 */
 	public OrderItemBean() {
 	}
+	
+	public OrderItemBean(MenuItemBean menuItem, int quantity, OrderItemStatus status) {
+		this.menuItem = menuItem;
+		this.quantity = quantity;
+		this.status = status;
+	}
 		
 	/**
 	 * return the Menu Item associated with this Order Item

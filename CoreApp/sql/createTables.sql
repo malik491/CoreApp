@@ -43,7 +43,7 @@ CREATE TABLE payments (
     
     p_type						ENUM ('CASH', 'CREDIT_CARD') NOT NULL,
     p_total  					DECIMAL(7, 2) NOT NULL,
-    p_cc_transaction_confm   	VARCHAR(50) NOT NULL,
+    p_cc_transaction_confm   	VARCHAR(50),
     
     PRIMARY KEY(p_id)
 );
@@ -89,48 +89,5 @@ CREATE TABLE order_items (
 	FOREIGN KEY (m_item_id) REFERENCES menu_items (m_item_id)
 );
 
-CREATE TABLE recipes (
-	recipe_id           BIGINT UNSIGNED NOT NULL,
-	m_item_id			BIGINT UNSIGNED NOT NULL,
-	
-	recipe_desc			VARCHAR(300) NOT NULL DEFAULT '',
-	
-	PRIMARY KEY (recipe_id),
-	FOREIGN KEY (m_item_id) REFERENCES menu_items (m_item_id)
-);
-
-CREATE TABLE inventory_items (
-	inv_item_id					BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    
-    inv_item_qty				INT UNSIGNED NOT NULL,
-    inv_item_measurement_unit 	ENUM ('LB','OZ', 'MG', 'G', 'PIECE') NOT NULL,
-	
-    PRIMARY KEY (inv_item_id)
-);
-
-CREATE TABLE recipe_items (
-	recipe_id      			BIGINT UNSIGNED NOT NULL,
-	inv_item_id				BIGINT UNSIGNED NOT NULL,
-	
-	r_item_qty				SMALLINT unsigned NOT NULL,
-	r_item_measurement_unit ENUM ('LB','OZ', 'MG', 'G', 'PIECE') NOT NULL,
-    
-	PRIMARY KEY (recipe_id, inv_item_id),
-	FOREIGN KEY (recipe_id) REFERENCES recipes (recipe_id),
-	FOREIGN KEY (inv_item_id) REFERENCES inventory_items (inv_item_id)
-);
-
-
-CREATE TABLE emails (
-	email_id			BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    
-    email_to			VARCHAR(50) NOT NULL,
-    email_from			VARCHAR(50) NOT NULL,
-	email_subject		VARCHAR(100) NOT NULL,
-    email_text			VARCHAR(300) NOT NULL,
-    email_sent_status   TINYINT NOT NULL DEFAULT 0,	
-    
-    PRIMARY KEY (email_id)
-);
 
 

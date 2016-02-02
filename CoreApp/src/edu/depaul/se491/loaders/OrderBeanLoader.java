@@ -69,7 +69,6 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 		bean.setPayment(paymentLoader.loadSingle(rs));		
 		
 		if (type == OrderType.DELIVERY) {
-			bean.setNotificationEmail(rs.getString(DBLabels.Order.NOTIFICATION_EMAIL));
 			bean.setAddress(addressLoader.loadSingle(rs));
 		}
 
@@ -90,13 +89,6 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 		ps.setTimestamp(paramIndex++, bean.getTimestamp());		
 		ps.setLong(paramIndex++, bean.getPayment().getId());
 
-		String notificaionEmail = bean.getNotificationEmail();
-		if (notificaionEmail != null) {
-			ps.setString(paramIndex++, notificaionEmail);
-		} else {
-			ps.setNull(paramIndex++, java.sql.Types.NULL);
-		}
-		
 		AddressBean address = bean.getAddress();
 		if (address != null) {
 			ps.setLong(paramIndex++, bean.getAddress().getId());

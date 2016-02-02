@@ -38,7 +38,12 @@ public class PaymentBeanLoader implements BeanLoader<PaymentBean> {
 	public void loadParameters(PreparedStatement ps, PaymentBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getType().name());
 		ps.setDouble(paramIndex++, bean.getTotal());
-		ps.setString(paramIndex++, (bean.getType() == PaymentType.CASH)? "N/A" : bean.getTransactionConfirmation());
+		
+		if (bean.getType() == PaymentType.CASH)
+			ps.setNull(paramIndex++, java.sql.Types.NULL);
+		else
+			ps.setString(paramIndex++, bean.getTransactionConfirmation());
+		
 	}
 
 }

@@ -60,13 +60,14 @@ public abstract class ParamLabels {
 		public static final String STATUS = "orderStatus";
 		public static final String TIMESTAMP = "orderTime";
 		public static final String CONFIRMATION = "orderConf";
-		public static final String NOTIFICATION_EMAIL = "orderNotificationEmail";
 	}
 	
 	public static final class OrderItem {
 		public static final String ORDER_ITEM = "orderItem";
 		public static final String MENU_ITEM = "oImItemId";
 		public static final String QUANTITY = "oItemQty";
+		public static final String STATUS = "oItemStatus";
+		
 	}
 	
 	public static final class Payment {
@@ -75,6 +76,7 @@ public abstract class ParamLabels {
 		public static final String ID = "paymentId";
 		public static final String TOTAL = "paymentTotal";
 		public static final String TYPE = "paymentType";
+		public static final String CC_TRANSACTION_CONFIRMATION = "paymentCcConfm";
 	}
 		
 	public static final class CreditCard {

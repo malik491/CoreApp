@@ -17,7 +17,7 @@ public abstract class ParamValues {
 	}
 	
 	public static final class OrderItem {
-		public static final int MIN_QTY = 1; 	
+		public static final int MIN_QTY = 0; 	
 
 		public static final int MAX_QTY = 65535; 		/*MySQL unsigned smallInt*/ 
 	}

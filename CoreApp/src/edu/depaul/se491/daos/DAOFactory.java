@@ -48,22 +48,4 @@ public abstract class DAOFactory {
 	public OrderItemDAO getOrderItemDAO() {
 		return new OrderItemDAO(this, connFactory);
 	}
-	
-	
-	public RecipeDAO getRecipeDAO() {
-		return new RecipeDAO(this, connFactory);
-	}
-	
-	public RecipeItemDAO getRecipeItemDAO() {
-		return new RecipeItemDAO(this, connFactory);
-	}
-	
-	public InventoryItemDAO getInventoryItemDAO() {
-		return new InventoryItemDAO(this, connFactory);
-	}
-
-	public EmailDAO getEmailDAO() {
-		return new EmailDAO(this, connFactory);
-	}
-	
 }

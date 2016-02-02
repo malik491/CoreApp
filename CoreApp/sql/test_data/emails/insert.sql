@@ -1,1 +1,0 @@
-INSERT INTO emails (email_to, email_from, email_subject, email_text, email_sent_status) VALUES ('')

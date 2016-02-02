@@ -8,12 +8,12 @@ import edu.depaul.se491.utils.ParamLengths;
 import edu.depaul.se491.utils.ParamValues;
 
 /**
- * @author usrm
+ * @author Malik
  *
  */
 public class CreditCardValidator extends BeanValidator {
 
-	public boolean validatePayment(CreditCardBean bean) {
+	public boolean validate(CreditCardBean bean) {
 		boolean isValid = isValidObject(bean, "Invalid CreditCard (Null)");
 		
 		if (isValid) {

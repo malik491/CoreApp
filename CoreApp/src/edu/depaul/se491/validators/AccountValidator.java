@@ -15,7 +15,7 @@ public class AccountValidator extends BeanValidator {
 		boolean isValid = isValidObject(bean, "Invalid Account (Null)");
 
 		if(isValid){
-			isValid  =  isValidCredentials(bean);
+			isValid  = isValidCredentials(bean);
 			isValid &= isValidRole(bean);
 			isValid &= isValidUser(bean);
 		}

@@ -77,7 +77,6 @@ public abstract class DBLabels {
 		public static final String TYPE 	= "o_type";
 		public static final String CONFIRMATION = "o_confirmation";
 		public static final String TIMESTAMP = "o_timestamp";
-		public static final String NOTIFICATION_EMAIL = "o_notification_email";
 		public static final String ADDRESS_ID = DBLabels.Address.ID;
 		public static final String PAYMENT_ID = DBLabels.Payment.ID;
 	}
@@ -90,44 +89,6 @@ public abstract class DBLabels {
 		public static final String QUANTITY = "o_item_qty";
 		public static final String STATUS = "o_item_status";
 		
-	}
-	
-	
-	public static final class InventoryItem {
-		public static final String TABLE = "inventory_items";
-		
-		public static final String ID = "inv_item_id";
-		public static final String QUANTITY  = "inv_item_qty";
-		public static final String MEASUREMENT_UNIT = "inv_item_measurement_unit";
-		
-	}
-	
-	public static final class Recipe {
-		public static final String TABLE = "recipes";
-		
-		public static final String ID = "recipe_id";
-		public static final String MENU_ITEM_ID = DBLabels.MenuItem.ID;
-		public static final String DESC = "recipe_desc";
-	}
-
-	
-	public static final class RecipeItem {
-		public static final String TABLE = "recipe_items";
-		
-		public static final String RECIPE_ID = DBLabels.Recipe.ID;
-		public static final String INVENTORY_ITEM_ID = DBLabels.InventoryItem.ID;
-		public static final String QUANTITY  = "r_item_qty";
-		public static final String MEASUREMENT_UNIT = "r_item_measurement_unit";
-	}
-	
-	public static final class Email {
-		public static final String TABLE = "emails";
-		
-		public static final String ID = "email_id";
-		public static final String TO = "email_to";
-		public static final String FROM = "email_from";
-		public static final String SUBJECT = "email_subject";	
-		public static final String TEXT = "email_text";
 	}
 	
 }

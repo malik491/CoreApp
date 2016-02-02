@@ -29,9 +29,8 @@ public class OrderBean implements Serializable {
 	private Timestamp timestamp;
 	private String confirmation;
 	private PaymentBean payment;
-	private Map<String, OrderItemBean> orderItems;
-	private String notificationEmail;
 	private AddressBean address;
+	private Map<String, OrderItemBean> orderItems;
 	
 	public OrderBean() {
 	}	
@@ -156,14 +155,6 @@ public class OrderBean implements Serializable {
 			else
 				orderItems.put(key, oItem);				
 		}
-	}
-	
-	public String getNotificationEmail() {
-		return notificationEmail;
-	}
-
-	public void setNotificationEmail(String notificationEmail) {
-		this.notificationEmail = notificationEmail;
 	}
 
 	public AddressBean getAddress() {

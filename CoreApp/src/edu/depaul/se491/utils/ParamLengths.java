@@ -5,10 +5,8 @@ public class ParamLengths {
 
 	public static final class Order {
 		public static final int MIN_CONFIRMATION = 1;
-		public static final int MIN_NOTIFICATION_EMAIL = ParamLengths.Email.MIN_ADDR;
 
 		public static final int MAX_CONFIRMATION = 50;
-		public static final int MAX_NOTIFICATION_EMAIL = ParamLengths.Email.MAX_ADDR;
 
 	}
 	
@@ -51,23 +49,12 @@ public class ParamLengths {
 		public static final int MIN_F_NAME = 1;
 		public static final int MIN_L_NAME = 1; 
 		public static final int MIN_PHONE = 10;
-		public static final int MIN_EMAIL = ParamLengths.Email.MIN_ADDR; 
+		public static final int MIN_EMAIL = 5; 
 		
 		public static final int MAX_F_NAME = 20;
 		public static final int MAX_L_NAME = 20; 
 		public static final int MAX_PHONE = 15;
-		public static final int MAX_EMAIL = ParamLengths.Email.MAX_ADDR; 
-	}
-	
-	public static final class Email {
-		public static final int MIN_ADDR = 5; 
-		public static final int MIN_SUBJECT = 1; 
-		public static final int MIN_TEXT = 1; 
-		
-		public static final int MAX_ADDR = 50;
-		public static final int MAX_SUBJECT = 5; 
-		public static final int MAX_TEXT = 5; 
-		
+		public static final int MAX_EMAIL = 50; 
 	}
 	
 	public static final class Credentials {

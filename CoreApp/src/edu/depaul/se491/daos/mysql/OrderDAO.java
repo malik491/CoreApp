@@ -328,6 +328,7 @@ public class OrderDAO {
 				return updated;
 		
 			OrderBean updatedOrderCopy = new OrderBuilder(updatedOrder).build();
+			updatedOrderCopy.setTimestamp(oldOrder.getTimestamp());
 			
 			/*
 			 * transaction:
@@ -382,7 +383,6 @@ public class OrderDAO {
 					// can't do it here because of foreign key constrain 
 					deletedOldAddress = true;
 					updatedOrderCopy.setAddress(null);
-					updatedOrderCopy.setNotificationEmail(null);
 				} else {
 					updated = false;
 				}
@@ -559,19 +559,19 @@ public class OrderDAO {
 			String.format("%s WHERE (UPPER(o.%s) = UPPER(?))", SELECT_ALL_QUERY, DBLabels.Order.CONFIRMATION);
 	
 	private static final String INSERT_ORDER_QUERY = 
-			String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+			String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)", 
 						  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
 						  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID, 
-						  DBLabels.Order.NOTIFICATION_EMAIL, DBLabels.Order.ADDRESS_ID);	
+						  DBLabels.Order.ADDRESS_ID);	
 	
 	private static final String UPDATE_ORDER_QUERY = 
-			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
+			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
 					  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
 					  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID, 
-					  DBLabels.Order.NOTIFICATION_EMAIL, DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
+					  DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
 	
 	private static final String DELETE_ORDER_QUERY = 
 			String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.Order.TABLE, DBLabels.Order.ID);
 	
-	private static final int ORDER_COLUMNS_COUNT = 7;
+	private static final int ORDER_COLUMNS_COUNT = 6;
 }

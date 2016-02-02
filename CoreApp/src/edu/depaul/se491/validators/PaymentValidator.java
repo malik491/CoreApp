@@ -15,7 +15,7 @@ import edu.depaul.se491.utils.ParamValues;
  */
 public class PaymentValidator extends BeanValidator {
 
-	public boolean validatePayment(PaymentBean bean, boolean isNewPayment) {
+	public boolean validate(PaymentBean bean, boolean isNewPayment) {
 		boolean isValid = isValidObject(bean, "Invalid Payment (Null)");
 		
 		if(isValid){
@@ -62,6 +62,8 @@ public class PaymentValidator extends BeanValidator {
 		    		int max = ParamLengths.Payment.MAX_TRANSACTION_CONFORMATION;
 		    		isValid = isValidString(bean.getTransactionConfirmation(), min, max, "Invalid credit card payment transaction confirmation");
 		    	}
+			} else {
+				isValid = false;
 			}
 		}
 				

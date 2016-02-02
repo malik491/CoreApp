@@ -23,38 +23,24 @@ public class OrderValidator extends BeanValidator {
 
 		if(isValid){
 			isValid  = validateId(bean.getId(), isNewOrder);
-			isValid &= isValidConfirmation(bean.getConfirmation(), isNewOrder); // conf can be null for new orders
+			isValid &= isValidType(bean);
 			isValid &= isValidStatus(bean);
+			isValid &= isValidConfirmation(bean.getConfirmation(), isNewOrder); // conf can be null for new orders
 			isValid &= isValidPayment(bean, isNewOrder);
 			isValid &= isValidOrderItems(bean);
-			isValid &= isValidType(bean);
 		}
 		
 		if (isValid) {
 			OrderType type = bean.getType();
 			if (type == OrderType.DELIVERY) {
 				isValid &= isValidAddress(bean);
-				isValid &= isValidNotificationEmail(bean);
 			} else {
 				isValid &= bean.getAddress() == null;
-				isValid &= bean.getNotificationEmail() == null;
 				if (!isValid)
 					addMessage("Invalid order (only delivery orders can have address and (optional) notification email");
 			}
 		}
 		
-		return isValid;
-	}
-
-	private boolean isValidNotificationEmail(OrderBean bean) {
-		boolean isValid =  false; 
-		
-		boolean isNotNull = (bean.getNotificationEmail() != null);
-		if (isNotNull) {
-			isValid = isValidString(bean.getNotificationEmail(), ParamLengths.Order.MIN_NOTIFICATION_EMAIL, ParamLengths.Order.MAX_NOTIFICATION_EMAIL, "Invalid order notification email");
-		} else {
-			isValid = true;
-		}
 		return isValid;
 	}
 
