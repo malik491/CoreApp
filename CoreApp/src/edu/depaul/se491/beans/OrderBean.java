@@ -33,7 +33,7 @@ public class OrderBean implements Serializable {
 	private Map<String, OrderItemBean> orderItems;
 	
 	public OrderBean() {
-	}	
+	}
 		
 	/**
 	 * return order id

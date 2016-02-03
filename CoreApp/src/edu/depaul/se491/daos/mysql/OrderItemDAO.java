@@ -147,7 +147,7 @@ public class OrderItemDAO {
 				if (newQuantity > 0) {
 					// batch update statement (update quantity query)
 					batchStatement = String.format(
-							"UPDATE %s SET %s=%d, %s=%s WHERE (%s = %d AND %s= %d)",
+							"UPDATE %s SET %s=%d, %s='%s' WHERE (%s = %d AND %s= %d)",
 							DBLabels.OrderItem.TABLE, 
 							DBLabels.OrderItem.QUANTITY, newQuantity,
 							DBLabels.OrderItem.STATUS, status,
@@ -262,7 +262,7 @@ public class OrderItemDAO {
 	private static final String DELETE_ORDER_ITEMS_QUERY = String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.OrderItem.TABLE, DBLabels.OrderItem.ORDER_ID);
 
 	
-	private static final String MULTIPLE_ROW_INSERT = " ,(?,?,?,?)";
+	private static final String MULTIPLE_ROW_INSERT = " ,(?, ?, ?, ?)";
 	private static final int INSERT_ORDER_ITEM_COLUMNS_COUNT = 4;
 
 }

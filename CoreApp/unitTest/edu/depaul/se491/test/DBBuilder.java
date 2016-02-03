@@ -23,11 +23,11 @@ public class DBBuilder {
 		DBBuilder dbBuilder = new DBBuilder(connFactory);
 		try {
 			dbBuilder.rebuildAll();
+			connFactory.close();
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	public DBBuilder(ConnectionFactory connFactory) {
 		this.connFactory = connFactory;

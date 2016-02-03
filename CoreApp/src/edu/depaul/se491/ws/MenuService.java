@@ -154,9 +154,6 @@ public class MenuService {
 		
 		return isValid;
 	}
-
-	
-	
 	
 	private <T> Response getResponse(Response.Status status, T entity) {
 		ResponseBuilder responseBuilder = Response.status(status);

@@ -11,5 +11,5 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum AccountRole {
-	ADMIN, MANAGER, EMPLOYEE, VENDOR, CUSTOMER_APP
+	ADMIN, MANAGER, EMPLOYEE, CUSTOMER_APP
 }

@@ -27,6 +27,7 @@ public class DBUtil {
 		Statement stmt = null;
 		
 		conn = connFactory.getConnection();
+		
 		for (String sql : queries) {
 			stmt = conn.createStatement();
 			try {

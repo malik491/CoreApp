@@ -15,6 +15,11 @@ public class RequestBean<T> implements Serializable {
 	public RequestBean(){
 	}
 	
+	public RequestBean(CredentialsBean credentials, T extra) {
+		this.credentials = credentials;
+		this.extra = extra;
+	}
+	
 	public CredentialsBean getCredentials() {
 		return credentials;
 	}

@@ -48,7 +48,7 @@ public class OrderDAO {
 	 * return all orders in the database
 	 * Empty list is returned if there are no orders in the database
 	 * @return
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public List<OrderBean> getAll() throws DBException {
 		return getMultiple(SELECT_ALL_WITH_ORDER_BY_QUERY, null);
@@ -59,7 +59,7 @@ public class OrderDAO {
 	 * Empty list is returned if there are no orders for the given status in the database
 	 * @param status
 	 * @return
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public List<OrderBean> getAllWithStatus(final OrderStatus status) throws DBException {
 		return getMultiple(SELECT_ALL_BY_STATUS_QUERY, status.toString());
@@ -70,7 +70,7 @@ public class OrderDAO {
 	 * Empty list is returned if there are no orders for the given type in the database
 	 * @param type
 	 * @return
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public List<OrderBean> getAllWithType(final OrderType type) throws DBException {
 		return getMultiple(SELECT_ALL_BY_TYPE_QUERY, type.toString());
@@ -81,7 +81,7 @@ public class OrderDAO {
 	 * Null is returned if there are no order for the given id
 	 * @param orderId
 	 * @return
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public OrderBean get(final long orderId) throws DBException {
 		Connection conn = null;
@@ -123,7 +123,7 @@ public class OrderDAO {
 	 * Null is returned if there are no order with the given confirmation number
 	 * @param orderConfirmation
 	 * @return
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public OrderBean get(final String orderConfirmation) throws DBException {
 		Connection conn = null;
@@ -163,7 +163,7 @@ public class OrderDAO {
 	 * add order to the database using the data in the orderBean
 	 * @param order order data (excluding the id)
 	 * @return true if order is added
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public OrderBean add(final OrderBean order) throws DBException {
 		Connection conn = null;
@@ -245,7 +245,7 @@ public class OrderDAO {
 	 * delete an existing order from the database
 	 * @param order
 	 * @return true if an order is deleted
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public boolean delete(final long orderId) throws DBException {
 		Connection conn = null;
@@ -279,7 +279,7 @@ public class OrderDAO {
 
 			// finally you can delete the address
 			if (deleted)
-				deleted = order.getType() != OrderType.DELIVERY? addressDAO.transactionDelete(conn, order.getAddress().getId()) : true;
+				deleted = (order.getType() == OrderType.DELIVERY)? addressDAO.transactionDelete(conn, order.getAddress().getId()) : true;
 
 			
 			if (deleted) {
@@ -313,7 +313,7 @@ public class OrderDAO {
 	 * For order items, only quantity is updated.
 	 * @param order updated order
 	 * @return true if order is updated
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public boolean update(final OrderBean updatedOrder) throws DBException {
 		Connection conn = null;
@@ -381,6 +381,7 @@ public class OrderDAO {
 				} else if (oldType == delivery && updatedType == pickup) {
 					// remove existing address
 					// can't do it here because of foreign key constrain 
+					updated = true;
 					deletedOldAddress = true;
 					updatedOrderCopy.setAddress(null);
 				} else {
@@ -395,8 +396,8 @@ public class OrderDAO {
 			// update order
 			if (updated) {
 				int paramIndex = 1;
-				loader.loadParameters(ps, updatedOrderCopy, paramIndex);
-				ps.setLong(paramIndex + ORDER_COLUMNS_COUNT, orderId);
+				loader.loadUpdateParameters(ps, updatedOrderCopy, paramIndex);
+				ps.setLong(paramIndex + ORDER_UPDATE_COLUMNS_COUNT, orderId);
 				
 				updated = DAOUtil.validUpdate(ps.executeUpdate());
 
@@ -433,7 +434,7 @@ public class OrderDAO {
 	 * @param sqlQuery select query with optional WHERE clause '... [WHERE columnName = ?]'
 	 * @param paramValue param value for the condition in WHERE clause, if present in the sqlQuery
 	 * @return
-	 * @throws SQLException
+	 * @throws DBException
 	 */
 	private List<OrderBean> getMultiple(final String selectSQLQuery, final String paramValue) throws DBException {
 		Connection conn = null;
@@ -559,19 +560,18 @@ public class OrderDAO {
 			String.format("%s WHERE (UPPER(o.%s) = UPPER(?))", SELECT_ALL_QUERY, DBLabels.Order.CONFIRMATION);
 	
 	private static final String INSERT_ORDER_QUERY = 
-			String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)", 
+			String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)", 
 						  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
 						  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID, 
 						  DBLabels.Order.ADDRESS_ID);	
 	
 	private static final String UPDATE_ORDER_QUERY = 
-			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
+			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
 					  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
-					  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID, 
-					  DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
+					  DBLabels.Order.CONFIRMATION, DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
 	
 	private static final String DELETE_ORDER_QUERY = 
 			String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.Order.TABLE, DBLabels.Order.ID);
 	
-	private static final int ORDER_COLUMNS_COUNT = 6;
+	private static final int ORDER_UPDATE_COLUMNS_COUNT = 4;
 }

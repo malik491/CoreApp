@@ -10,20 +10,8 @@ import edu.depaul.se491.daos.DAOFactory;
  *
  */
 public class TestDAOFactory extends DAOFactory {
-	private static DAOFactory testInstance;
 	
-	/**
-	 * return a test DAOFactory instance
-	 * @return
-	 */
-	public static DAOFactory getInstance() {
-		if (testInstance == null)
-			testInstance = new TestDAOFactory();
-		return testInstance;
+	public TestDAOFactory(ConnectionFactory connFactory) {
+		super(connFactory);
 	}
-	
-	
-	private TestDAOFactory() {
-		super(TestConnectionFactory.getInstance());
-	}	
 }

@@ -287,11 +287,11 @@ public class AccountDAO {
 																DBLabels.Account.TABLE, DBLabels.User.TABLE, DBLabels.Address.TABLE, 
 																DBLabels.Account.ROLE);
 	
-	private static final String SELECT_BY_USERNAME_Query = String.format("SELECT * FROM %s NATURAL JOIN %s NATURAL JOIN %s WHERE (UPPER(%s) = UPPER(?))",
+	private static final String SELECT_BY_USERNAME_Query = String.format("SELECT * FROM %s NATURAL JOIN %s NATURAL JOIN %s WHERE (%s = ?)",
 																		DBLabels.Account.TABLE, DBLabels.User.TABLE, DBLabels.Address.TABLE, 
 																		DBLabels.Account.USERNAME);
 	
-	private static final String INSERT_ACC_QUERY = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?,?,?,?)",
+	private static final String INSERT_ACC_QUERY = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?,?, ?,?)",
 																DBLabels.Account.TABLE, DBLabels.Account.USERNAME, 
 																DBLabels.Account.PASSWORD, DBLabels.Account.ROLE, DBLabels.Account.USER_ID);
 	

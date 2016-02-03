@@ -20,15 +20,14 @@ public class OrderBuilder {
 		this.bean = new OrderBean();
 		
 		this.bean.setId(bean.getId());
-		this.bean.setStatus(bean.getStatus());
 		this.bean.setType(bean.getType());
-		this.bean.setTimestamp(bean.getTimestamp());
+		this.bean.setStatus(bean.getStatus());
 		this.bean.setConfirmation(bean.getConfirmation());
+		this.bean.setTimestamp(bean.getTimestamp());
 		this.bean.setPayment(bean.getPayment());
 		this.bean.setItems(bean.getItems());
 		this.bean.setAddress(bean.getAddress());
 	}
-	
 	
 	public OrderBean build() {
 		return bean;

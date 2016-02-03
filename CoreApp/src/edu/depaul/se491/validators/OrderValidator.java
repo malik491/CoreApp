@@ -75,7 +75,7 @@ public class OrderValidator extends BeanValidator {
 		// new confiramtion is generated for new orders so don't check it here
 		boolean isValid = true;
 		if (!isNewOrder) {
-			isValid = isValidString(confiramtion, ParamLengths.Order.MIN_CONFIRMATION, ParamLengths.Order.MIN_CONFIRMATION, "Invalid Order Confirmation");
+			isValid = isValidString(confiramtion, ParamLengths.Order.MIN_CONFIRMATION, ParamLengths.Order.MAX_CONFIRMATION, "Invalid Order Confirmation");
 		}
 		return isValid;
 	}	

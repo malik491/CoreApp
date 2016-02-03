@@ -4,7 +4,6 @@
  */
 package edu.depaul.se491.daos;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -20,76 +19,101 @@ import edu.depaul.se491.daos.ConnectionFactory;
  *
  */
 public class TestConnectionFactory implements ConnectionFactory {
-	private static ConnectionFactory instance;
-	private static BasicDataSource dataSource;
-	private boolean isInitialized;
+	private static final ConnectionFactory instance = new TestConnectionFactory();
+	private static String driverClassName;
+	private static String username;
+	private static String password;
+	private static String url;
+	
+	private static final BasicDataSource dataSource;
+	
+	static {
+		// database driver
+		dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(driverClassName);
+		dataSource.setUsername(username);
+		dataSource.setPassword(password);
+		dataSource.setUrl(url);
+		dataSource.setMaxTotal(5); // only allow 5 active connections at the same time
+		dataSource.setMaxIdle(5);  // only allow 5 idle connections at all time
+		dataSource.setMaxWaitMillis(500); //wait max 500 ms for a connection to be returned to the pool before throwing an exception
+		dataSource.setDefaultAutoCommit(true);
+	}
+	
 	
 	/**
 	 * return a test connection factory instance
 	 * @return
 	 */
 	public static ConnectionFactory getInstance() {
-		if (instance == null)
-			instance = new TestConnectionFactory();
 		return instance;
 	}
 	
-	
+		
 	private TestConnectionFactory() {
-		isInitialized = false;
-	}
-	
-	@Override
-	public Connection getConnection() throws SQLException {
-		if (!isInitialized)
-			lazyInitialize();
-		return dataSource.getConnection();
-	}
-
-	private void lazyInitialize() {
 		InputStream inputStream = null;
 		try {
+			// read config file
 			Properties prop = new Properties();
 			String propFileName = "testDBconfig.properties";
-			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+			inputStream = TestConnectionFactory.class.getClassLoader().getResourceAsStream(propFileName);
 			
 			if (inputStream != null) {
 				prop.load(inputStream);
 	
-				String driverClassName = prop.getProperty("driverClassName");
-				String username = prop.getProperty("username");
-				String password = prop.getProperty("password");
-				String url = prop.getProperty("url");
+				driverClassName = prop.getProperty("driverClassName");
+				username = prop.getProperty("username");
+				password = prop.getProperty("password");
+				url = prop.getProperty("url");
 				
-				if (driverClassName == null || username == null || password == null || url == null)
-					throw new IOException("Missing some properties for the TestDB configuration");
-				
-				// database driver
-				dataSource = new BasicDataSource();
-				dataSource.setDriverClassName(driverClassName);
-				dataSource.setUsername(username);
-				dataSource.setPassword(password);
-				dataSource.setUrl(url);
-				dataSource.setMaxTotal(10); // only allow three connections open at a time
-				dataSource.setMaxWaitMillis(250); // wait 250ms until throwing an exception
-				dataSource.setPoolPreparedStatements(true);
-				
-				isInitialized = true;
+				if (driverClassName == null || username == null || password == null || url == null) {
+					driverClassName = username = password = url = null;
+					System.err.println("Missing some properties for the TestDB configuration");
+				}
 			} else {
-				throw new FileNotFoundException("TestDB configuration file '" + propFileName + "' not found");
+				driverClassName = username = password = url = null;
+				System.err.println("TestDB configuration file '" + propFileName + "' not found");
 			}
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			driverClassName = username = password = url = null;
 			e.printStackTrace();
 		} finally {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					e.printStackTrace();				
 				}
+			}			
+		}
+	}
+	
+	@Override
+	public Connection getConnection() throws SQLException {
+		Connection c = null;
+		try {
+			c = dataSource != null? dataSource.getConnection() : null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return c;
+		//return dataSource != null? dataSource.getConnection() : null;
+	}
+
+
+	@Override
+	public void close() throws SQLException {
+		// data source is initialized once in a static block
+		// so it's safe to check for null without synchronization
+		if (dataSource != null) {
+			synchronized (dataSource) {
+				// according to api, calling close on a closed data source has no affect.
+				dataSource.close();
 			}
 		}		
 	}
+
+	
+	
 
 }

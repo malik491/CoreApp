@@ -19,18 +19,20 @@ public class TestDataGenerator {
 	private String dataDIR;
 
 	public static void main(String[] args) {
-		TestDataGenerator gen = new TestDataGenerator();
+		ConnectionFactory connFactory = TestConnectionFactory.getInstance();
+		TestDataGenerator gen = new TestDataGenerator(connFactory);
 		
 		try {
 			gen.generateStandardData();
+			connFactory.close();
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	
-	public TestDataGenerator() {
-		this.connFactory = TestConnectionFactory.getInstance();
+	public TestDataGenerator(ConnectionFactory connFactory) {
+		this.connFactory = connFactory;
 		this.dataDIR = "sql/test_data";
 	}
 

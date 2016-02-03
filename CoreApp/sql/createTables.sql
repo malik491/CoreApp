@@ -30,7 +30,7 @@ CREATE TABLE users (
 CREATE TABLE accounts (
 	acc_username			VARCHAR(30) NOT NULL,
 	acc_password			VARCHAR(60) NOT NULL,
-	acc_role				enum ('ADMIN', 'MANAGER', 'EMPLOYEE', 'VENDOR', 'CUSTOMER_APP') NOT NULL,
+	acc_role				enum ('ADMIN', 'MANAGER', 'EMPLOYEE', 'CUSTOMER_APP') NOT NULL,
 	
 	u_id					BIGINT UNSIGNED NOT NULL,
 	

@@ -71,7 +71,7 @@ public class AccountBeanLoader implements BeanLoader<AccountBean>{
 	 */
 	@Override
 	public void loadParameters(PreparedStatement ps, AccountBean bean, int paramIndex) throws SQLException {
-		ps.setString(paramIndex++, bean.getCredentials().getUsername());
+		ps.setString(paramIndex++, bean.getCredentials().getUsername().toLowerCase());
 		ps.setString(paramIndex++, bean.getCredentials().getPassword());		
 		ps.setString(paramIndex++, bean.getRole().name());
 		ps.setLong(paramIndex, bean.getUser().getId());

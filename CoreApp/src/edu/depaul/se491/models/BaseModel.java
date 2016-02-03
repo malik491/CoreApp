@@ -106,7 +106,6 @@ public abstract class BaseModel {
 	protected static final AccountRole ADMIN = AccountRole.ADMIN;
 	protected static final AccountRole MANAGER = AccountRole.MANAGER;
 	protected static final AccountRole EMPLOYEE = AccountRole.EMPLOYEE;
-	protected static final AccountRole VENDOR = AccountRole.VENDOR;
 	protected static final AccountRole CUSTOMER_APP = AccountRole.CUSTOMER_APP;
 
 	private static final String GENERIC_SERVER_ERR_MSG = "Internal Server Error. Contact the site admin for details";

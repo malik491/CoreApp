@@ -73,7 +73,7 @@ public class AccountModel extends BaseModel {
 	}
 
 	public Boolean update(AccountBean bean) {
-		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER, EMPLOYEE, VENDOR};
+		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER, EMPLOYEE};
 		boolean isValid = hasPermission(allowedRoles);
 		
 		isValid = isValid? isValidBean(bean, false) : false;
@@ -104,7 +104,7 @@ public class AccountModel extends BaseModel {
 			String oldAccountUsername = oldAccount.getCredentials().getUsername();
 			String loggedInUsername = loggedInAccount.getCredentials().getUsername();
 			
-			boolean isSelf = loggedInUsername.equals(oldAccountUsername);
+			boolean isSelf = loggedInUsername.equalsIgnoreCase(oldAccountUsername);
 			
 			if (isSelf) {
 				// can't change self role
@@ -134,7 +134,7 @@ public class AccountModel extends BaseModel {
 	
 	
 	public AccountBean read(final String username) {
-		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER, EMPLOYEE, VENDOR};
+		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER, EMPLOYEE};
 		boolean isValid = hasPermission(allowedRoles);
 		
 		isValid = isValid? isValidUsername(username) : false;
@@ -146,7 +146,7 @@ public class AccountModel extends BaseModel {
 
 			String loggedInUsername = loggedInAccount.getCredentials().getUsername();
 			
-			boolean isSelf = loggedInUsername.equals(username);
+			boolean isSelf = loggedInUsername.equalsIgnoreCase(username);
 			
 			if (isSelf) {
 				account = loggedInAccount;
@@ -188,7 +188,7 @@ public class AccountModel extends BaseModel {
 			loggedInAs = loggedInAccount.getRole();
 			
 			String loggedInUsername = loggedInAccount.getCredentials().getUsername();		
-			boolean isSelf = loggedInUsername.equals(username);
+			boolean isSelf = loggedInUsername.equalsIgnoreCase(username);
 			
 			isValid = (!isSelf);
 			if (!isValid) {
@@ -233,10 +233,10 @@ public class AccountModel extends BaseModel {
 
 			if (loggedInAs == ADMIN) {
 				// all accounts but admin accounts
-				viewableRoles = new AccountRole[] {MANAGER, EMPLOYEE, VENDOR, CUSTOMER_APP};
+				viewableRoles = new AccountRole[] {MANAGER, EMPLOYEE, CUSTOMER_APP};
 			} else if (loggedInAs == MANAGER) {
-				// employee or vendors accounts only
-				viewableRoles = new AccountRole[] {EMPLOYEE, VENDOR};
+				// employee accounts only
+				viewableRoles = new AccountRole[] {EMPLOYEE};
 			} else {
 				viewableRoles = new AccountRole[0];
 			}
@@ -310,7 +310,7 @@ public class AccountModel extends BaseModel {
 	 * return true/false solely base on account role
 	 * Logged in as:
 	 * 		Admin	: can create admin, manager, or customer_app account
-	 *  	Manager	: can create employee or vendor accounts
+	 *  	Manager	: can create employee accounts
 	 *  	all other roles: not allowed to created accounts 
 	 * @param loggedInAs
 	 * @param toBeUpdatedHasRole
@@ -329,9 +329,9 @@ public class AccountModel extends BaseModel {
 				message = String.format("Access Denied (Admin cannot create accounts with '%s' role)", toBeCreatedHasRole);  
 		
 		} else if (loggedInAs == MANAGER) {
-			// manager can create employee or vendor accounts
+			// manager can create employee accounts
 		
-			isValid = (toBeCreatedHasRole == EMPLOYEE || toBeCreatedHasRole == VENDOR);
+			isValid = (toBeCreatedHasRole == EMPLOYEE);
 			if (!isValid)
 				message = String.format("Access Denied (Manager cannot create accounts with '%s' role)", toBeCreatedHasRole);  
 		
@@ -354,7 +354,7 @@ public class AccountModel extends BaseModel {
 	 * return true/false solely base on account role
 	 * Logged in as:
 	 * 		Admin	: can read all none admin accounts
-	 *  	Manager	: can read employee or vendor accounts
+	 *  	Manager	: can read employee accounts
 	 *  	all other roles:
 	 * 				  returns false because role is not enough
 	 * 				  to determine read permission.
@@ -377,7 +377,7 @@ public class AccountModel extends BaseModel {
 		
 		} else if (loggedInAs == MANAGER) {
 		
-			isValid = (toBeReadHasRole == EMPLOYEE || toBeReadHasRole == VENDOR);
+			isValid = (toBeReadHasRole == EMPLOYEE);
 			if (!isValid)
 				message = String.format("Access Denied (Manager cannot view '%s' accounts", toBeReadHasRole) ;
 		
@@ -397,7 +397,7 @@ public class AccountModel extends BaseModel {
 	 * return true/false solely base on account role
 	 * Logged in as:
 	 * 		Admin	: can delete all none admin accounts
-	 *  	Manager	: can delete employee or vendor accounts
+	 *  	Manager	: can delete employee accounts
 	 *  	all other roles: can't delete any account  
 	 * @param loggedInAs
 	 * @param toBeDeleteHasRole
@@ -416,9 +416,9 @@ public class AccountModel extends BaseModel {
 				message = String.format("Access Denied (Admin cannot delete '%s' accounts", toBeDeleteHasRole) ;
 		
 		} else if (loggedInAs == MANAGER) {
-			// manager can delete employee or vendor accounts
+			// manager can delete employee accounts
 		
-			isValid = (toBeDeleteHasRole == EMPLOYEE || toBeDeleteHasRole == VENDOR);
+			isValid = (toBeDeleteHasRole == EMPLOYEE);
 			if (!isValid)
 				message = String.format("Access Denied (Manager cannot delete '%s' accounts", toBeDeleteHasRole) ;
 		
@@ -438,7 +438,7 @@ public class AccountModel extends BaseModel {
 	 * return true/false solely base on account role
 	 * Logged in as:
 	 * 		Admin	: can delete all none admin accounts
-	 *  	Manager	: can delete employee or vendor accounts
+	 *  	Manager	: can delete employee accounts
 	 *  	all other roles: can't delete any account
 	 * @param loggedInAs
 	 * @param toBeUpdatedHasRole
@@ -458,7 +458,7 @@ public class AccountModel extends BaseModel {
 			
 		} else if (loggedInAs == MANAGER) {
 			
-			isValid = (toBeUpdatedHasRole == EMPLOYEE || toBeUpdatedHasRole == VENDOR);
+			isValid = (toBeUpdatedHasRole == EMPLOYEE);
 			if (!isValid)
 				message = String.format("Access Denied (Manager cannot update '%s' accounts", toBeUpdatedHasRole);
 		} else {
