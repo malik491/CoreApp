@@ -89,22 +89,7 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 		ps.setTimestamp(paramIndex++, bean.getTimestamp());		
 		ps.setLong(paramIndex++, bean.getPayment().getId());
 
-		AddressBean address = bean.getAddress();
-		if (address != null) {
-			ps.setLong(paramIndex++, bean.getAddress().getId());
-		} else {
-			ps.setNull(paramIndex++, java.sql.Types.NULL);		
-		}
-	}
-	
-	
-	public void loadUpdateParameters(PreparedStatement ps, OrderBean bean, int paramIndex) throws SQLException {		
-		ps.setString(paramIndex++, bean.getType().name());
-		ps.setString(paramIndex++, bean.getStatus().name());
-		ps.setString(paramIndex++, bean.getConfirmation());
-		
-		AddressBean address = bean.getAddress();
-		if (address != null) {
+		if (bean.getType() == OrderType.DELIVERY) {
 			ps.setLong(paramIndex++, bean.getAddress().getId());
 		} else {
 			ps.setNull(paramIndex++, java.sql.Types.NULL);		

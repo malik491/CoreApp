@@ -5,6 +5,7 @@
  */
 package edu.depaul.se491.models;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.ws.rs.core.Response.Status;
@@ -66,6 +67,7 @@ public class OrderModel extends BaseModel {
 		OrderBean createdOrder = null;
 		if (isValid) {
 			try {
+				bean.setTimestamp(new Timestamp(System.currentTimeMillis()));
 				bean.setConfirmation(ConfirmationGenerator.getOrderConfirmation());
 				
 				PaymentBean payment = bean.getPayment();
@@ -86,65 +88,65 @@ public class OrderModel extends BaseModel {
 
 	/**
 	 * update an existing order
-	 * @param bean
+	 * @param updatedOrder
 	 * @return
 	 */
-	public Boolean update(OrderBean bean) {
-		boolean isValid = isValidOrder(bean, false);
+	public Boolean update(OrderBean updatedOrder) {
+		boolean isValid = isValidOrder(updatedOrder, false);
 		
 		AccountRole[] allowedRoles = null;
 		if (isValid) {
-			OrderStatus status = bean.getStatus();
-			if (status == OrderStatus.CANCELED)
+			if (updatedOrder.getStatus() == OrderStatus.CANCELED)
 				allowedRoles = new AccountRole[] {MANAGER};
 			else
 				allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
 		}
-		
 		isValid = isValid? hasPermission(allowedRoles) : false;
+
+		OrderBean oldOrder = isValid? read(updatedOrder.getId()) : null;
+		isValid = (oldOrder != null);
 
 		Boolean updated = null;
 		if (isValid) {
 			boolean updateOrder = true;
-			if (getLoggedinAccount().getRole() != MANAGER) {
-				// employee update (kitchen terminal)
-				
-				if (bean.getStatus() == OrderStatus.CANCELED) {
-					setResponseStatus(Status.UNAUTHORIZED);
-					setResponseMessage("Access Denied (unauthorized)");
-				} else {
-					OrderBean oldOrder = read(bean.getId());
-					if (oldOrder != null) {
-						if (oldOrder.getStatus() == OrderStatus.CANCELED) {
-							// ignore the update, the order was canceled while it was being prepared
-							updateOrder = false;
-							updated = true;
-						} else {
-							boolean allOrderItemsReady = true;
-							for (OrderItemBean oi: bean.getItems())
-								allOrderItemsReady &= (oi.getStatus() == OrderItemStatus.READY);
+			
+			// confirmation, timestamp, and payment don't get updated.
+			updatedOrder.setTimestamp(oldOrder.getTimestamp());
+			updatedOrder.setConfirmation(oldOrder.getConfirmation());
+			updatedOrder.setPayment(oldOrder.getPayment());
 
-							// only update order items and set order status based on
-							// the orderItem status
-							bean.setType(oldOrder.getType());
-							bean.setConfirmation(oldOrder.getConfirmation());
-							bean.setAddress(oldOrder.getAddress());						
-							bean.setStatus(allOrderItemsReady? OrderStatus.PREPARED : OrderStatus.SUBMITTED);
-						}
-					} else {
-						updateOrder = false;
-					}
+			if (getLoggedinAccount().getRole() != MANAGER) {
+				// employee update (from kitchen terminal)
+				
+				if (oldOrder.getStatus() == OrderStatus.CANCELED) {
+					// employee trying to updated a canceled order
+					// the order got canceled while it was being prepared
+					updateOrder = false;
+					updated = false;	
+				} else {
+					// order type & address don't get updated by employee
+					updatedOrder.setType(oldOrder.getType());
+					updatedOrder.setAddress(oldOrder.getAddress());
+					
+					// only update orderItem status
+					List<OrderItemBean> updatableItems = getUpdatableOrderItems(oldOrder, updatedOrder);
+					updatedOrder.setItems(updatableItems);
+					
+					// auto update order status (based on the status of all order items)
+					boolean isAllOrderItemsReady = isAllOrderItemsReady(updatableItems);
+					updatedOrder.setStatus(isAllOrderItemsReady? OrderStatus.PREPARED : OrderStatus.SUBMITTED);
 				}
 			}
 			
 			if (updateOrder) {
 				try {
-					updated = getDAOFactory().getOrderDAO().update(bean);					
+					updated = getDAOFactory().getOrderDAO().update(updatedOrder);					
 				} catch (DBException e) {
 					setResponseAndMeessageForDBError();
 				}
 			}
 		}
+		
 		return updated;
 	}
 	
@@ -377,5 +379,30 @@ public class OrderModel extends BaseModel {
 		return isValid;
 	}
 	
+	
+	private List<OrderItemBean> getUpdatableOrderItems(OrderBean oldOrder, OrderBean updatedOrder) {
+		List<OrderItemBean> updatableOrderItems = oldOrder.getItems();
+		
+		for (OrderItemBean updatedOrderItem: updatedOrder.getItems()) {
+			for (OrderItemBean oldOrderItem: updatableOrderItems) {
+				long updatedMenuItemId = updatedOrderItem.getMenuItem().getId();
+				long oldMenuItemId = oldOrderItem.getMenuItem().getId();
+				
+				if (updatedMenuItemId == oldMenuItemId) {
+					// update the old order item status
+					oldOrderItem.setStatus(updatedOrderItem.getStatus());
+				}		
+			}
+		}
+		return updatableOrderItems;
+	}
+	
+	
+	private boolean isAllOrderItemsReady(List<OrderItemBean> orderItems) {
+		boolean isAllReady = true;
+		for (OrderItemBean orderItem: orderItems)
+			isAllReady &= (orderItem.getStatus() == OrderItemStatus.READY);
+		return isAllReady;
+	}
 
 }

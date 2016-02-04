@@ -192,9 +192,7 @@ public class OrderDAO {
 				addedOrder.setPayment(addedPayment);
 
 				// then handle address
-				if (order.getType() == OrderType.PICKUP) {
-					added = true;
-				} else {
+				if (order.getType() == OrderType.DELIVERY) {
 					final AddressBean addedAddress = addressDAO.transactionAdd(conn, order.getAddress());
 					added = (addedAddress != null);
 					if (added)
@@ -324,11 +322,8 @@ public class OrderDAO {
 		try {
 			final long orderId = updatedOrder.getId();
 			final OrderBean oldOrder = get(orderId);
-			if (oldOrder == null || oldOrder.getPayment().getId() != updatedOrder.getPayment().getId())
-				return updated;
-		
+			
 			OrderBean updatedOrderCopy = new OrderBuilder(updatedOrder).build();
-			updatedOrderCopy.setTimestamp(oldOrder.getTimestamp());
 			
 			/*
 			 * transaction:
@@ -383,9 +378,6 @@ public class OrderDAO {
 					// can't do it here because of foreign key constrain 
 					updated = true;
 					deletedOldAddress = true;
-					updatedOrderCopy.setAddress(null);
-				} else {
-					updated = false;
 				}
 			}
 
@@ -396,7 +388,7 @@ public class OrderDAO {
 			// update order
 			if (updated) {
 				int paramIndex = 1;
-				loader.loadUpdateParameters(ps, updatedOrderCopy, paramIndex);
+				loader.loadParameters(ps, updatedOrderCopy, paramIndex);
 				ps.setLong(paramIndex + ORDER_UPDATE_COLUMNS_COUNT, orderId);
 				
 				updated = DAOUtil.validUpdate(ps.executeUpdate());
@@ -566,12 +558,13 @@ public class OrderDAO {
 						  DBLabels.Order.ADDRESS_ID);	
 	
 	private static final String UPDATE_ORDER_QUERY = 
-			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
+			String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=?, %s=? WHERE (%s = ?)", 
 					  DBLabels.Order.TABLE, DBLabels.Order.TYPE, DBLabels.Order.STATUS, 
-					  DBLabels.Order.CONFIRMATION, DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
+					  DBLabels.Order.CONFIRMATION, DBLabels.Order.TIMESTAMP, DBLabels.Order.PAYMENT_ID,
+					  DBLabels.Order.ADDRESS_ID, DBLabels.Order.ID);		
 	
 	private static final String DELETE_ORDER_QUERY = 
 			String.format("DELETE FROM %s WHERE (%s = ?)", DBLabels.Order.TABLE, DBLabels.Order.ID);
 	
-	private static final int ORDER_UPDATE_COLUMNS_COUNT = 4;
+	private static final int ORDER_UPDATE_COLUMNS_COUNT = 6;
 }
