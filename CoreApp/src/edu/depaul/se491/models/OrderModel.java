@@ -355,8 +355,10 @@ public class OrderModel extends BaseModel {
 		
 		if (isValid) {
 			// validate address (if delivery)
-			if (bean.getType() == OrderType.DELIVERY)
-				isValid = new AddressValidator().validate(bean.getAddress(), isNewOrder);
+			if (bean.getType() == OrderType.DELIVERY) {
+				boolean isNewAddress = bean.getAddress().getId() == 0;
+				isValid = new AddressValidator().validate(bean.getAddress(), isNewAddress);
+			}
 		}
 		
 		if (isValid) {

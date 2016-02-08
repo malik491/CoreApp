@@ -55,7 +55,7 @@ public class AddressValidator extends BeanValidator {
 	
 	private boolean isValidZipcode(AddressBean bean)
 	{
-		return isValidString(bean.getZipcode(), ParamLengths.Address.MIN_ZIPCODE, ParamLengths.Address.MIN_ZIPCODE, "Invalid Address Zipcode");
+		return isValidString(bean.getZipcode(), ParamLengths.Address.MIN_ZIPCODE, ParamLengths.Address.MAX_ZIPCODE, "Invalid Address Zipcode");
 	}
 	
 	private boolean isValidLine2(AddressBean bean)
