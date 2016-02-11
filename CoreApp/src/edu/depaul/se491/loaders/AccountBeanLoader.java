@@ -18,7 +18,7 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * @author Malik
  *
  */
-public class AccountBeanLoader implements BeanLoader<AccountBean>{
+public class AccountBeanLoader {
 	private UserBeanLoader loader;
 	
 	public AccountBeanLoader() {
@@ -33,7 +33,6 @@ public class AccountBeanLoader implements BeanLoader<AccountBean>{
 	 * @param rs a ResultSet containing accounts data from the database
 	 * @return list of accounts
 	 */
-	@Override
 	public List<AccountBean> loadList(ResultSet rs) throws SQLException {
 		List<AccountBean> accounts = new ArrayList<>();
 		while(rs.next())
@@ -48,7 +47,6 @@ public class AccountBeanLoader implements BeanLoader<AccountBean>{
 	 * @param rs a ResultSet containing account data from the database
 	 * @return account bean object containing the data from an account in the database
 	 */
-	@Override
 	public AccountBean loadSingle(ResultSet rs) throws SQLException {
 		AccountBean bean = new AccountBean();
 		
@@ -69,7 +67,6 @@ public class AccountBeanLoader implements BeanLoader<AccountBean>{
 	 * @param bean account bean with data
 	 * @return return the passed ps
 	 */
-	@Override
 	public void loadParameters(PreparedStatement ps, AccountBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getCredentials().getUsername().toLowerCase());
 		ps.setString(paramIndex++, bean.getCredentials().getPassword());		

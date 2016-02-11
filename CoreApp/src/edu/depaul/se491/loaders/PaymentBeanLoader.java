@@ -10,9 +10,8 @@ import edu.depaul.se491.beans.PaymentBean;
 import edu.depaul.se491.enums.PaymentType;
 import edu.depaul.se491.utils.dao.DBLabels;
 
-public class PaymentBeanLoader implements BeanLoader<PaymentBean> {
+public class PaymentBeanLoader {
 
-	@Override
 	public List<PaymentBean> loadList(ResultSet rs) throws SQLException {
 		List<PaymentBean> beans = new ArrayList<PaymentBean>();
 		while (rs.next())
@@ -21,7 +20,6 @@ public class PaymentBeanLoader implements BeanLoader<PaymentBean> {
 		return beans;
 	}
 
-	@Override
 	public PaymentBean loadSingle(ResultSet rs) throws SQLException {
 		PaymentType type = PaymentType.valueOf(rs.getString(DBLabels.Payment.TYPE));
 		
@@ -34,7 +32,6 @@ public class PaymentBeanLoader implements BeanLoader<PaymentBean> {
 		return bean;
 	}
 
-	@Override
 	public void loadParameters(PreparedStatement ps, PaymentBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getType().name());
 		ps.setDouble(paramIndex++, bean.getTotal());

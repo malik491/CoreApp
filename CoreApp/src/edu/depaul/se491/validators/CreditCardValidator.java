@@ -28,23 +28,23 @@ public class CreditCardValidator extends BeanValidator {
 	
 	
 	private boolean isValidCcNumber(CreditCardBean bean) {
-		boolean isValid  = isValidString(bean.getCcNumber(), ParamLengths.CreditCard.MIN_CC_NUMBER, ParamLengths.CreditCard.MAX_CC_NUMBER, "Invalid credit card number (length)");
+		boolean isValid  = isValidString(bean.getCcNumber(), ParamLengths.CreditCard.MIN_NUMBER, ParamLengths.CreditCard.MAX_NUMBER, "Invalid credit card number (length)");
 		isValid &= isValidNumbericString(bean.getCcNumber(), "Invalid credit card number (not digit)");
 		
 		return isValid;
 	}
 	
 	private boolean isValidCcHolderName(CreditCardBean bean) {
-		return isValidString(bean.getCcHolderName(), ParamLengths.CreditCard.MIN_CC_HOLDER_NAME, ParamLengths.CreditCard.MAX_CC_HOLDER_NAME, "Invalid credit card holder's name");
+		return isValidString(bean.getCcHolderName(), ParamLengths.CreditCard.MIN_HOLDER_NAME, ParamLengths.CreditCard.MAX_HOLDER_NAME, "Invalid credit card holder's name");
 	}
 	
 	private boolean isValidCcExpMonth(CreditCardBean bean) {
-		return isValidValue(bean.getExpMonth(), ParamValues.CreditCard.MIN_CC_EXP_MONTH, ParamValues.CreditCard.MAX_CC_EXP_MONTH, "Invalid credit card expiration month");
+		return isValidValue(bean.getExpMonth(), ParamValues.CreditCard.MIN_EXP_MONTH, ParamValues.CreditCard.MAX_EXP_MONTH, "Invalid credit card expiration month");
 		
 	}
 	
 	private boolean isValidCcExpYear(CreditCardBean bean) {
-		return isValidValue(bean.getExpYear(), ParamValues.CreditCard.MIN_CC_EXP_YEAR, ParamValues.CreditCard.MAX_CC_EXP_YEAR, "Invalid credit card expiration year");
+		return isValidValue(bean.getExpYear(), ParamValues.CreditCard.MIN_EXP_YEAR, ParamValues.CreditCard.MAX_EXP_YEAR, "Invalid credit card expiration year");
 
 	}
 }

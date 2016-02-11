@@ -3,7 +3,6 @@ package edu.depaul.se491.dao.mysql;
 import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -148,7 +147,7 @@ public class OrderDAOTest {
 			assertNotNull(order.getStatus());
 			assertNotNull(order.getTimestamp());
 			assertNotNull(order.getConfirmation());
-			assertNotNull(order.getItems());
+			assertNotNull(order.getOrderItems());
 			assertNotNull(order.getPayment());
 			assertNull(order.getPayment().getCreditCard());
 			assertNull(order.getPayment().getTransactionConfirmation());
@@ -159,7 +158,7 @@ public class OrderDAOTest {
 			assertEquals(confirmation, order.getConfirmation());
 			assertEquals(OrderType.PICKUP, order.getType());
 			assertEquals(OrderStatus.SUBMITTED, order.getStatus());
-			assertEquals(expectedOrderItemsCount, order.getItems().size());
+			assertEquals(expectedOrderItemsCount, order.getOrderItems().length);
 
 			assertEquals(expectedPaymentId, order.getPayment().getId());
 			assertEquals(PaymentType.CASH, order.getPayment().getType());
@@ -189,7 +188,7 @@ public class OrderDAOTest {
 			assertNotNull(order.getStatus());
 			assertNotNull(order.getTimestamp());
 			assertNotNull(order.getConfirmation());
-			assertNotNull(order.getItems());
+			assertNotNull(order.getOrderItems());
 			assertNotNull(order.getPayment());
 			assertNotNull(order.getPayment().getTransactionConfirmation());
 			assertNotNull(order.getAddress());
@@ -199,7 +198,7 @@ public class OrderDAOTest {
 			assertEquals(expectedOrderId, order.getId());
 			assertEquals(OrderType.DELIVERY, order.getType());
 			assertEquals(OrderStatus.SUBMITTED, order.getStatus());
-			assertEquals(expectedOrderItemsCount, order.getItems().size());
+			assertEquals(expectedOrderItemsCount, order.getOrderItems().length);
 
 			assertEquals(expectedPaymentId, order.getPayment().getId());
 			assertEquals(PaymentType.CREDIT_CARD, order.getPayment().getType());
@@ -223,9 +222,7 @@ public class OrderDAOTest {
 		MenuItemBean menuItem = new MenuItemBean();
 		menuItem.setId(1);
 		
-		List<OrderItemBean> orderItems = new ArrayList<>();
-		OrderItemBean orderItem = new OrderItemBean(menuItem, 1, OrderItemStatus.NOT_READY);
-		orderItems.add(orderItem);
+		OrderItemBean[] orderItems = new OrderItemBean[] {new OrderItemBean(menuItem, 1, OrderItemStatus.NOT_READY)};
 		
 		final OrderBean order = new OrderBean();
 		order.setType(OrderType.PICKUP);
@@ -233,7 +230,7 @@ public class OrderDAOTest {
 		order.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		order.setConfirmation(confirmation);
 		order.setPayment( new PaymentBean(0, total, PaymentType.CASH, null, null));
-		order.setItems(orderItems);
+		order.setOrderItems(orderItems);
 		
 		OrderBean addedOrder = null;
 		try {
@@ -248,7 +245,7 @@ public class OrderDAOTest {
 		assertNotNull(addedOrder.getTimestamp());
 		assertNotNull(addedOrder.getConfirmation());
 		assertNotNull(addedOrder.getPayment());
-		assertNotNull(addedOrder.getItems());
+		assertNotNull(addedOrder.getOrderItems());
 		assertNull(addedOrder.getAddress());
 
 		assertEquals(expectedOrderId, addedOrder.getId());
@@ -257,7 +254,7 @@ public class OrderDAOTest {
 		assertEquals(order.getTimestamp(), addedOrder.getTimestamp());
 		assertEquals(order.getConfirmation(), addedOrder.getConfirmation());
 		assertEquals(order.getPayment().getType(), addedOrder.getPayment().getType());
-		assertEquals(order.getItems().size(), addedOrder.getItems().size());
+		assertEquals(order.getOrderItems().length, addedOrder.getOrderItems().length);
 		assertEquals(expectedPaymentId, addedOrder.getPayment().getId());
 		assertTrue(Double.compare(order.getPayment().getTotal(), addedOrder.getPayment().getTotal()) == 0);
 	}
@@ -291,7 +288,7 @@ public class OrderDAOTest {
 			 assertNotNull(oldPickupOrder.getStatus());
 			 assertNotNull(oldPickupOrder.getTimestamp());
 			 assertNotNull(oldPickupOrder.getConfirmation());
-			 assertNotNull(oldPickupOrder.getItems());
+			 assertNotNull(oldPickupOrder.getOrderItems());
 			 assertNotNull(oldPickupOrder.getPayment());
 			 assertNull(oldPickupOrder.getAddress());
 			 assertEquals(OrderType.PICKUP, oldPickupOrder.getType());
@@ -305,9 +302,9 @@ public class OrderDAOTest {
 			 oldPickupOrder.setAddress(new AddressBean(0, "new address", null, "Chicago", AddressState.IL, "60601"));
 			 
 			 // update old pick order items
-			 List<OrderItemBean> oldItems = oldPickupOrder.getItems();
-			 oldItems.get(0).setQuantity(0);
-			 oldItems.get(1).setQuantity(2);
+			 OrderItemBean[] oldItems = oldPickupOrder.getOrderItems();
+			 oldItems[0].setQuantity(0);
+			 oldItems[1].setQuantity(2);
 			 
 			
 			 boolean updated = orderDAO.update(oldPickupOrder);
@@ -319,7 +316,7 @@ public class OrderDAOTest {
 			 assertNotNull(updatedOrder.getStatus());
 			 assertNotNull(updatedOrder.getTimestamp());
 			 assertNotNull(updatedOrder.getConfirmation());
-			 assertNotNull(updatedOrder.getItems());
+			 assertNotNull(updatedOrder.getOrderItems());
 			 assertNotNull(updatedOrder.getPayment());
 			 assertNotNull(updatedOrder.getAddress());
 			 
@@ -329,7 +326,7 @@ public class OrderDAOTest {
 			 assertEquals(oldPickupOrder.getConfirmation(), updatedOrder.getConfirmation());
 			 assertEquals(oldPickupOrder.getPayment().getId(), updatedOrder.getPayment().getId());
 			 assertEquals(oldPickupOrder.getPayment().getType(), updatedOrder.getPayment().getType());
-			 assertEquals(oldPickupOrder.getItems().size() - 1, updatedOrder.getItems().size());
+			 assertEquals(oldPickupOrder.getOrderItems().length - 1, updatedOrder.getOrderItems().length);
 			 
 			 long expectedAddressId = 7;
 			 assertEquals(expectedAddressId, updatedOrder.getAddress().getId());
@@ -352,7 +349,7 @@ public class OrderDAOTest {
 			 assertNotNull(oldDeliveryOrder.getStatus());
 			 assertNotNull(oldDeliveryOrder.getTimestamp());
 			 assertNotNull(oldDeliveryOrder.getConfirmation());
-			 assertNotNull(oldDeliveryOrder.getItems());
+			 assertNotNull(oldDeliveryOrder.getOrderItems());
 			 assertNotNull(oldDeliveryOrder.getPayment());
 			 assertNotNull(oldDeliveryOrder.getAddress());
 			 assertEquals(OrderType.DELIVERY, oldDeliveryOrder.getType());

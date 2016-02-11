@@ -20,7 +20,7 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * 
  * @author Malik
  */
-public class UserBeanLoader implements BeanLoader<UserBean> {
+public class UserBeanLoader {
 	private AddressBeanLoader loader;
 	
 	public UserBeanLoader() {
@@ -35,7 +35,6 @@ public class UserBeanLoader implements BeanLoader<UserBean> {
 	 * @param rs a ResultSet containing Users data from the database
 	 * @return list of Users
 	 */
-	@Override
 	public List<UserBean> loadList(ResultSet rs) throws SQLException {
 		List<UserBean> users = new ArrayList<>();
 		while (rs.next())
@@ -50,7 +49,6 @@ public class UserBeanLoader implements BeanLoader<UserBean> {
 	 * @param rs a ResultSet containing User data from the database
 	 * @return User bean object containing the data for a user in the database
 	 */
-	@Override
 	public UserBean loadSingle(ResultSet rs) throws SQLException {
 		UserBean bean = new UserBean();
 		
@@ -70,7 +68,6 @@ public class UserBeanLoader implements BeanLoader<UserBean> {
 	 * @param bean user bean with data
 	 * @return return the passed ps
 	 */
-	@Override
 	public void loadParameters(PreparedStatement ps, UserBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getFirstName());
 		ps.setString(paramIndex++, bean.getLastName());

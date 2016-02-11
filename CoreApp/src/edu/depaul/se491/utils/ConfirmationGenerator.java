@@ -20,8 +20,7 @@ public abstract class ConfirmationGenerator {
 	}
 
 	public static synchronized String getPaymentConfirmation(CreditCardBean creditCard) {
-		String randomString = String.format("%d-%d", creditCard.getCcNumber().hashCode(), random.nextInt(10000));
-		String confirmation = Integer.toString(randomString.hashCode());
+		String confirmation = String.format("cc-payment-%d-%d-%d", random.nextInt(10000), random.nextInt(10000), random.nextInt(10000));
 		return confirmation;
 	}
 

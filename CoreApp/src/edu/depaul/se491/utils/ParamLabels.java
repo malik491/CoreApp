@@ -82,10 +82,10 @@ public abstract class ParamLabels {
 	public static final class CreditCard {
 		public static final String CRIDET_CARD_BEAN = "ccBean";
 		
-		public static final String CC_NUMBER = "ccNumber";
-		public static final String CC_HOLDER_NAME = "ccHolderName";
-		public static final String CC_EXP_MONTH = "ccExpMonth";
-		public static final String CC_EXP_YEAR = "ccExpYear";
+		public static final String NUMBER = "ccNumber";
+		public static final String HOLDER_NAME = "ccHolderName";
+		public static final String EXP_MONTH = "ccExpMonth";
+		public static final String EXP_YEAR = "ccExpYear";
 	}
 
 	public static final class JspMsg {

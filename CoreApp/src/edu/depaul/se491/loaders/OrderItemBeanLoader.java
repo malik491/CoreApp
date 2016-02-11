@@ -21,7 +21,7 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * 
  * @author Malik
  */
-public class OrderItemBeanLoader implements BeanLoader<OrderItemBean> {
+public class OrderItemBeanLoader {
 	private MenuItemBeanLoader loader;
 	
 	public OrderItemBeanLoader() {
@@ -36,12 +36,12 @@ public class OrderItemBeanLoader implements BeanLoader<OrderItemBean> {
 	 * @param rs a ResultSet containing order items data from the database
 	 * @return list of order items
 	 */
-	@Override
-	public List<OrderItemBean> loadList(ResultSet rs) throws SQLException {
+	public OrderItemBean[] loadList(ResultSet rs) throws SQLException {
 		List<OrderItemBean> oItems = new ArrayList<>();
 		while (rs.next())
 			oItems.add(loadSingle(rs));
-		return oItems;
+		
+		return oItems.toArray(new OrderItemBean[oItems.size()]);
 	}
 
 	/**
@@ -51,7 +51,6 @@ public class OrderItemBeanLoader implements BeanLoader<OrderItemBean> {
 	 * @param rs a ResultSet containing orderItem data from the database
 	 * @return orderItem bean object containing the data from an orderItem in the database
 	 */
-	@Override
 	public OrderItemBean loadSingle(ResultSet rs) throws SQLException {
 		OrderItemBean bean = new OrderItemBean();
 		
@@ -61,13 +60,6 @@ public class OrderItemBeanLoader implements BeanLoader<OrderItemBean> {
 
 		return bean;
 	}
-
-	
-	@Override
-	public void loadParameters(PreparedStatement ps, OrderItemBean bean, int paramIndex) throws SQLException {
-		throw new SQLException("Unsupported method. order id paramater is needed.");
-	}
-	
 
 	/**
 	 * populate the PreparedStatment with data in the orderItem bean

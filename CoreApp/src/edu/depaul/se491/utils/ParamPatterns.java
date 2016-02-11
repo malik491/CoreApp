@@ -24,4 +24,11 @@ public abstract class ParamPatterns {
 		public static final String CITY 	= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.Address.MIN_CITY, ParamLengths.Address.MAX_CITY);
 		public static final String ZIPCODE 	= String.format("[0-9]{%d,%d}", ParamLengths.Address.MIN_ZIPCODE, ParamLengths.Address.MAX_ZIPCODE);	
 	}
+	
+	
+	public static final class CreditCard {
+		public static final String NUMBER 	= String.format("[0-9]{%d,%d}", ParamLengths.CreditCard.MIN_NUMBER, ParamLengths.CreditCard.MAX_NUMBER);
+		public static final String HOLDER_NAME 	= String.format("[a-zA-Z\\s]{%d,%d}", ParamLengths.CreditCard.MIN_HOLDER_NAME, ParamLengths.CreditCard.MAX_HOLDER_NAME);
+		
+	}
 }

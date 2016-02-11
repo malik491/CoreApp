@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
@@ -22,7 +21,7 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * 
  * @author Malik
  */
-public class OrderBeanLoader implements BeanLoader<OrderBean>{
+public class OrderBeanLoader {
 	private AddressBeanLoader addressLoader;
 	private PaymentBeanLoader paymentLoader;
 	
@@ -39,7 +38,6 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 	 * @param rs a ResultSet containing orders data from the database
 	 * @return list of orders
 	 */
-	@Override
 	public List<OrderBean> loadList(ResultSet rs) throws SQLException {
 		List<OrderBean> orders = new ArrayList<>();
 		while (rs.next())
@@ -55,7 +53,6 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 	 * @param rs a ResultSet containing order data from the database
 	 * @return order bean object containing the data from an order in the database
 	 */
-	@Override
 	public OrderBean loadSingle(ResultSet rs) throws SQLException {
 		OrderType type = OrderType.valueOf(rs.getString(DBLabels.Order.TYPE));
 		
@@ -81,7 +78,6 @@ public class OrderBeanLoader implements BeanLoader<OrderBean>{
 	 * @param bean order bean with data
 	 * @return return the passed ps
 	 */
-	@Override
 	public void loadParameters(PreparedStatement ps, OrderBean bean, int paramIndex) throws SQLException {		
 		ps.setString(paramIndex++, bean.getType().name());
 		ps.setString(paramIndex++, bean.getStatus().name());

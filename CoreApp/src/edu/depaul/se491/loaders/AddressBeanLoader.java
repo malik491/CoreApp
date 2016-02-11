@@ -20,7 +20,7 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * 
  * @author Malik
  */
-public class AddressBeanLoader implements BeanLoader<AddressBean> {
+public class AddressBeanLoader {
 
 	/**
 	 * return a list of address beans using addresses data in the ResultSet (rows)
@@ -30,7 +30,6 @@ public class AddressBeanLoader implements BeanLoader<AddressBean> {
 	 * @param rs a ResultSet containing addresses data from the database
 	 * @return list of addresses
 	 */
-	@Override
 	public List<AddressBean> loadList(ResultSet rs) throws SQLException {
 		List<AddressBean> addresses = new ArrayList<>();
 		while(rs.next())
@@ -46,7 +45,6 @@ public class AddressBeanLoader implements BeanLoader<AddressBean> {
 	 * @param rs a ResultSet containing account data from the database
 	 * @return account bean object containing the data from an account in the database
 	 */
-	@Override
 	public AddressBean loadSingle(ResultSet rs) throws SQLException {
 		AddressBean bean = new AddressBean();		
 		
@@ -66,7 +64,6 @@ public class AddressBeanLoader implements BeanLoader<AddressBean> {
 	 * @param bean address bean with data
 	 * @return return the passed ps
 	 */
-	@Override
 	public void loadParameters(PreparedStatement ps, AddressBean bean, int paramIndex) throws SQLException {		
 		ps.setString(paramIndex++, bean.getLine1());
 		

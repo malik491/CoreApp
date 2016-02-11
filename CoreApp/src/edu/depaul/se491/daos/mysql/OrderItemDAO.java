@@ -8,8 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.daos.ConnectionFactory;
@@ -39,12 +37,12 @@ public class OrderItemDAO {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<OrderItemBean> getOrderItems(final long orderId) throws DBException  {
+	public OrderItemBean[] getOrderItems(final long orderId) throws DBException  {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
-		List<OrderItemBean> orderItems = null;
+		OrderItemBean[] orderItems = null;
 		try {
 			conn = connFactory.getConnection();
 			ps = conn.prepareStatement(SELECT_BY_ORDER_ID_QUERY);
@@ -82,8 +80,8 @@ public class OrderItemDAO {
 		PreparedStatement ps = null;
 		boolean added = false;
 		try {
-			List<OrderItemBean> items = order.getItems();
-			int itemsCount = items.size();
+			OrderItemBean[] items = order.getOrderItems();
+			int itemsCount = items.length;
 			if (itemsCount < 1)
 				return added;
 			
@@ -127,8 +125,8 @@ public class OrderItemDAO {
 		boolean updated = false;
 		try {
 			final long orderId = order.getId();
-			List<OrderItemBean> items = order.getItems();
-			int itemsCount = items.size();
+			OrderItemBean[] items = order.getOrderItems();
+			int itemsCount = items.length;
 			if (itemsCount < 1)
 				return updated;
 			

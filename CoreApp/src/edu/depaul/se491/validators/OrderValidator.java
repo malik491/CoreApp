@@ -3,8 +3,6 @@
  */
 package edu.depaul.se491.validators;
 
-import java.util.List;
-
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.enums.OrderType;
 import edu.depaul.se491.beans.OrderItemBean;
@@ -81,12 +79,12 @@ public class OrderValidator extends BeanValidator {
 	}	
 
 	private boolean isValidOrderItems(OrderBean bean) {
-		List<OrderItemBean> items = bean.getItems();
+		OrderItemBean[] items = bean.getOrderItems();
 		
 		boolean isValid = isValidObject(items, "Invalid OrderItems for Order (Null)");
 		
 		if (isValid) {
-			int itemsCount = items.size();
+			int itemsCount = items.length;
 			isValid  = isValidValue(itemsCount, ParamValues.Order.MIN_ORDER_ITEMS, ParamValues.Order.MAX_ORDER_ITEMS, "Invalid OrderItems for Order (0 or too many items)");
 		}
 		

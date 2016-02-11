@@ -13,7 +13,6 @@ import java.util.List;
 
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.AddressBean;
-import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.beans.PaymentBean;
 import edu.depaul.se491.builders.OrderBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
@@ -100,7 +99,7 @@ public class OrderDAO {
 				order = loader.loadSingle(rs);
 			
 			if (order != null)
-				order.setItems(orderItemDAO.getOrderItems(order.getId()));
+				order.setOrderItems(orderItemDAO.getOrderItems(order.getId()));
 			
 		} catch (SQLException | DBException e) {
 			e.printStackTrace();
@@ -141,7 +140,7 @@ public class OrderDAO {
 				order = loader.loadSingle(rs);
 			
 			if (order != null)
-				order.setItems(orderItemDAO.getOrderItems(order.getId()));
+				order.setOrderItems(orderItemDAO.getOrderItems(order.getId()));
 			
 		} catch (SQLException | DBException e) {
 			e.printStackTrace();
@@ -269,7 +268,7 @@ public class OrderDAO {
 			ps.setLong(1, orderId);
 
 			// delete order items first (have foreign key to order)
-			deleted = orderItemDAO.transactionDelete(conn, orderId, order.getItems().size());
+			deleted = orderItemDAO.transactionDelete(conn, orderId, order.getOrderItems().length);
 
 			// delete order (has foreign key to address)
 			if (deleted)
@@ -313,17 +312,17 @@ public class OrderDAO {
 	 * @return true if order is updated
 	 * @throws DBException
 	 */
-	public boolean update(final OrderBean updatedOrder) throws DBException {
+	public boolean update(final OrderBean order) throws DBException {
 		Connection conn = null;
 		PreparedStatement ps = null;		
 		
 		boolean updated = false;
 		
 		try {
-			final long orderId = updatedOrder.getId();
+			final long orderId = order.getId();
 			final OrderBean oldOrder = get(orderId);
 			
-			OrderBean updatedOrderCopy = new OrderBuilder(updatedOrder).build();
+			OrderBean updatedOrderCopy = new OrderBuilder(order).build(); // copy
 			
 			/*
 			 * transaction:
@@ -383,7 +382,7 @@ public class OrderDAO {
 
 			// update order items
 			if (updated)
-				updated = updateOrderItems(conn, oldOrder, updatedOrderCopy);
+				updated = orderItemDAO.transactionUpdate(conn, updatedOrderCopy);
 						
 			// update order
 			if (updated) {
@@ -446,7 +445,7 @@ public class OrderDAO {
 			
 			// for each order, set order items
 			for (OrderBean order: orders)
-				order.setItems(orderItemDAO.getOrderItems(order.getId()));
+				order.setOrderItems(orderItemDAO.getOrderItems(order.getId()));
 			
 		} catch (SQLException | DBException e) {
 			e.printStackTrace();
@@ -463,46 +462,6 @@ public class OrderDAO {
 		}
 		return orders;
 	}
-	
-	
-	private boolean updateOrderItems(final Connection conn, final OrderBean oldOrder, final OrderBean updatedOrder) throws DBException {
-		boolean updated = isValidUpdatedOrderItems(oldOrder.getItems(), updatedOrder.getItems());
-		
-		if (updated)
-			updated = orderItemDAO.transactionUpdate(conn, updatedOrder);	
-		
-		return updated;
-	}
-		
-	private boolean isValidUpdatedOrderItems(final List<OrderItemBean> oldOrderItems, final List<OrderItemBean> updatedOrderItems) {
-		int oldItemsCount = oldOrderItems.size();
-		int newItemsCount = updatedOrderItems.size();
-		
-		if (oldItemsCount != newItemsCount)
-			return false;
-			
-		boolean allWithZeroQty = true;
-		for (OrderItemBean oldOrderItem: oldOrderItems) 
-		{
-			boolean foundMatch = false;	
-			
-			for (OrderItemBean updatedOrderItem: updatedOrderItems) {
-				foundMatch = (oldOrderItem.getMenuItem().getId() == updatedOrderItem.getMenuItem().getId());
-				if (foundMatch) {
-					allWithZeroQty &= (updatedOrderItem.getQuantity() == 0);
-					break; // break from the inner loop (process the next oldOrderItem)
-				}
-			}
-			
-			if (!foundMatch) {
-				// the oldOrderItems list has an orderItem that is not in the updatedOrderItems list
-				return false;
-			}
-		}
-		
-		return allWithZeroQty == false;		
-	}
-	
 	
 	private boolean hasDifferentData(final AddressBean oldAddress, final AddressBean newAddress) {
 		boolean isSame = false;

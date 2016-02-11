@@ -5,11 +5,6 @@ package edu.depaul.se491.beans;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import edu.depaul.se491.enums.OrderStatus;
@@ -30,7 +25,7 @@ public class OrderBean implements Serializable {
 	private String confirmation;
 	private PaymentBean payment;
 	private AddressBean address;
-	private Map<String, OrderItemBean> orderItems;
+	private OrderItemBean[] orderItems;
 	
 	public OrderBean() {
 	}
@@ -127,34 +122,16 @@ public class OrderBean implements Serializable {
 	 * return all order items for this order
 	 * @return
 	 */
-	public List<OrderItemBean> getItems() {
-		if (orderItems == null)
-			return null;
-		
-		List<OrderItemBean> result = new ArrayList<>();
-		for(OrderItemBean oItem: orderItems.values()) {
-			result.add(oItem);
-		}
-		return result;
+	public OrderItemBean[] getOrderItems() {
+		return orderItems;
 	}
 	
 	/**
 	 * set order items for this order
 	 * @param items
 	 */
-	public void setItems(List<OrderItemBean> items) {
-		if (orderItems == null)
-			orderItems = new HashMap<String, OrderItemBean>();
-		
-		for (OrderItemBean oItem: items) {
-			String key = Long.toString(oItem.getMenuItem().getId());
-
-			OrderItemBean oldItem = orderItems.get(key);
-			if (oldItem != null)
-				oldItem.setQuantity(oldItem.getQuantity() + oItem.getQuantity());	
-			else
-				orderItems.put(key, oItem);				
-		}
+	public void setOrderItems(OrderItemBean[] orderItems) {
+		this.orderItems = orderItems;
 	}
 
 	public AddressBean getAddress() {

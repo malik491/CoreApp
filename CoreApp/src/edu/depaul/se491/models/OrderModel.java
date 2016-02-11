@@ -25,7 +25,6 @@ import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.utils.ConfirmationGenerator;
 import edu.depaul.se491.validators.AddressValidator;
 import edu.depaul.se491.validators.CreditCardValidator;
-import edu.depaul.se491.validators.MenuItemValidator;
 import edu.depaul.se491.validators.OrderItemValidator;
 import edu.depaul.se491.validators.OrderValidator;
 import edu.depaul.se491.validators.PaymentValidator;
@@ -108,33 +107,25 @@ public class OrderModel extends BaseModel {
 
 		Boolean updated = null;
 		if (isValid) {
-			boolean updateOrder = true;
-			
-			// confirmation, timestamp, and payment don't get updated.
-			updatedOrder.setTimestamp(oldOrder.getTimestamp());
-			updatedOrder.setConfirmation(oldOrder.getConfirmation());
-			updatedOrder.setPayment(oldOrder.getPayment());
+			boolean updateOrder = isValidUpdatedOrderItems(oldOrder.getOrderItems(), updatedOrder.getOrderItems());
 
-			if (getLoggedinAccount().getRole() != MANAGER) {
-				// employee update (from kitchen terminal)
+			if (updateOrder) {
+				// confirmation, timestamp, and payment don't get updated.
+				updatedOrder.setTimestamp(oldOrder.getTimestamp());
+				updatedOrder.setConfirmation(oldOrder.getConfirmation());
+				updatedOrder.setPayment(oldOrder.getPayment());
 				
-				if (oldOrder.getStatus() == OrderStatus.CANCELED) {
-					// employee trying to updated a canceled order
-					// the order got canceled while it was being prepared
-					updateOrder = false;
-					updated = false;	
-				} else {
-					// order type & address don't get updated by employee
+				if (getLoggedinAccount().getRole() == EMPLOYEE) {
+					// employee only updates order items status
+					updatedOrder.setStatus(oldOrder.getStatus());
 					updatedOrder.setType(oldOrder.getType());
 					updatedOrder.setAddress(oldOrder.getAddress());
 					
-					// only update orderItem status
-					List<OrderItemBean> updatableItems = getUpdatableOrderItems(oldOrder, updatedOrder);
-					updatedOrder.setItems(updatableItems);
-					
-					// auto update order status (based on the status of all order items)
-					boolean isAllOrderItemsReady = isAllOrderItemsReady(updatableItems);
-					updatedOrder.setStatus(isAllOrderItemsReady? OrderStatus.PREPARED : OrderStatus.SUBMITTED);
+					// if the order is not canceled, auto update its status based on the status of all order items
+					if (updatedOrder.getStatus() != OrderStatus.CANCELED) {
+						boolean isAllOrderItemsReady = isAllOrderItemsReady(updatedOrder.getOrderItems());
+						updatedOrder.setStatus(isAllOrderItemsReady? OrderStatus.PREPARED : OrderStatus.SUBMITTED);
+					}
 				}
 			}
 			
@@ -365,7 +356,7 @@ public class OrderModel extends BaseModel {
 			// validate orderItem & menuItem
 			OrderItemValidator orderItemValidator = new OrderItemValidator();
 			
-			for (OrderItemBean orderItem: bean.getItems()) {
+			for (OrderItemBean orderItem: bean.getOrderItems()) {
 				isValid &= orderItemValidator.validate(orderItem);
 				if (!isValid)
 					break;
@@ -381,26 +372,28 @@ public class OrderModel extends BaseModel {
 		return isValid;
 	}
 	
-	
-	private List<OrderItemBean> getUpdatableOrderItems(OrderBean oldOrder, OrderBean updatedOrder) {
-		List<OrderItemBean> updatableOrderItems = oldOrder.getItems();
+	private boolean isValidUpdatedOrderItems(final OrderItemBean[] oldOrderItems, final OrderItemBean[] updatedOrderItems) {
+		boolean allWithZeroQty = true;
 		
-		for (OrderItemBean updatedOrderItem: updatedOrder.getItems()) {
-			for (OrderItemBean oldOrderItem: updatableOrderItems) {
-				long updatedMenuItemId = updatedOrderItem.getMenuItem().getId();
-				long oldMenuItemId = oldOrderItem.getMenuItem().getId();
-				
-				if (updatedMenuItemId == oldMenuItemId) {
-					// update the old order item status
-					oldOrderItem.setStatus(updatedOrderItem.getStatus());
-				}		
+		for (OrderItemBean updatedItem: updatedOrderItems) {
+			for (OrderItemBean oldItem: oldOrderItems) {
+				if (oldItem.getMenuItem().getId() == updatedItem.getMenuItem().getId()) {
+					allWithZeroQty &= (updatedItem.getQuantity() == 0);
+					break;
+				}
 			}
 		}
-		return updatableOrderItems;
+		
+		if (allWithZeroQty) {
+			setResponseStatus(Status.BAD_REQUEST);
+			setResponseMessage("At least one order item must have quantity > 0 (Otherwise, cancel the order instead)");
+		}
+		
+		return !allWithZeroQty;		
 	}
 	
 	
-	private boolean isAllOrderItemsReady(List<OrderItemBean> orderItems) {
+	private boolean isAllOrderItemsReady(OrderItemBean[] orderItems) {
 		boolean isAllReady = true;
 		for (OrderItemBean orderItem: orderItems)
 			isAllReady &= (orderItem.getStatus() == OrderItemStatus.READY);

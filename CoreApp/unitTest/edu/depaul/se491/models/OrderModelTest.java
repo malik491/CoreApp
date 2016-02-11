@@ -2,7 +2,6 @@ package edu.depaul.se491.models;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -74,13 +73,12 @@ public class OrderModelTest {
 
 	@Test
 	public void testCreate() {
-		List<OrderItemBean> items = new ArrayList<>();
-		items.add(new OrderItemBean(new MenuItemBean(1, null, null, 1.99, null), 1, OrderItemStatus.NOT_READY));
+		OrderItemBean[] items = new OrderItemBean[] {new OrderItemBean(new MenuItemBean(1, null, null, 1.99, null), 1, OrderItemStatus.NOT_READY)};
 		
 		OrderBean order = new OrderBean();
 		order.setType(OrderType.PICKUP);
 		order.setPayment(new PaymentBean(0, 1.99, PaymentType.CASH, null, null));
-		order.setItems(items);
+		order.setOrderItems(items);
 
 		// as a manager test creating order with order status:
 		// canceled, prepared, submitted		
@@ -177,8 +175,8 @@ public class OrderModelTest {
 		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
 		
 		oldOrder.setStatus(OrderStatus.SUBMITTED);
-		oldOrder.getItems().get(0).setStatus(OrderItemStatus.READY);
-		oldOrder.getItems().get(1).setStatus(OrderItemStatus.READY);
+		oldOrder.getOrderItems()[0].setStatus(OrderItemStatus.READY);
+		oldOrder.getOrderItems()[1].setStatus(OrderItemStatus.READY);
 		updated = model.update(oldOrder);
 		assertNotNull(updated);
 		assertTrue(updated);

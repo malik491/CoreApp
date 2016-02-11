@@ -21,7 +21,7 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * 
  * @author Malik
  */
-public class MenuItemBeanLoader implements BeanLoader<MenuItemBean> {
+public class MenuItemBeanLoader {
 
 	/**
 	 * return a list of menuItem beans using menuItems data in the ResultSet (rows)
@@ -31,7 +31,6 @@ public class MenuItemBeanLoader implements BeanLoader<MenuItemBean> {
 	 * @param rs a ResultSet containing menu items data from the database
 	 * @return list of menu items
 	 */
-	@Override
 	public List<MenuItemBean> loadList(ResultSet rs) throws SQLException {
 		List<MenuItemBean> mItems = new ArrayList<MenuItemBean>();
 		while (rs.next())
@@ -47,7 +46,6 @@ public class MenuItemBeanLoader implements BeanLoader<MenuItemBean> {
 	 * @param rs a ResultSet containing menuItem data from the database
 	 * @return MenuItem bean object containing the data from a menuItem in the database
 	 */
-	@Override
 	public MenuItemBean loadSingle(ResultSet rs) throws SQLException {
 		MenuItemBean bean = new MenuItemBean();
 		
@@ -66,7 +64,6 @@ public class MenuItemBeanLoader implements BeanLoader<MenuItemBean> {
 	 * @param bean menuItem bean with data
 	 * @return return the passed ps
 	 */
-	@Override
 	public void loadParameters(PreparedStatement ps, MenuItemBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getName());
 		ps.setString(paramIndex++, bean.getDescription());

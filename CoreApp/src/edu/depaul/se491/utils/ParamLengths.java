@@ -17,11 +17,11 @@ public class ParamLengths {
 	}
 	
 	public static final class CreditCard {
-		public static final int MIN_CC_NUMBER = 12;   		/*CC number range from 12 to 19 digit string*/
-		public static final int MIN_CC_HOLDER_NAME = 3;		/* holder's full name*/
+		public static final int MIN_NUMBER = 12;   		/*CC number range from 12 to 19 digit string*/
+		public static final int MIN_HOLDER_NAME = 3;		/* holder's full name*/
 
-		public static final int MAX_CC_NUMBER = 19;
-		public static final int MAX_CC_HOLDER_NAME = 100;
+		public static final int MAX_NUMBER = 19;
+		public static final int MAX_HOLDER_NAME = 100;
 	}
 	
 	

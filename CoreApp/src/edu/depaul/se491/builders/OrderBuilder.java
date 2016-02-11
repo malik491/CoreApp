@@ -25,7 +25,7 @@ public class OrderBuilder {
 		this.bean.setConfirmation(bean.getConfirmation());
 		this.bean.setTimestamp(bean.getTimestamp());
 		this.bean.setPayment(bean.getPayment());
-		this.bean.setItems(bean.getItems());
+		this.bean.setOrderItems(bean.getOrderItems());
 		this.bean.setAddress(bean.getAddress());
 	}
 	
