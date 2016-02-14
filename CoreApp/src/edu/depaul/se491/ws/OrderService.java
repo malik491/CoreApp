@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.RequestBean;
+import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
 import edu.depaul.se491.models.OrderModel;
@@ -106,6 +107,73 @@ public class OrderService {
 		if (isValid) {	
 			OrderModel model = new OrderModel(request.getCredentials());
 			Boolean updated = model.update(request.getExtra());
+			if (updated == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, updated);
+		} else {
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
+		}
+		
+		return response;
+	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/update/station/main")
+	public Response mainStationUpdate(RequestBean<OrderBean> request) {
+		Response response = null;
+		boolean isValid = isValidRequest(request, false);
+		
+		if (isValid) {	
+			OrderModel model = new OrderModel(request.getCredentials());
+			Boolean updated = model.update(request.getExtra(), MenuItemCategory.MAIN);
+			if (updated == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, updated);
+		} else {
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
+		}
+		
+		return response;
+	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/update/station/side")
+	public Response sideStationupdate(RequestBean<OrderBean> request) {
+		Response response = null;
+		boolean isValid = isValidRequest(request, false);
+		
+		if (isValid) {	
+			OrderModel model = new OrderModel(request.getCredentials());
+			Boolean updated = model.update(request.getExtra(), MenuItemCategory.SIDE);
+			if (updated == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, updated);
+		} else {
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
+		}
+		
+		return response;
+	}
+
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/update/station/beverage")
+	public Response beverageStationupdate(RequestBean<OrderBean> request) {
+		Response response = null;
+		boolean isValid = isValidRequest(request, false);
+		
+		if (isValid) {	
+			OrderModel model = new OrderModel(request.getCredentials());
+			Boolean updated = model.update(request.getExtra(), MenuItemCategory.BEVERAGE);
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
 			else

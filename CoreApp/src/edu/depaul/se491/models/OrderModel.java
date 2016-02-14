@@ -17,6 +17,7 @@ import edu.depaul.se491.beans.PaymentBean;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.enums.AccountRole;
+import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.enums.OrderItemStatus;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
@@ -91,16 +92,10 @@ public class OrderModel extends BaseModel {
 	 * @return
 	 */
 	public Boolean update(OrderBean updatedOrder) {
-		boolean isValid = isValidOrder(updatedOrder, false);
+		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
+		boolean isValid = hasPermission(allowedRoles);
 		
-		AccountRole[] allowedRoles = null;
-		if (isValid) {
-			if (updatedOrder.getStatus() == OrderStatus.CANCELED)
-				allowedRoles = new AccountRole[] {MANAGER};
-			else
-				allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
-		}
-		isValid = isValid? hasPermission(allowedRoles) : false;
+		isValid = isValid? isValidOrder(updatedOrder, false): false;
 
 		OrderBean oldOrder = isValid? read(updatedOrder.getId()) : null;
 		isValid = (oldOrder != null);
@@ -114,19 +109,6 @@ public class OrderModel extends BaseModel {
 				updatedOrder.setTimestamp(oldOrder.getTimestamp());
 				updatedOrder.setConfirmation(oldOrder.getConfirmation());
 				updatedOrder.setPayment(oldOrder.getPayment());
-				
-				if (getLoggedinAccount().getRole() == EMPLOYEE) {
-					// employee only updates order items status
-					updatedOrder.setStatus(oldOrder.getStatus());
-					updatedOrder.setType(oldOrder.getType());
-					updatedOrder.setAddress(oldOrder.getAddress());
-					
-					// if the order is not canceled, auto update its status based on the status of all order items
-					if (updatedOrder.getStatus() != OrderStatus.CANCELED) {
-						boolean isAllOrderItemsReady = isAllOrderItemsReady(updatedOrder.getOrderItems());
-						updatedOrder.setStatus(isAllOrderItemsReady? OrderStatus.PREPARED : OrderStatus.SUBMITTED);
-					}
-				}
 			}
 			
 			if (updateOrder) {
@@ -141,6 +123,64 @@ public class OrderModel extends BaseModel {
 		return updated;
 	}
 	
+	
+	public Boolean update(OrderBean updatedOrder, MenuItemCategory currentStation) {
+		AccountRole[] allowedRoles = new AccountRole[] {EMPLOYEE};
+		boolean isValid = hasPermission(allowedRoles);
+		
+		isValid = isValid? isValidOrder(updatedOrder, false): false;
+		isValid = isValid? isValidStation(currentStation) : false;
+
+		OrderBean oldOrder = isValid? read(updatedOrder.getId()) : null;
+		isValid = (oldOrder != null);
+
+		Boolean updated = null;
+		if (isValid) {
+			boolean updateOrder = isValidUpdatedOrderItems(oldOrder.getOrderItems(), updatedOrder.getOrderItems());
+
+			if (updateOrder) {
+				// employee only updates order items status
+				// confirmation, timestamp, and payment don't get updated.
+				
+				updatedOrder.setTimestamp(oldOrder.getTimestamp());
+				updatedOrder.setConfirmation(oldOrder.getConfirmation());
+				updatedOrder.setPayment(oldOrder.getPayment());
+				updatedOrder.setStatus(oldOrder.getStatus());
+				updatedOrder.setType(oldOrder.getType());
+				updatedOrder.setAddress(oldOrder.getAddress());
+				
+				// only update items for the current station
+				for (OrderItemBean updatedItem : updatedOrder.getOrderItems()) {
+					if (updatedItem.getMenuItem().getItemCategory() != currentStation) {
+						for (OrderItemBean oldItem : oldOrder.getOrderItems()) {
+							if (oldItem.getMenuItem().getId() == updatedItem.getMenuItem().getId()) {
+								updatedItem.setStatus(oldItem.getStatus());
+								break;
+							}
+						}
+					}
+				}
+				
+				// if the order is not canceled, auto update its status based on the status of all order items
+				if (updatedOrder.getStatus() != OrderStatus.CANCELED) {
+					boolean isAllOrderItemsReady = isAllOrderItemsReady(updatedOrder.getOrderItems());
+					updatedOrder.setStatus(isAllOrderItemsReady? OrderStatus.PREPARED : OrderStatus.SUBMITTED);
+				}
+			}
+			
+			if (updateOrder) {
+				try {
+					updated = getDAOFactory().getOrderDAO().update(updatedOrder);					
+				} catch (DBException e) {
+					setResponseAndMeessageForDBError();
+				}
+			}
+		}
+		
+		return updated;
+	}
+
+
 	/**
 	 * delete an existing order
 	 * @param id
@@ -369,6 +409,15 @@ public class OrderModel extends BaseModel {
 		}
 		
 		
+		return isValid;
+	}
+	
+	private boolean isValidStation(MenuItemCategory currentStation) {
+		boolean isValid = (currentStation != null);
+		if (!isValid) {
+			setResponseStatus(Status.BAD_REQUEST);
+			setResponseMessage("Invalid station data");
+		}
 		return isValid;
 	}
 	

@@ -113,6 +113,67 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
+	public Boolean mainStationUpdate(final OrderBean updatedOrder) {
+		final String getTarget = serviceBaseUrl + "/update/station/main";
+		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
+		
+		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
+		
+		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+		
+		Boolean updated = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			updated = response.readEntity(Boolean.class);
+		}
+		
+		response.close();
+		return updated;
+	}
+	
+	public Boolean sideStationUpdate(final OrderBean updatedOrder) {
+		final String getTarget = serviceBaseUrl + "/update/station/side";
+		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
+		
+		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
+		
+		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+		
+		Boolean updated = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			updated = response.readEntity(Boolean.class);
+		}
+		
+		response.close();
+		return updated;
+	}
+	
+	public Boolean beverageStationupdate(final OrderBean updatedOrder) {
+		final String getTarget = serviceBaseUrl + "/update/station/beverage";
+		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
+		
+		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
+		
+		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+		
+		Boolean updated = null;
+		
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			setResponseMessage(response.readEntity(String.class));
+		} else {
+			updated = response.readEntity(Boolean.class);
+		}
+		
+		response.close();
+		return updated;
+	}
+	
+	
 	public Boolean delete(final long orderId) {
 		final String getTarget = serviceBaseUrl + "/delete";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
