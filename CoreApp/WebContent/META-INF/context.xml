@@ -28,7 +28,7 @@
     <Resource
 		username="root" 
 		password="se491"
-		url="jdbc:mysql://localhost:3306/se491test?createDatabaseIfNotExist=true"		
+		url="jdbc:mysql://localhost:3306/se491"		
 		name="jdbc/se491"
 		auth="Container"
 		type="javax.sql.DataSource"

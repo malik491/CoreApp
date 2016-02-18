@@ -25,7 +25,9 @@ public class TestDataGenerator {
 		try {
 			gen.generateStandardData();
 			connFactory.close();
+			System.out.println("Successfully populated database (se491)");
 		} catch (SQLException | IOException e) {
+			System.out.println("Failed to populate database (se491). See stack trace.");
 			e.printStackTrace();
 		}
 	}

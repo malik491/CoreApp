@@ -24,7 +24,9 @@ public class DBBuilder {
 		try {
 			dbBuilder.rebuildAll();
 			connFactory.close();
+			System.out.println("Successfully created database (se491)");
 		} catch (IOException | SQLException e) {
+			System.out.println("Failed to create database (se491). See stack trace.");
 			e.printStackTrace();
 		}
 	}
