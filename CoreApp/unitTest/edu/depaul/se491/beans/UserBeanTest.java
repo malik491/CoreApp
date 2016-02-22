@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class UserBeanTest {
-	UserBean  bean;
+	private UserBean  bean;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -30,7 +30,7 @@ public class UserBeanTest {
 		String firstname = "first";
 		String lastname = "last";
 		String email = "email";
-		String phone = "phone";
+		String phone = "1234567890";
 		AddressBean address = new AddressBean();
 		long id  = 1;
 		
@@ -57,8 +57,6 @@ public class UserBeanTest {
 		long id = 1;
 		bean.setId(id);
 		assertEquals(id ,bean.getId());
-		
-		
 	}
 
 	@Test

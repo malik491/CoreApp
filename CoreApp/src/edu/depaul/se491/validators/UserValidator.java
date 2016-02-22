@@ -13,7 +13,7 @@ import edu.depaul.se491.utils.ParamLengths;
 public class UserValidator extends BeanValidator {
 
 	public boolean validate(UserBean bean, boolean isNewUser) {
-		boolean isValid = isValidObject(bean, "Invalid User (Null)");
+		boolean isValid = isValidObject(bean);
 
 		if(isValid){
 			isValid  = validateId(bean.getId(), isNewUser);
@@ -28,34 +28,32 @@ public class UserValidator extends BeanValidator {
 	}
 
 	public boolean validateId(Long userId, boolean isNewUser) {
-		boolean isValid = isValidObject(userId, "Invalid user id (Null Long object)");
+		boolean isValid = isValidObject(userId);
 		
-		if (isValid) {
-			String invalidMsg = String.format("Invalid User Id %s", isNewUser? " (for new User)": "");
-			isValid = isValidId(userId, isNewUser, invalidMsg);			
-		}
+		if (isValid)
+			isValid = isValidId(userId, isNewUser);			
 		
 		return isValid;
 	}
 	
 	public boolean isValidEmail(String email) {
-		return isValidString(email, ParamLengths.User.MIN_EMAIL, ParamLengths.User.MAX_EMAIL, "Invalid User Email Name");
+		return isValidString(email, ParamLengths.User.MIN_EMAIL, ParamLengths.User.MAX_EMAIL);
 	}
 
 	
 	private boolean isValidFirstName(UserBean bean) {
-		return isValidString(bean.getFirstName(), ParamLengths.User.MIN_F_NAME, ParamLengths.User.MAX_F_NAME, "Invalid User First Name");
+		return isValidString(bean.getFirstName(), ParamLengths.User.MIN_F_NAME, ParamLengths.User.MAX_F_NAME);
 	}
 	
 	private boolean isValidLastName(UserBean bean) {
-		return isValidString(bean.getLastName(), ParamLengths.User.MIN_L_NAME, ParamLengths.User.MAX_L_NAME, "Invalid User Last Name");
+		return isValidString(bean.getLastName(), ParamLengths.User.MIN_L_NAME, ParamLengths.User.MAX_L_NAME);
 	}
 		
 	private boolean isValidPhone(UserBean bean) {
-		return isValidString(bean.getPhone(), ParamLengths.User.MIN_PHONE, ParamLengths.User.MAX_PHONE, "Invalid User Phone Name");
+		return isValidString(bean.getPhone(), ParamLengths.User.MIN_PHONE, ParamLengths.User.MAX_PHONE);
 	}
 	
 	private boolean isValidAddress(UserBean bean) {
-		return isValidObject(bean.getAddress(), "Invalid User Address (Null)");
+		return isValidObject(bean.getAddress());
 	}
 }

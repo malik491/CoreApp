@@ -7,12 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-
 import com.mysql.jdbc.Statement;
 
 import edu.depaul.se491.beans.AddressBean;
-import edu.depaul.se491.builders.AddressBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.exceptions.DBException;
@@ -33,41 +30,6 @@ public class AddressDAO {
 		this.loader = new AddressBeanLoader();
 	}
 	
-	/**
-	 * return all addresses in the database
-	 * Empty list is returned if there are no addresses in the database
-	 * @return
-	 * @throws SQLException
-	 */
-	public List<AddressBean> getAll() throws DBException {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<AddressBean> addresses = null;
-		
-		try {
-			conn = connFactory.getConnection();
-			ps = conn.prepareStatement(SELECT_ALL_QUERY);
-			
-			rs = ps.executeQuery();
-			addresses = loader.loadList(rs);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} finally {
-			try {
-				DAOUtil.close(rs);
-				DAOUtil.close(ps);
-				DAOUtil.close(conn);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-			}
-		}
-		return addresses;
-	}
-
 	/**
 	 * return address associated with the given id
 	 * Null is returned if there are no address for the given id
@@ -122,11 +84,7 @@ public class AddressDAO {
 			
 			boolean added = DAOUtil.validInsert(ps.executeUpdate());
 			if (added) {
-				// copy old address data
-				addedAddr = new AddressBuilder(address).build();
-				
-				// set its new id
-				addedAddr.setId(DAOUtil.getAutGeneratedKey(ps));						
+				addedAddr = new AddressBean(DAOUtil.getAutGeneratedKey(ps), address.getLine1(), address.getLine2(), address.getCity(), address.getState(), address.getZipcode());						
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -200,11 +158,6 @@ public class AddressDAO {
 		}
 		return deleted;
 	}
-	
-	
-	
-	private static final String SELECT_ALL_QUERY = String.format("SELECT * FROM %s ORDER BY %s", 
-																DBLabels.Address.TABLE, DBLabels.Address.ID);
 	
 	private static final String SELECT_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE (%s = ?)", 
 																DBLabels.Address.TABLE, DBLabels.Address.ID);

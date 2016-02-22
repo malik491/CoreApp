@@ -11,7 +11,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import edu.depaul.se491.beans.MenuItemBean;
-import edu.depaul.se491.builders.MenuItemBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.exceptions.DBException;
@@ -124,9 +123,7 @@ public class MenuItemDAO {
 			boolean added = DAOUtil.validInsert(ps.executeUpdate());
 			if (added) {
 				long menuItemId = DAOUtil.getAutGeneratedKey(ps);
-				
-				addedMenuItem = new MenuItemBuilder(menuItem).build();
-				addedMenuItem.setId(menuItemId);
+				addedMenuItem = new MenuItemBean(menuItemId, menuItem.getName(), menuItem.getDescription(), menuItem.getPrice(), menuItem.getItemCategory());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

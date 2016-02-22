@@ -6,9 +6,6 @@ package edu.depaul.se491.loaders;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.enums.AddressState;
 import edu.depaul.se491.utils.dao.DBLabels;
@@ -21,22 +18,6 @@ import edu.depaul.se491.utils.dao.DBLabels;
  * @author Malik
  */
 public class AddressBeanLoader {
-
-	/**
-	 * return a list of address beans using addresses data in the ResultSet (rows)
-	 * Empty list is return if the ResultSet is empty
-	 * The ResultSet cursor should be positioned before the first row before calling
-	 * this method. Otherwise, the first row will not be included in the result.
-	 * @param rs a ResultSet containing addresses data from the database
-	 * @return list of addresses
-	 */
-	public List<AddressBean> loadList(ResultSet rs) throws SQLException {
-		List<AddressBean> addresses = new ArrayList<>();
-		while(rs.next())
-			addresses.add(loadSingle(rs));
-		
-		return addresses;
-	}
 	
 	/**
 	 * return an account bean using the ResultSet (a single row)

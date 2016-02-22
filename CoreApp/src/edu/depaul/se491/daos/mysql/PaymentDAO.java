@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import com.mysql.jdbc.Statement;
 
 import edu.depaul.se491.beans.PaymentBean;
-import edu.depaul.se491.builders.PaymentBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.exceptions.DBException;
@@ -38,11 +37,7 @@ public class PaymentDAO {
 			
 			boolean added = DAOUtil.validInsert(ps.executeUpdate());
 			if (added) {
-				// copy old payment data
-				addedPayment = new PaymentBuilder(bean).build();
-				
-				// set its new id
-				addedPayment.setId(DAOUtil.getAutGeneratedKey(ps));						
+				addedPayment = new PaymentBean(DAOUtil.getAutGeneratedKey(ps), bean.getTotal(), bean.getType(), bean.getCreditCard(), bean.getTransactionConfirmation());					
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

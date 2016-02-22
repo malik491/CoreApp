@@ -10,5 +10,15 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum OrderType {
-	PICKUP, DELIVERY
+	PICKUP("Pickup"), DELIVERY("Delivery");
+	
+	private String name;
+	OrderType(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

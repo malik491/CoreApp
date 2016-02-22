@@ -9,5 +9,15 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum MenuItemCategory {
-	BEVERAGE, MAIN, SIDE
+	BEVERAGE("Beverage"), MAIN("Main"), SIDE("Side");
+	
+	private String name;
+	MenuItemCategory(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

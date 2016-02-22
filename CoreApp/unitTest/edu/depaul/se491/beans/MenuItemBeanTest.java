@@ -24,36 +24,20 @@ public class MenuItemBeanTest {
 		assertEquals(null, menuItem.getName());
 		assertNull(menuItem.getDescription());	
 		assertTrue(menuItem.getPrice() == 0);
+		assertNull(menuItem.getItemCategory());
 		
-		long validID = 1;
-		String validName = "soda";
-		String validDescription = "Decaf Soda";
-		double validPrice = 10;
+		long id = 1;
+		String name = "soda";
+		String description = "Decaf Soda";
+		double price = 10;
 		
-		menuItem.setId(validID);
-		menuItem.setName(validName);
-		menuItem.setDescription(validDescription);
-		menuItem.setPrice(validPrice);
-		
-		assertEquals(validID, menuItem.getId());
-		assertEquals(validName, menuItem.getName());
-		assertEquals(validDescription, menuItem.getDescription());
-		assertTrue(validPrice == menuItem.getPrice());
-		
-		long invalidID = -1;
-		String invalidName = "";
-		String invalidDescription = "";
-		double invalidPrice = -10;
-
-		menuItem.setId(invalidID);
-		menuItem.setName(invalidName);
-		menuItem.setDescription(invalidDescription);
-		menuItem.setPrice(invalidPrice);
-
-		assertEquals(invalidID, menuItem.getId());
-		assertEquals(invalidName, menuItem.getName());
-		assertEquals(invalidDescription, menuItem.getDescription());
-		assertTrue(invalidPrice == menuItem.getPrice());
+		menuItem = new MenuItemBean(id, name, description, price, MenuItemCategory.MAIN);
+		assertNotNull(menuItem);
+		assertEquals(id, menuItem.getId());
+		assertEquals(name, menuItem.getName());
+		assertEquals(description, menuItem.getDescription());
+		assertEquals(0, Double.compare(price, menuItem.getPrice()));
+		assertEquals(MenuItemCategory.MAIN, menuItem.getItemCategory());
 
 	}
 

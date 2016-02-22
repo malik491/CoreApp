@@ -11,5 +11,15 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum OrderStatus {
-	SUBMITTED, PREPARED, CANCELED;
+	SUBMITTED("Submitted"), PREPARED("Prepared"), CANCELED("Canceled");
+	
+	private String name;
+	OrderStatus(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

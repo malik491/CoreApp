@@ -9,5 +9,15 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum OrderItemStatus {
-	READY, NOT_READY
+	READY("Ready"), NOT_READY("Not Ready");
+	
+	private String name;
+	OrderItemStatus(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

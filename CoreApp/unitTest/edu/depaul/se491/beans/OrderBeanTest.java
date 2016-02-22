@@ -196,7 +196,7 @@ public class OrderBeanTest {
 		OrderItemBean[] items = new OrderItemBean[1];
 		bean.setOrderItems(items);
 		assertNotNull(bean.getOrderItems());
-		assertEquals(items.length, bean.getOrderItems());
+		assertEquals(items.length, bean.getOrderItems().length);
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class OrderBeanTest {
 		OrderItemBean[] items = new OrderItemBean[1];
 		bean.setOrderItems(items);
 		assertNotNull(bean.getOrderItems());
-		assertEquals(items.length, bean.getOrderItems());
+		assertEquals(items.length, bean.getOrderItems().length);
 	}
 
 	@Test

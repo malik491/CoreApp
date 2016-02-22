@@ -13,7 +13,7 @@ import edu.depaul.se491.utils.ParamValues;
 public class OrderItemValidator extends BeanValidator {
 
 	public boolean validate(OrderItemBean bean) {
-		boolean isValid = isValidObject(bean, "Invalid OrderItem (Null)");
+		boolean isValid = isValidObject(bean);
 
 		if(isValid){
 			isValid  = isValidMenuItem(bean);
@@ -25,14 +25,14 @@ public class OrderItemValidator extends BeanValidator {
 	}
 
 	private boolean isValidQuantity(OrderItemBean bean) {
-		return isValidValue(bean.getQuantity(), ParamValues.OrderItem.MIN_QTY, ParamValues.OrderItem.MAX_QTY, "Invalid OrderItem Quantity");
+		return isValidValue(bean.getQuantity(), ParamValues.OrderItem.MIN_QTY, ParamValues.OrderItem.MAX_QTY);
 	}
 
 	private boolean isValidMenuItem(OrderItemBean bean) {
-		return isValidObject(bean.getMenuItem(), "Invalid MenuItem for OrderItem (Null)");
+		return isValidObject(bean.getMenuItem());
 	}
 	
 	private boolean isValidStatus(OrderItemBean bean) {
-		return isValidObject(bean.getStatus(), "Invalid status for OrderItem (Null)");
+		return isValidObject(bean.getStatus());
 	}
 }

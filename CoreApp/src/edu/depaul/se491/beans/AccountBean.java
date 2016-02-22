@@ -76,4 +76,5 @@ public class AccountBean implements Serializable {
 	public void setRole(AccountRole role) {
 		this.role = role;
 	}
+	
 }

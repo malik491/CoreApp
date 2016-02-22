@@ -164,7 +164,7 @@ public class OrderModelTest {
 		assertNotNull(updated);
 		assertTrue(updated);
 		
-		// as employee test updating order item status
+		// as employee test updating order
 		credentials = new CredentialsBean("employee1", "password");
 		model = new OrderModel(daoFactory, credentials);
 		

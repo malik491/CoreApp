@@ -19,33 +19,22 @@ import edu.depaul.se491.daos.ConnectionFactory;
  *
  */
 public class TestConnectionFactory implements ConnectionFactory {
-	private static final ConnectionFactory instance = new TestConnectionFactory();
-	private static String driverClassName;
-	private static String username;
-	private static String password;
-	private static String url;
+	private static ConnectionFactory instance;
 	
-	private static final BasicDataSource dataSource;
-	
-	static {
-		// database driver
-		dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(driverClassName);
-		dataSource.setUsername(username);
-		dataSource.setPassword(password);
-		dataSource.setUrl(url);
-		dataSource.setMaxTotal(5); // only allow 5 active connections at the same time
-		dataSource.setMaxIdle(5);  // only allow 5 idle connections at all time
-		dataSource.setMaxWaitMillis(500); //wait max 500 ms for a connection to be returned to the pool before throwing an exception
-		dataSource.setDefaultAutoCommit(true);
-	}
-	
-	
+	private String driverClassName;
+	private String username;
+	private String password;
+	private String url;
+	private BasicDataSource dataSource;
+		
 	/**
 	 * return a test connection factory instance
 	 * @return
 	 */
-	public static ConnectionFactory getInstance() {
+	public synchronized static ConnectionFactory getInstance() {
+		if (instance == null)
+			instance = new TestConnectionFactory();
+		
 		return instance;
 	}
 	
@@ -70,6 +59,17 @@ public class TestConnectionFactory implements ConnectionFactory {
 					driverClassName = username = password = url = null;
 					System.err.println("Missing some properties for the TestDB configuration");
 				}
+				
+				dataSource = new BasicDataSource();
+				dataSource.setDriverClassName(driverClassName);
+				dataSource.setUsername(username);
+				dataSource.setPassword(password);
+				dataSource.setUrl(url);
+				dataSource.setMaxTotal(5); // only allow 5 active connections at the same time
+				dataSource.setMaxIdle(5);  // only allow 5 idle connections at all time
+				dataSource.setMaxWaitMillis(500); //wait max 500 ms for a connection to be returned to the pool before throwing an exception
+				dataSource.setDefaultAutoCommit(true);
+
 			} else {
 				driverClassName = username = password = url = null;
 				System.err.println("TestDB configuration file '" + propFileName + "' not found");
@@ -90,30 +90,25 @@ public class TestConnectionFactory implements ConnectionFactory {
 	
 	@Override
 	public Connection getConnection() throws SQLException {
-		Connection c = null;
+		Connection conn = null;
 		try {
-			c = dataSource != null? dataSource.getConnection() : null;
+			conn = dataSource != null? dataSource.getConnection() : null;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return c;
-		//return dataSource != null? dataSource.getConnection() : null;
+		return conn;
 	}
 
 
 	@Override
 	public void close() throws SQLException {
-		// data source is initialized once in a static block
-		// so it's safe to check for null without synchronization
-		if (dataSource != null) {
-			synchronized (dataSource) {
-				// according to api, calling close on a closed data source has no affect.
+		synchronized(this) {
+			if (instance != null) {
 				dataSource.close();
+				dataSource = null;
+				instance = null;
 			}
-		}		
+			
+		}
 	}
-
-	
-	
-
 }

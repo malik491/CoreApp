@@ -6,9 +6,6 @@ package edu.depaul.se491.loaders;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.depaul.se491.beans.UserBean;
 import edu.depaul.se491.utils.dao.DBLabels;
 
@@ -25,21 +22,6 @@ public class UserBeanLoader {
 	
 	public UserBeanLoader() {
 		loader = new AddressBeanLoader(); 
-	}
-	
-	/**
-	 * return a list of User beans using users data in the ResultSet (rows)
-	 * Empty list is return if the ResultSet is empty
-	 * The ResultSet cursor should be positioned before the first row before calling
-	 * this method. Otherwise, the first row will not be included in the result.
-	 * @param rs a ResultSet containing Users data from the database
-	 * @return list of Users
-	 */
-	public List<UserBean> loadList(ResultSet rs) throws SQLException {
-		List<UserBean> users = new ArrayList<>();
-		while (rs.next())
-			users.add(loadSingle(rs));
-		return users;
 	}
 
 	/**

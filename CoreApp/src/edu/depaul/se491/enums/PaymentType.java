@@ -10,5 +10,15 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum PaymentType {
-	CASH, CREDIT_CARD;
+	CASH("Cash"), CREDIT_CARD("Credit Card");
+	
+	private String name;
+	PaymentType(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

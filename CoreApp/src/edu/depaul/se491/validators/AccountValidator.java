@@ -12,7 +12,7 @@ import edu.depaul.se491.beans.AccountBean;
 public class AccountValidator extends BeanValidator {
 
 	public boolean validate(AccountBean bean) {
-		boolean isValid = isValidObject(bean, "Invalid Account (Null)");
+		boolean isValid = isValidObject(bean);
 
 		if(isValid){
 			isValid  = isValidCredentials(bean);
@@ -25,16 +25,16 @@ public class AccountValidator extends BeanValidator {
 	
 	private boolean isValidCredentials(AccountBean bean)
 	{
-		return isValidObject(bean.getCredentials(), "Invalid Account Credentials (Null)");
+		return isValidObject(bean.getCredentials());
 	}
 	
 	private boolean isValidUser(AccountBean bean)
 	{
-		return isValidObject(bean.getUser(), "Invalid Account User (Null)");
+		return isValidObject(bean.getUser());
 	}
 	
 	private boolean isValidRole(AccountBean bean)
 	{
-		return isValidObject(bean.getRole(), "Invalid Account Role (Null)");
+		return isValidObject(bean.getRole());
 	}
 }

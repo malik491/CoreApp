@@ -3,37 +3,13 @@
  */
 package edu.depaul.se491.validators;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Malik
  *
  */
-public abstract class BeanValidator {
-	private List<String> messages;
-	
-	protected BeanValidator() {
-		messages = new ArrayList<String>();
-	}
-	
-	/**
-	 * return validation error messages
-	 * @return
-	 */
-	public List<String> getValidationMessages() {
-		return messages;
-	}
-	
-	/**
-	 * add validation error message
-	 * @param message
-	 */
-	protected void addMessage(String message) {
-		messages.add(message);
-	}
+class BeanValidator {
 	
 	/**
 	 * return true if (s is not null, s is not blank string (empty or all white spaces), and ( min <= s length <= max)
@@ -44,13 +20,10 @@ public abstract class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	protected boolean isValidString(String s, int minLength, int maxLength, String invalidMsg) {
+	public boolean isValidString(String s, int minLength, int maxLength) {
 		boolean isValid = StringUtils.isNotBlank(s);
 		isValid &= isValidLength(s, minLength, maxLength);
-		
-		if (!isValid)
-			addMessage(invalidMsg);		
-		
+
 		return isValid;		
 	}
 	
@@ -60,7 +33,7 @@ public abstract class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	protected boolean isValidNumbericString(String s, String invalidMsg) {
+	public boolean isValidNumbericString(String s) {
 		boolean isValid = StringUtils.isNotBlank(s);
 		
 		if (isValid) {
@@ -71,9 +44,6 @@ public abstract class BeanValidator {
 				}
 			}
 		}
-		
-		if (!isValid)
-			addMessage(invalidMsg);		
 		
 		return isValid;
 	}
@@ -86,13 +56,8 @@ public abstract class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	protected boolean isValidId(long id, boolean isNewBean, String invalidMsg) {
-		boolean isValid = isNewBean? (id == 0) : (id > 0);
-		
-		if (!isValid)
-			addMessage(invalidMsg);
-		
-		return isValid;
+	public boolean isValidId(long id, boolean isNewBean) {
+		return isNewBean? (id == 0) : (id > 0);
 	}
 	
 	/**
@@ -101,16 +66,10 @@ public abstract class BeanValidator {
 	 * @param value
 	 * @param min
 	 * @param max
-	 * @param invalidMsg
 	 * @return
 	 */
-	protected boolean isValidValue(double value, double min, double max, String invalidMsg) {
-		boolean isValid = isValidValue(value, min, max);
-
-		if (!isValid)
-			addMessage(invalidMsg);
-		
-		return isValid;
+	public boolean isValidValue(double value, double min, double max) {
+		return Double.compare(min, value) <= 0 && Double.compare(value, max) <= 0;
 	}
 
 	/**
@@ -122,13 +81,8 @@ public abstract class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	protected boolean isValidValue(int value, int min, int max, String invalidMsg) {
-		boolean isValid = isValidValue(value, min, max);
-
-		if (!isValid)
-			addMessage(invalidMsg);
-		
-		return isValid;
+	public boolean isValidValue(int value, int min, int max) {
+		return min <= value && value <= max;		
 	}
 	
 	/**
@@ -137,13 +91,8 @@ public abstract class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	protected boolean isValidObject(Object obj, String invalidMsg) {
-		boolean isValid = (obj != null);
-		
-		if (!isValid)
-			addMessage(invalidMsg);		
-		
-		return isValid;		
+	public boolean isValidObject(Object obj) {
+		return (obj != null);
 	}
 	
 	
@@ -154,29 +103,7 @@ public abstract class BeanValidator {
 	 * @param maxLength
 	 * @return
 	 */
-	private boolean isValidLength(String s, int minLength, int maxLength) {
+	public boolean isValidLength(String s, int minLength, int maxLength) {
 		return s == null? false : (minLength <= s.length() && s.length() <= maxLength);
-	}
-	
-	/**
-	 * return true is (min <= value <= max).
-	 * @param value
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	private boolean isValidValue(double value, double min, double max) {
-		return Double.compare(min, value) <= 0 && Double.compare(value, max) <= 0;
-	}
-
-	/**
-	 *  return true is (min <= value <= max).
-	 * @param value
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	private boolean isValidValue(int value, int min, int max) {
-		return min <= value && value <= max;
 	}
 }

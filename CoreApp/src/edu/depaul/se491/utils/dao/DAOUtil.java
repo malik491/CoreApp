@@ -26,8 +26,8 @@ public abstract class DAOUtil {
 		long newId = -1;
 		ResultSet addressKey = ps.getGeneratedKeys();
 		newId = addressKey.next()? addressKey.getLong(1) : -1; 					
-		if (newId == -1)
-			throw new SQLException("DAOUtil.getAutGeneratedKey(): can't get generated key for newly inserted item.");
+		if (newId <= 0)
+			throw new SQLException("getGeneratedKeys() returned 0 (SQL NULL) or couldn't get auto generated key (resultSet.next() is false)");
 		return newId;
 	}
 	

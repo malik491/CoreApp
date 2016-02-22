@@ -24,10 +24,7 @@ public class AddressBeanTest {
 		assertNull(bean.getCity());
 		assertEquals(0, bean.getId());
 		assertNull(bean.getState());
-	}
-
-	@Test
-	public void testAddressBeanLongStringStringStringAddressStateString() {
+		
 		String line1 = "line1";
 		String line2 = "line2";
 		String zipcode = "zipcode";
@@ -43,7 +40,6 @@ public class AddressBeanTest {
 		assertNotNull(bean.getCity());
 		assertEquals(id, bean.getId());
 		assertNotNull(bean.getState());
-		
 	}
 
 	@Test
@@ -191,24 +187,4 @@ public class AddressBeanTest {
 		bean.setZipcode(zipcode);
 		assertNull(bean.getZipcode());
 	}
-
-	@Test
-	public void testEqualsObject() {
-		AddressBean bean2  = new AddressBean();
-		assertTrue(bean.equals(bean2));
-		
-		String line1 = "line1";
-		String line2 = "line2";
-		String zipcode = "zipcode";
-		String city = "chicago";
-		AddressState state = AddressState.IL;
-		long id = 1;
-		
-		bean = new AddressBean(id,line1, line2, city, state, zipcode);
-		assertFalse(bean.equals(bean2));
-		bean2 = new AddressBean(id,line1, line2, city, state, zipcode);
-		assertTrue(bean.equals(bean2));
-		
-	}
-
 }

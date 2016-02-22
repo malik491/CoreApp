@@ -15,7 +15,7 @@ public class MenuItemValidator extends BeanValidator {
 
 		
 	public boolean validate(MenuItemBean bean, boolean isNewMenuItem) {
-		boolean isValid = isValidObject(bean, "Invalid MenuItem (Null)");
+		boolean isValid = isValidObject(bean);
 
 		if(isValid){
 			isValid  =  validateId(bean.getId(), isNewMenuItem);
@@ -29,32 +29,27 @@ public class MenuItemValidator extends BeanValidator {
 	}
 	
 	public boolean validateId(Long menuItemId, boolean isNewMenuItem) {
-		boolean isValid = isValidObject(menuItemId, "Invalid menu item id (Null Long object)");
+		boolean isValid = isValidObject(menuItemId);
 		
-		if (isValid) {
-			String invalidMsg = String.format("Invalid MenuItem Id %s", isNewMenuItem? " (for new MenuItem)": "");
-			isValid = isValidId(menuItemId, isNewMenuItem, invalidMsg);			
-		}
+		if (isValid)
+			isValid = isValidId(menuItemId, isNewMenuItem);
 		
 		return isValid;
 	}
 
-	private boolean isValidName(MenuItemBean bean)
-	{
-		return isValidString(bean.getName(), ParamLengths.MenuItem.MIN_NAME, ParamLengths.MenuItem.MAX_NAME, "Invalid MenuItem Name");
+	private boolean isValidName(MenuItemBean bean) {
+		return isValidString(bean.getName(), ParamLengths.MenuItem.MIN_NAME, ParamLengths.MenuItem.MAX_NAME);
 	}
 	
-	private boolean isValidDescription(MenuItemBean bean)
-	{
-		return isValidString(bean.getDescription(), ParamLengths.MenuItem.MIN_DESC, ParamLengths.MenuItem.MAX_DESC, "Invalid MenuItem Description");
+	private boolean isValidDescription(MenuItemBean bean) {
+		return isValidString(bean.getDescription(), ParamLengths.MenuItem.MIN_DESC, ParamLengths.MenuItem.MAX_DESC);
 	}
 		
-	private boolean isValidPrice(MenuItemBean bean)
-	{
-		return isValidValue(bean.getPrice(), ParamValues.MenuItem.MIN_PRICE, ParamValues.MenuItem.MAX_PRICE, "Invalid MenuItem Price");
+	private boolean isValidPrice(MenuItemBean bean) {
+		return isValidValue(bean.getPrice(), ParamValues.MenuItem.MIN_PRICE, ParamValues.MenuItem.MAX_PRICE);
 	}	
 	
 	private boolean isValidCategoryItem(MenuItemBean bean) {
-		return isValidObject(bean.getItemCategory(), "Invalid MenuItem category (Null)");
+		return isValidObject(bean.getItemCategory());
 	}
 }

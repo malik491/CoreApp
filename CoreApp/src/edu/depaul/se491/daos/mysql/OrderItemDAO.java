@@ -190,7 +190,7 @@ public class OrderItemDAO {
 	 * @return true if all items are deleted (deletedCount = itemsCount)
 	 * @throws SQLException
 	 */
-	public boolean transactionDelete(Connection conn, long orderId, int itemsCount) throws DBException {
+	public boolean transactionDeleteAll(Connection conn, long orderId, int itemsCount) throws DBException {
 		PreparedStatement ps = null;
 		boolean deleted = false;
 		try {

@@ -23,6 +23,23 @@ public class PaymentBeanTest {
 		assertNull(bean.getType());
 		assertEquals(0, bean.getId());
 		assertTrue(bean.getTotal()==0);
+		
+		bean = new PaymentBean(0L, 1.00, PaymentType.CASH, null, null);
+		assertNotNull(bean);
+		assertEquals(0L, bean.getId());
+		assertEquals(0, Double.compare(bean.getTotal(), 1.00));
+		assertEquals(PaymentType.CASH, bean.getType());
+		assertNull(bean.getCreditCard());
+		assertNull(bean.getTransactionConfirmation());
+		
+		bean = new PaymentBean(0L, 1.00, PaymentType.CREDIT_CARD, new CreditCardBean(), "cc-payment-confirmation");
+		assertNotNull(bean);
+		assertEquals(0L, bean.getId());
+		assertEquals(0, Double.compare(bean.getTotal(), 1.00));
+		assertEquals(PaymentType.CREDIT_CARD, bean.getType());
+		assertNotNull(bean.getCreditCard());
+		assertEquals("cc-payment-confirmation", bean.getTransactionConfirmation());
+		
 	}
 
 	@Test

@@ -22,36 +22,12 @@ public class AccountBeanTest {
 		assertEquals(null, account.getCredentials());
 		assertEquals(null, account.getRole());
 		assertEquals(null, account.getUser());
-	}
-
-	@Test
-	public void testAccountBeanCredentialsBeanUserBeanAccountRole() {
 		
-		CredentialsBean validCred = new CredentialsBean();
-		UserBean validUser = new UserBean();
-		AccountRole validRole = AccountRole.ADMIN;
-		
-		account.setCredentials(validCred);
-		account.setUser(validUser);
-		account.setRole(validRole);
-
-		assertEquals(validCred, account.getCredentials());
-		assertEquals(validUser, account.getUser());
-		assertTrue(validRole == account.getRole());
-	
-		
-		CredentialsBean invalidCred = null;
-		UserBean invalidUser = null;
-		AccountRole invalidRole = null;
-
-		account.setCredentials(invalidCred);
-		account.setUser(invalidUser);
-		account.setRole(invalidRole);
-
-		assertEquals(invalidCred, account.getCredentials());
-		assertEquals(invalidUser, account.getUser());
-		assertTrue(invalidRole == account.getRole());
-	
+		account = new AccountBean(new CredentialsBean(), new UserBean(), AccountRole.ADMIN);
+		assertNotNull(account);
+		assertNotNull(account.getCredentials());
+		assertNotNull(account.getUser());
+		assertNotNull(account.getRole());
 	}
 
 	@Test

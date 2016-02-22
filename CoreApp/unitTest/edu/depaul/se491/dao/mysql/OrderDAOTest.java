@@ -28,6 +28,11 @@ import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.test.DBBuilder;
 import edu.depaul.se491.test.TestDataGenerator;
 
+/**
+ * 
+ * @author Malik
+ *
+ */
 public class OrderDAOTest {
 	private static ConnectionFactory connFactory;
 	private static DBBuilder dbBuilder;

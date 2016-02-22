@@ -7,7 +7,7 @@ public class CredentialsValidator extends BeanValidator {
 
 	
 	public boolean validate(CredentialsBean bean) {
-		boolean isValid = isValidObject(bean, "Invalid CredentialsBean (Null)");
+		boolean isValid = isValidObject(bean);
 	
 		if(isValid){
 			isValid  = isValidUsername(bean.getUsername());
@@ -17,13 +17,11 @@ public class CredentialsValidator extends BeanValidator {
 		return isValid;
 	}
 	
-	public boolean isValidUsername(String username)
-	{
-		return isValidString(username, ParamLengths.Credentials.MIN_USERNAME, ParamLengths.Credentials.MAX_USERNAME, "Invalid Credentials username");
+	public boolean isValidUsername(String username) {
+		return isValidString(username, ParamLengths.Credentials.MIN_USERNAME, ParamLengths.Credentials.MAX_USERNAME);
 	}
 	
-	private boolean isValidPassword(CredentialsBean bean)
-	{
-		return isValidString(bean.getPassword(), ParamLengths.Credentials.MIN_PASSWORD, ParamLengths.Credentials.MAX_PASSWORD, "Invalid Credentials password");
+	private boolean isValidPassword(CredentialsBean bean) {
+		return isValidString(bean.getPassword(), ParamLengths.Credentials.MIN_PASSWORD, ParamLengths.Credentials.MAX_PASSWORD);
 	}
 }

@@ -7,13 +7,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-
 import com.mysql.jdbc.Statement;
 
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.UserBean;
-import edu.depaul.se491.builders.UserBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.exceptions.DBException;
@@ -34,40 +31,6 @@ public class UserDAO {
 		this.connFactory = connFactory;
 		this.addressDAO = daoFactory.getAddressDAO();
 		this.loader = new UserBeanLoader();
-	}
-	
-	/**
-	 * return all users in the database
-	 * Empty list is returned if there are no users in the database
-	 * @return
-	 * @throws SQLException
-	 */
-	public List<UserBean> getAll() throws DBException {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<UserBean> users = null;
-		try {
-			conn = connFactory.getConnection();
-			ps = conn.prepareStatement(SELECT_ALL_QUERY);
-			
-			rs = ps.executeQuery();
-			users = loader.loadList(rs);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} finally {
-			try {
-				DAOUtil.close(rs);
-				DAOUtil.close(ps);
-				DAOUtil.close(conn);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-			}
-		}
-		return users;
 	}
 	
 	/**
@@ -125,10 +88,7 @@ public class UserDAO {
 			boolean added = addedAddress != null;
 			
 			if (added) {
-				// copy old user data
-				addedUser = new UserBuilder(user).build();
-				// set its new address (with id)
-				addedUser.setAddress(addedAddress);
+				addedUser = new UserBean(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), addedAddress);
 				
 				ps = conn.prepareStatement(INSERT_USER_QUERY, Statement.RETURN_GENERATED_KEYS);
 				loader.loadParameters(ps, addedUser, 1);
@@ -227,11 +187,8 @@ public class UserDAO {
 		}
 		return deleted;
 	}
-
 	
-	private static final String SELECT_ALL_QUERY = String.format("SELECT * FROM %s NATURAL JOIN %s", DBLabels.User.TABLE, DBLabels.Address.TABLE);
-	
-	private static final String SELECT_BY_ID_QUERY = String.format("%s WHERE (%s = ?)", SELECT_ALL_QUERY, DBLabels.User.ID);
+	private static final String SELECT_BY_ID_QUERY = String.format("SELECT * FROM %s NATURAL JOIN %s WHERE (%s = ?)", DBLabels.User.TABLE, DBLabels.Address.TABLE, DBLabels.User.ID);
 	
 	private static final String INSERT_USER_QUERY = String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?,?,?,?,?)",
 																DBLabels.User.TABLE, DBLabels.User.F_NAME, DBLabels.User.L_NAME,

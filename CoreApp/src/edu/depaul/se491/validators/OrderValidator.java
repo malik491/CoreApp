@@ -17,7 +17,7 @@ public class OrderValidator extends BeanValidator {
 	
 	
 	public boolean validate(OrderBean bean, boolean isNewOrder) {
-		boolean isValid = isValidObject(bean, "Invalid Order (Null)");
+		boolean isValid = isValidObject(bean);
 
 		if(isValid){
 			isValid  = validateId(bean.getId(), isNewOrder);
@@ -30,25 +30,20 @@ public class OrderValidator extends BeanValidator {
 		
 		if (isValid) {
 			OrderType type = bean.getType();
-			if (type == OrderType.DELIVERY) {
+			if (type == OrderType.DELIVERY)
 				isValid &= isValidAddress(bean);
-			} else {
+			else
 				isValid &= bean.getAddress() == null;
-				if (!isValid)
-					addMessage("Invalid order (only delivery orders can have address and (optional) notification email");
-			}
 		}
 		
 		return isValid;
 	}
 
 	public boolean validateId(Long orderId, boolean isNewOrder) {
-		boolean isValid = isValidObject(orderId, "Invalid order id (Null Long object)");
+		boolean isValid = isValidObject(orderId);
 		
-		if (isValid) {
-			String invalidMsg = String.format("Invalid order id %s", isNewOrder? " (for new order)": "");
-			isValid = isValidId(orderId, isNewOrder, invalidMsg);			
-		}
+		if (isValid)
+			isValid = isValidId(orderId, isNewOrder);
 		
 		return isValid;
 	}
@@ -58,22 +53,22 @@ public class OrderValidator extends BeanValidator {
 	}
 	
 	private boolean isValidStatus(OrderBean bean) {
-		return isValidObject(bean.getStatus(), "Invalid Order Status (Null)");
+		return isValidObject(bean.getStatus());
 	}
 	
 	private boolean isValidType(OrderBean bean) {
-		return isValidObject(bean.getType(), "Invalid Order Type (Null)");
+		return isValidObject(bean.getType());
 	}
 
 	private boolean isValidPayment(OrderBean bean, boolean isNewOrder) {
-		return isValidObject(bean.getPayment(), "Invalid Order Payment (Null)");
+		return isValidObject(bean.getPayment());
 	}
 	
 	private boolean isValidConfirmation(String confiramtion, boolean isNewOrder) {
 		// new confiramtion is generated for new orders so don't check it here
 		boolean isValid = true;
 		if (!isNewOrder) {
-			isValid = isValidString(confiramtion, ParamLengths.Order.MIN_CONFIRMATION, ParamLengths.Order.MAX_CONFIRMATION, "Invalid Order Confirmation");
+			isValid = isValidString(confiramtion, ParamLengths.Order.MIN_CONFIRMATION, ParamLengths.Order.MAX_CONFIRMATION);
 		}
 		return isValid;
 	}	
@@ -81,18 +76,18 @@ public class OrderValidator extends BeanValidator {
 	private boolean isValidOrderItems(OrderBean bean) {
 		OrderItemBean[] items = bean.getOrderItems();
 		
-		boolean isValid = isValidObject(items, "Invalid OrderItems for Order (Null)");
+		boolean isValid = isValidObject(items);
 		
 		if (isValid) {
 			int itemsCount = items.length;
-			isValid  = isValidValue(itemsCount, ParamValues.Order.MIN_ORDER_ITEMS, ParamValues.Order.MAX_ORDER_ITEMS, "Invalid OrderItems for Order (0 or too many items)");
+			isValid  = isValidValue(itemsCount, ParamValues.Order.MIN_ORDER_ITEMS, ParamValues.Order.MAX_ORDER_ITEMS);
 		}
 		
 		return isValid;
 	}
 	
 	private boolean isValidAddress(OrderBean bean) {
-		return isValidObject(bean.getAddress(), "Invalid order address (missing delivery address)");
+		return isValidObject(bean.getAddress());
 	}
 
 }

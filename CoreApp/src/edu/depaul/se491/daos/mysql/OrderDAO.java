@@ -14,7 +14,6 @@ import java.util.List;
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.PaymentBean;
-import edu.depaul.se491.builders.OrderBuilder;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.enums.OrderStatus;
@@ -171,7 +170,7 @@ public class OrderDAO {
 		OrderBean result = null;
 		try {
 			boolean added = false;
-			OrderBean addedOrder = new OrderBuilder(order).build();
+			OrderBean addedOrder = copyOrder(order);
 			
 			/* Transaction :
 			 * - add payment
@@ -268,7 +267,7 @@ public class OrderDAO {
 			ps.setLong(1, orderId);
 
 			// delete order items first (have foreign key to order)
-			deleted = orderItemDAO.transactionDelete(conn, orderId, order.getOrderItems().length);
+			deleted = orderItemDAO.transactionDeleteAll(conn, orderId, order.getOrderItems().length);
 
 			// delete order (has foreign key to address)
 			if (deleted)
@@ -322,7 +321,7 @@ public class OrderDAO {
 			final long orderId = order.getId();
 			final OrderBean oldOrder = get(orderId);
 			
-			OrderBean updatedOrderCopy = new OrderBuilder(order).build(); // copy
+			OrderBean updatedOrderCopy = copyOrder(order); // copy
 			
 			/*
 			 * transaction:
@@ -485,7 +484,19 @@ public class OrderDAO {
 		return !isSame;
 	}
 	
-	
+	private OrderBean copyOrder(final OrderBean order) {
+		OrderBean bean = new OrderBean();
+		
+		bean.setId(order.getId());
+		bean.setType(order.getType());
+		bean.setStatus(order.getStatus());
+		bean.setConfirmation(order.getConfirmation());
+		bean.setTimestamp(order.getTimestamp());
+		bean.setPayment(order.getPayment());
+		bean.setOrderItems(order.getOrderItems());
+		bean.setAddress(order.getAddress());
+		return bean;
+	}
 	
 	private static final String SELECT_ALL_QUERY = 
 			String.format("SELECT o.*, p.*, a.%s, a.%s, a.%s, a.%s, a.%s "
