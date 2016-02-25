@@ -1,5 +1,6 @@
 /**
- * A production DAOFactory (uses production connection factory) 
+ * Production DAO Factory 
+ * (uses Production Connection Factory) 
  */
 package edu.depaul.se491.daos;
 
@@ -12,7 +13,7 @@ public class ProductionDAOFactory extends DAOFactory {
 	
 	
 	/**
-	 * return a production DAOFactory instance
+	 * return a Production DAOFactory instance
 	 * @return
 	 */
 	public static DAOFactory getInstance() {

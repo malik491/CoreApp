@@ -1,6 +1,3 @@
-/**
- * Menu Data Access Object (DAO)
- */
 package edu.depaul.se491.daos.mysql;
 
 import java.sql.Connection;
@@ -13,14 +10,14 @@ import java.util.List;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.MenuItemBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
+ * Menu Data Access Object (DAO)
+ * 
  * @author Malik
- *
  */
 public class MenuItemDAO {
 	private ConnectionFactory connFactory;
@@ -32,12 +29,11 @@ public class MenuItemDAO {
 	}
 	
 	/**
-	 * return all menu items in the database
-	 * Empty list is returned if there are no menu items in the database
+	 * return all menu items or empty list
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<MenuItemBean> getAll() throws DBException {
+	public List<MenuItemBean> getAll() throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -51,29 +47,26 @@ public class MenuItemDAO {
 			menu = loader.loadList(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return menu;
 	}
 	
 	/**
-	 * return menuItem associated with the given id
-	 * Null is returned if there are no menuItem for the given id
+	 * return a menu item with the given id or null
 	 * @param menuItemId
 	 * @return
 	 * @throws SQLException
 	 */
-	public MenuItemBean get(long menuItemId) throws DBException {
+	public MenuItemBean get(long menuItemId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -89,28 +82,26 @@ public class MenuItemDAO {
 				menuItem = loader.loadSingle(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return menuItem;
 	}
 	
 	/**
-	 * add a menu item to the database using data in the menuItemBean
-	 * @param menuItem menuItem data (excluding the id)
-	 * @return
+	 * insert a new menu item
+	 * @param menuItem
+	 * @return newly added menu item 
 	 * @throws SQLException
 	 */
-	public MenuItemBean add(MenuItemBean menuItem) throws DBException {
+	public MenuItemBean add(MenuItemBean menuItem) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		MenuItemBean addedMenuItem = null;
@@ -126,27 +117,25 @@ public class MenuItemDAO {
 				addedMenuItem = new MenuItemBean(menuItemId, menuItem.getName(), menuItem.getDescription(), menuItem.getPrice(), menuItem.getItemCategory());
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return addedMenuItem;
 	}
 	
 	/**
-	 * update an existing menuItem with new data
-	 * @param menuItem updated menuItem data
+	 * update a menu item
+	 * @param menuItem
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean update(MenuItemBean menuItem) throws DBException {
+	public boolean update(MenuItemBean menuItem) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		boolean updated = false;
@@ -161,22 +150,27 @@ public class MenuItemDAO {
 			updated = DAOUtil.validUpdate(ps.executeUpdate()); 
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return updated;
 	}
 	
-	// not supported
-	public boolean delete(long menuItemId) throws DBException {
+	/**
+	 * delete a menu item
+	 * NOTE: deleting menu item is not supported at this time (based on DB design)
+	 * Return False ALWAYS.
+	 * @param menuItemId
+	 * @return false (always)
+	 * @throws SQLException
+	 */
+	public boolean delete(long menuItemId) throws SQLException {
 		return false;
 	}
 	

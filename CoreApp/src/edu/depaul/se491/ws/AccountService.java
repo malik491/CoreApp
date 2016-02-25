@@ -16,6 +16,8 @@ import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.RequestBean;
+import edu.depaul.se491.daos.DAOFactory;
+import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.models.AccountModel;
 import edu.depaul.se491.validators.CredentialsValidator;
 
@@ -26,6 +28,16 @@ import edu.depaul.se491.validators.CredentialsValidator;
 @Path("/account")
 public class AccountService {
 
+	private static DAOFactory daoFactory;
+	
+	public AccountService() {
+		daoFactory = ProductionDAOFactory.getInstance();
+	}
+
+	public AccountService(DAOFactory factory) {
+		daoFactory = factory;
+	}
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -35,7 +47,7 @@ public class AccountService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			AccountModel model = new AccountModel(request.getCredentials());	
+			AccountModel model = new AccountModel(daoFactory, request.getCredentials());	
 			AccountBean accountBean = model.read(request.getExtra());
 			if (accountBean == null) {
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -58,7 +70,7 @@ public class AccountService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			AccountModel model = new AccountModel(request.getCredentials());	
+			AccountModel model = new AccountModel(daoFactory, request.getCredentials());	
 			AccountBean createdAccount  = model.create(request.getExtra());
 			if (createdAccount == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -83,7 +95,7 @@ public class AccountService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			AccountModel model = new AccountModel(request.getCredentials());
+			AccountModel model = new AccountModel(daoFactory, request.getCredentials());
 			Boolean updated  = model.update(request.getExtra());
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -107,7 +119,7 @@ public class AccountService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			AccountModel model = new AccountModel(request.getCredentials());	
+			AccountModel model = new AccountModel(daoFactory, request.getCredentials());	
 			Boolean deleted  = model.delete(request.getExtra());
 			if (deleted == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -130,7 +142,7 @@ public class AccountService {
 		boolean isValid = isValidRequest(request, true);
 		
 		if (isValid) {	
-			AccountModel model = new AccountModel(request.getCredentials());	
+			AccountModel model = new AccountModel(daoFactory, request.getCredentials());	
 			List<AccountBean> accounts  = model.readAll();
 			if (accounts == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());

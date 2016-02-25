@@ -1,6 +1,3 @@
-/**
- * OrderItem Data Access Object (DAO)
- */
 package edu.depaul.se491.daos.mysql;
 
 import java.sql.Connection;
@@ -12,32 +9,36 @@ import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.OrderItemBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
+ * OrderItem Data Access Object (DAO)
+ * 
  * @author Malik
- *
  */
 public class OrderItemDAO {
 	private final ConnectionFactory connFactory;
 	private final OrderItemBeanLoader loader;
 	
+	/**
+	 * construct OrderItemDAO
+	 * @param daoFactory
+	 * @param connFactory
+	 */
 	public OrderItemDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.loader = new OrderItemBeanLoader();
 	}
 	
 	/**
-	 * return a list of all order items for a given order (specified by orderId)
-	 * Empty List is returned if there are no order items for the given order
-	 * @param orderId order id associated with order items
+	 * return order items for the given order or empty list
+	 * @param orderId
 	 * @return
 	 * @throws SQLException
 	 */
-	public OrderItemBean[] getOrderItems(final long orderId) throws DBException  {
+	public OrderItemBean[] getOrderItems(final long orderId) throws SQLException  {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -53,30 +54,27 @@ public class OrderItemDAO {
 			orderItems = loader.loadList(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return orderItems;
 	}
 	
 	/**
-	 * Insert a list of order items for the given order as a part of a database transaction
-	 * @param conn connection for this transaction
-	 * @param orderId order id associated with items param
-	 * @param items order items to add
-	 * @return true if all items are added
+	 * insert order items for the given order using the given connection (transaction)
+	 * @param conn
+	 * @param order
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionAdd(final Connection conn, final OrderBean order) throws DBException {
+	public boolean transactionAdd(final Connection conn, final OrderBean order) throws SQLException {
 		PreparedStatement ps = null;
 		boolean added = false;
 		try {
@@ -97,29 +95,26 @@ public class OrderItemDAO {
 			added = ps.executeUpdate() == itemsCount;
 					
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return added;
 	}
 
 	/**
-	 * update order items quantities as a part of a database transaction
-	 * order item with quantity <= 0 will be deleted
-	 * @param conn connection for this transaction
-	 * @param orderId order id associated with items param
-	 * @param items order items to update
-	 * @return true if all items are updated
+	 * update order items (quantity and status) for the given order using the given connection (transaction)
+	 * order items with quantity = 0 are deleted
+	 * @param conn
+	 * @param order
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionUpdate(Connection conn, final OrderBean order) throws DBException {
+	public boolean transactionUpdate(Connection conn, final OrderBean order) throws SQLException {
 		Statement batchedUpateStatement = null;
 		
 		boolean updated = false;
@@ -168,29 +163,26 @@ public class OrderItemDAO {
 			updated = executeBatch(batchedUpateStatement);
 					
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(batchedUpateStatement);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return updated;
 	}
 	
-	
 	/**
-	 * delete all order items for a given order as a part of a database transaction
-	 * @param conn connection for this transaction
-	 * @param orderId order id associated with the items
-	 * @param itemsCount number of items for the order
-	 * @return true if all items are deleted (deletedCount = itemsCount)
+	 * delete order items for the given order id using the given connection (transaction)
+	 * @param conn
+	 * @param orderId
+	 * @param itemsCount
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionDeleteAll(Connection conn, long orderId, int itemsCount) throws DBException {
+	public boolean transactionDeleteAll(Connection conn, long orderId, int itemsCount) throws SQLException {
 		PreparedStatement ps = null;
 		boolean deleted = false;
 		try {
@@ -199,14 +191,12 @@ public class OrderItemDAO {
 			deleted = ps.executeUpdate() == itemsCount;
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return deleted;

@@ -12,13 +12,16 @@ import org.junit.Test;
 
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.UserBean;
+import edu.depaul.se491.daos.BadConnection;
 import edu.depaul.se491.daos.ConnectionFactory;
+import edu.depaul.se491.daos.ExceptionConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 import edu.depaul.se491.daos.TestDAOFactory;
 import edu.depaul.se491.daos.mysql.UserDAO;
 import edu.depaul.se491.enums.AddressState;
 import edu.depaul.se491.test.DBBuilder;
 import edu.depaul.se491.test.TestDataGenerator;
+import edu.depaul.se491.utils.ParamLengths;
 
 /**
  * 
@@ -72,7 +75,7 @@ public class UserDAOTest {
 	}
 
 	@Test
-	public void testGet() {
+	public void testGet() throws SQLException {
 		UserBean user = userDAO.get(1L);
 		assertNotNull(user);
 		
@@ -85,7 +88,7 @@ public class UserDAOTest {
 	}
 
 	@Test
-	public void testTransactionAdd() {
+	public void testTransactionAdd() throws Exception {
 		AddressBean address = new AddressBean(0L, "street address", null, "Chicago", AddressState.IL, "53123");
 		UserBean user = new UserBean(0L, "first name", "last name", "myemail1@gmail.com", "0987654321", address);
 		
@@ -95,15 +98,14 @@ public class UserDAOTest {
 			con = connFactory.getConnection();
 			addedUser = userDAO.transactionAdd(con, user);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionAdd()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
@@ -123,7 +125,7 @@ public class UserDAOTest {
 	}
 
 	@Test
-	public void testTransactionUpdate() {
+	public void testTransactionUpdate() throws SQLException {
 		UserBean oldUser = userDAO.get(1L);
 		oldUser.setFirstName("updated fname");
 		oldUser.setLastName("updated lname");
@@ -136,15 +138,14 @@ public class UserDAOTest {
 			con = connFactory.getConnection();
 			updated = userDAO.transactionUpdate(con, oldUser);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionUpdate()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
@@ -163,7 +164,7 @@ public class UserDAOTest {
 	}
 
 	@Test
-	public void testTransactionDelete() {
+	public void testTransactionDelete() throws SQLException {
 		long id = -1L;
 		
 		Connection con = null;
@@ -176,21 +177,106 @@ public class UserDAOTest {
 			UserBean newUser = userDAO.transactionAdd(con, user);
 			id = newUser.getId();
 			deleted = userDAO.transactionDelete(con, newUser);
-		} catch (Exception e) {
-			fail("exception in testTransactionUpdate()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
 		
 		assertTrue(deleted);
 		assertNull(userDAO.get(id));
+	}
+	
+	
+	@Test
+	public void testExceptions() throws SQLException {
+		UserDAO dao = new TestDAOFactory(new ExceptionConnectionFactory()).getUserDAO();
+		
+		try {
+			dao.get(1L);
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+		
+		try {
+			dao.transactionAdd(new BadConnection(), new UserBean());
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+
+		try {
+			dao.transactionDelete(new BadConnection(), new UserBean());
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+
+		try {
+			dao.transactionUpdate(new BadConnection(), new UserBean());
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+		
+		
+		Connection conn = null;
+		try {
+			UserBean oldUser = userDAO.get(1L);
+			
+			StringBuilder sb = new StringBuilder();
+			for (int i=0; i < ParamLengths.User.MAX_F_NAME + 1; i++)
+				sb.append("x");
+			
+			oldUser.setFirstName(sb.toString());
+			
+			conn = connFactory.getConnection();
+			conn.setAutoCommit(false);
+			
+			userDAO.transactionUpdate(conn, oldUser);
+			
+			fail("No Exception Thrown");			
+		} catch (SQLException e) {
+			if (conn == null) {
+				throw e;
+			} else {
+				try {
+					conn.rollback();
+					conn.close();
+				} catch (SQLException e1) {
+					throw e1;
+				}
+			}
+		}
+		
+		try {
+			UserBean user = new UserBean(0L, "firstName", "lastName", "myemail@Email", "1234567890", new AddressBean(0L, "line 1", "line 2", "City", AddressState.IL, "12345"));
+			
+			StringBuilder sb = new StringBuilder();
+			for (int i=0; i < ParamLengths.User.MAX_PHONE + 1; i++)
+				sb.append("x");
+			
+			user.setPhone(sb.toString());
+			
+			conn = connFactory.getConnection();
+			conn.setAutoCommit(false);
+			
+			userDAO.transactionAdd(conn, user);
+			
+			fail("No Exception Thrown");			
+		} catch (Exception e) {
+			if (conn == null) {
+				throw e;
+			} else {
+				try {
+					conn.rollback();
+					conn.close();
+				} catch (SQLException e1) {
+					throw e1;
+				}
+			}
+		}
+		
+		assertTrue(true);
 	}
 
 }

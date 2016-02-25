@@ -1,5 +1,5 @@
 /**
- * Order type
+ * Order Type
  */
 package edu.depaul.se491.enums;
 

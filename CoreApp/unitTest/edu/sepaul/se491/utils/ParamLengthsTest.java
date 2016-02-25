@@ -9,7 +9,14 @@ import edu.depaul.se491.utils.ParamLengths;
 public class ParamLengthsTest {
 
 	@Test
+	public void testParamLengths() {
+		assertNotNull(new ParamLengths());
+	}
+	
+	@Test
 	public void testAddressLengths() {
+		assertNotNull(new ParamLengths.Address());
+		
 		assertEquals(1, ParamLengths.Address.MIN_LINE1);
 		assertEquals(0, ParamLengths.Address.MIN_LINE2);
 		assertEquals(1, ParamLengths.Address.MIN_CITY);
@@ -23,6 +30,8 @@ public class ParamLengthsTest {
 
 	@Test
 	public void testCreditCardLengths() {
+		assertNotNull(new ParamLengths.CreditCard());
+		
 		assertEquals(12, ParamLengths.CreditCard.MIN_NUMBER);
 		assertEquals(3, ParamLengths.CreditCard.MIN_HOLDER_NAME);
 
@@ -32,6 +41,8 @@ public class ParamLengthsTest {
 	
 	@Test
 	public void testCredentialsLengths() {
+		assertNotNull(new ParamLengths.Credentials());
+		
 		assertEquals(3, ParamLengths.Credentials.MIN_USERNAME);
 		assertEquals(3, ParamLengths.Credentials.MIN_PASSWORD);
 
@@ -41,6 +52,8 @@ public class ParamLengthsTest {
 
 	@Test
 	public void testMenuItemLengths() {
+		assertNotNull(new ParamLengths.MenuItem());
+		
 		assertEquals(1, ParamLengths.MenuItem.MIN_NAME);
 		assertEquals(1, ParamLengths.MenuItem.MIN_DESC);
 
@@ -50,18 +63,24 @@ public class ParamLengthsTest {
 
 	@Test
 	public void testOrderLengths() {
+		assertNotNull(new ParamLengths.Order());
+		
 		assertEquals(1, ParamLengths.Order.MIN_CONFIRMATION);
 		assertEquals(50, ParamLengths.Order.MAX_CONFIRMATION);
 	}
 	
 	@Test
 	public void testPaymentLengths() {
+		assertNotNull(new ParamLengths.Payment());
+		
 		assertEquals(1, ParamLengths.Payment.MIN_TRANSACTION_CONFORMATION);
 		assertEquals(50, ParamLengths.Payment.MAX_TRANSACTION_CONFORMATION);
 	}
 	
 	@Test
 	public void testUserLengths() {
+		assertNotNull(new ParamLengths.User());
+		
 		assertEquals(1, ParamLengths.User.MIN_F_NAME);
 		assertEquals(1, ParamLengths.User.MIN_L_NAME);
 		assertEquals(5, ParamLengths.User.MIN_EMAIL);

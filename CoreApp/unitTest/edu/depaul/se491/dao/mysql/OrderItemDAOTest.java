@@ -13,7 +13,9 @@ import org.junit.Test;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.OrderItemBean;
+import edu.depaul.se491.daos.BadConnection;
 import edu.depaul.se491.daos.ConnectionFactory;
+import edu.depaul.se491.daos.ExceptionConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 import edu.depaul.se491.daos.TestDAOFactory;
 import edu.depaul.se491.daos.mysql.OrderItemDAO;
@@ -72,7 +74,7 @@ public class OrderItemDAOTest {
 	}
 
 	@Test
-	public void testGetOrderItems() {
+	public void testGetOrderItems() throws SQLException {
 		OrderItemBean[] orderItems = null;
 		orderItems = orderItemDAO.getOrderItems(1L);
 		
@@ -91,41 +93,51 @@ public class OrderItemDAOTest {
 	}
 
 	@Test
-	public void testTransactionAdd() {
+	public void testTransactionAdd() throws SQLException {
+		long orderId = 1;
 		OrderBean order = new OrderBean();
-		order.setId(1L);
-		order.setOrderItems(new OrderItemBean[]{ new OrderItemBean(new MenuItemBean(3, null, null, 0, null), 10, OrderItemStatus.READY)});
+		order.setId(orderId);
+		order.setOrderItems(
+				new OrderItemBean[]{ 
+						new OrderItemBean(new MenuItemBean(3, null, null, 0, null), 3, OrderItemStatus.NOT_READY),
+						new OrderItemBean(new MenuItemBean(4, null, null, 0, null), 4, OrderItemStatus.NOT_READY)
+				});
 		
 		Connection con = null;
-		boolean added = false;
 		try {
 			con = connFactory.getConnection();
-			added = orderItemDAO.transactionAdd(con, order);
+			boolean added = orderItemDAO.transactionAdd(con, order);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionAdd()");
-			e.printStackTrace();
+			assertTrue(added);
+			OrderItemBean[] orderItems = orderItemDAO.getOrderItems(orderId);
+			assertNotNull(orderItems);
+			assertEquals(4, orderItems.length);
+			for (int i=2; i < 4; i++) {
+				assertNotNull(orderItems[i].getMenuItem());
+				assertEquals(i+1, orderItems[i].getMenuItem().getId());
+				assertEquals(i+1, orderItems[i].getQuantity());
+				assertEquals(OrderItemStatus.NOT_READY, orderItems[i].getStatus());
+			}
+			
+			// test zero items
+			order.setOrderItems(new OrderItemBean[0]);
+			assertFalse(orderItemDAO.transactionAdd(con, order));
+			
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
-		
-		assertTrue(added);
-		OrderItemBean[] orderItems = orderItemDAO.getOrderItems(1L);
-		assertNotNull(orderItems);
-		assertEquals(3, orderItems.length);
-		assertEquals(3, orderItems[2].getMenuItem().getId());
-		assertEquals(10, orderItems[2].getQuantity());
-		assertEquals(OrderItemStatus.READY, orderItems[2].getStatus());
 	}
 
 	@Test
-	public void testTransactionUpdate() {
+	public void testTransactionUpdate() throws SQLException {
 		OrderItemBean[] oldItems = orderItemDAO.getOrderItems(1L);
 		assertNotNull(oldItems);
 		assertEquals(2, oldItems.length);
@@ -138,59 +150,91 @@ public class OrderItemDAOTest {
 		order.setOrderItems(oldItems);
 		
 		Connection con = null;
-		boolean updated = false;
 		try {
 			con = connFactory.getConnection();
-			updated = orderItemDAO.transactionUpdate(con, order);
+			boolean updated = orderItemDAO.transactionUpdate(con, order);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionAdd()");
-			e.printStackTrace();
+			assertTrue(updated);
+			
+			OrderItemBean[] updatedItems = orderItemDAO.getOrderItems(1L);
+			assertNotNull(updatedItems);
+			
+			assertEquals(1, updatedItems.length);
+			
+			assertEquals(oldItems[1].getMenuItem().getId(), updatedItems[0].getMenuItem().getId());
+			assertEquals(oldItems[1].getQuantity(), updatedItems[0].getQuantity());
+			assertEquals(oldItems[1].getStatus(), updatedItems[0].getStatus());
+			
+			// test zero items
+			order.setOrderItems(new OrderItemBean[0]);
+			assertFalse(orderItemDAO.transactionUpdate(con, order));
+			
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
-		
-		assertTrue(updated);
-		
-		OrderItemBean[] updatedItems = orderItemDAO.getOrderItems(1L);
-		assertNotNull(updatedItems);
-		
-		assertEquals(1, updatedItems.length);
-		
-		assertEquals(oldItems[1].getMenuItem().getId(), updatedItems[0].getMenuItem().getId());
-		assertEquals(oldItems[1].getQuantity(), updatedItems[0].getQuantity());
-		assertEquals(oldItems[1].getStatus(), updatedItems[0].getStatus());
 	}
 
 	@Test
-	public void testTransactionDelete() {
+	public void testTransactionDelete() throws SQLException {
 		Connection con = null;
 		boolean deleted = false;
 		try {
 			con = connFactory.getConnection();
 			deleted = orderItemDAO.transactionDeleteAll(con, 1L, 2);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionAdd()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
 		
 		assertTrue(deleted);
 		assertEquals(0, orderItemDAO.getOrderItems(1L).length);
+	}
+	
+	@Test
+	public void testExceptions() {
+		OrderItemDAO dao = new TestDAOFactory(new ExceptionConnectionFactory()).getOrderItemDAO();
+		OrderBean order = new OrderBean();
+		order.setId(1L);
+		order.setOrderItems(new OrderItemBean[]{new OrderItemBean(new MenuItemBean(1L, null, null, 0, null), 1, OrderItemStatus.READY)});
+		
+		try {
+			dao.getOrderItems(order.getId());
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+
+		try {
+			dao.transactionAdd(new BadConnection(),	order);
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+		
+		try {
+			dao.transactionUpdate(new BadConnection(), order);
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+
+		try {
+			dao.transactionDeleteAll(new BadConnection(), order.getId(), 1);
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+				
+		
+		assertTrue(true);
 	}
 
 }

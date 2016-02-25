@@ -12,7 +12,9 @@ import org.junit.Test;
 
 import edu.depaul.se491.beans.CreditCardBean;
 import edu.depaul.se491.beans.PaymentBean;
+import edu.depaul.se491.daos.BadConnection;
 import edu.depaul.se491.daos.ConnectionFactory;
+import edu.depaul.se491.daos.ExceptionConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 import edu.depaul.se491.daos.TestDAOFactory;
 import edu.depaul.se491.daos.mysql.PaymentDAO;
@@ -72,7 +74,7 @@ public class PaymentDAOTest {
 	}
 
 	@Test
-	public void testTransactionAdd() {
+	public void testTransactionAdd() throws Exception {
 		PaymentBean cashPayment = new PaymentBean(0L, 5.00, PaymentType.CASH, null, null);
 		PaymentBean ccPayment = new PaymentBean(0L, 10.50, PaymentType.CREDIT_CARD, new CreditCardBean(), "credit-card-confirmation");
 		
@@ -86,14 +88,13 @@ public class PaymentDAOTest {
 			addedCashPayment = paymentDAO.transactionAdd(con, cashPayment);
 			addedCCPayment = paymentDAO.transactionAdd(con, ccPayment);
 		} catch (Exception e) {
-			fail("exception in testTransactionAdd()");
-			e.printStackTrace();
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
@@ -113,6 +114,18 @@ public class PaymentDAOTest {
 		assertEquals(0, Double.compare(ccPayment.getTotal(), addedCCPayment.getTotal()));
 		assertNotNull(addedCCPayment.getCreditCard());
 		assertEquals(ccPayment.getTransactionConfirmation(), addedCCPayment.getTransactionConfirmation());		
+	}
+	
+	@Test
+	public void testExceptions() {
+		PaymentDAO dao = new TestDAOFactory(new ExceptionConnectionFactory()).getPaymentDAO();
+		
+		try {
+			dao.transactionAdd(new BadConnection(), new PaymentBean());
+			fail("No Exception Thrown");
+		} catch(Exception e) {}
+		
+		assertTrue(true);
 	}
 
 }

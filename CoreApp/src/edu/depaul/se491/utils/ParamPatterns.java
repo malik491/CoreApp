@@ -1,12 +1,16 @@
 package edu.depaul.se491.utils;
 
-public abstract class ParamPatterns {
+/**
+ * utility for parameter patterns
+ * 
+ * @author Malik
+ */
+public class ParamPatterns {
 
 	public static final class MenuItem {
 		public static final String NAME 	= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.MenuItem.MIN_NAME, ParamLengths.MenuItem.MAX_NAME);
 	}
-	
-	
+		
 	public static final class Credentials {
 		public static final String USERNAME = String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.Credentials.MIN_USERNAME, ParamLengths.Credentials.MAX_USERNAME);
 		public static final String PASSWORD = String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.Credentials.MIN_PASSWORD, ParamLengths.Credentials.MAX_PASSWORD);
@@ -24,8 +28,7 @@ public abstract class ParamPatterns {
 		public static final String CITY 	= String.format("[a-zA-Z0-9\\s]{%d,%d}", ParamLengths.Address.MIN_CITY, ParamLengths.Address.MAX_CITY);
 		public static final String ZIPCODE 	= String.format("[0-9]{%d,%d}", ParamLengths.Address.MIN_ZIPCODE, ParamLengths.Address.MAX_ZIPCODE);	
 	}
-	
-	
+		
 	public static final class CreditCard {
 		public static final String NUMBER 	= String.format("[0-9]{%d,%d}", ParamLengths.CreditCard.MIN_NUMBER, ParamLengths.CreditCard.MAX_NUMBER);
 		public static final String HOLDER_NAME 	= String.format("[a-zA-Z\\s]{%d,%d}", ParamLengths.CreditCard.MIN_HOLDER_NAME, ParamLengths.CreditCard.MAX_HOLDER_NAME);

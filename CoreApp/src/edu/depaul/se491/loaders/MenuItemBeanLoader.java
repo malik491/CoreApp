@@ -1,6 +1,3 @@
-/**
- * Loader for MenuItem bean
- */
 package edu.depaul.se491.loaders;
 
 import java.sql.PreparedStatement;
@@ -15,21 +12,17 @@ import edu.depaul.se491.utils.dao.DBLabels;
 
 
 /**
- * MenuItem Bean loader
- * - populate a preparedStatment using data store in a MenuItem bean
- * - populate/recreate a new MenuItem bean using data in a ResultSet
+ * MenuItemBean Loader
  * 
  * @author Malik
  */
 public class MenuItemBeanLoader {
 
 	/**
-	 * return a list of menuItem beans using menuItems data in the ResultSet (rows)
-	 * Empty list is return if the ResultSet is empty
-	 * The ResultSet cursor should be positioned before the first row before calling
-	 * this method. Otherwise, the first row will not be included in the result.
-	 * @param rs a ResultSet containing menu items data from the database
-	 * @return list of menu items
+	 * return all MenuItemBeans in the result-set or empty list
+	 * @param rs
+	 * @return
+	 * @throws SQLException
 	 */
 	public List<MenuItemBean> loadList(ResultSet rs) throws SQLException {
 		List<MenuItemBean> mItems = new ArrayList<MenuItemBean>();
@@ -38,13 +31,11 @@ public class MenuItemBeanLoader {
 		return mItems;
 	}
 
-
 	/**
-	 * return an menuItem bean using the ResultSet (a single row)
-	 * THIS METHOD SHOULD BE CALLED ONLY WHEN (rs.next() is true before the call).
-	 * It expects a ResultSet its cursor pointing at a row
-	 * @param rs a ResultSet containing menuItem data from the database
-	 * @return MenuItem bean object containing the data from a menuItem in the database
+	 * return a single MenuItemBean in the result-set
+	 * @param rs
+	 * @return
+	 * @throws SQLException
 	 */
 	public MenuItemBean loadSingle(ResultSet rs) throws SQLException {
 		MenuItemBean bean = new MenuItemBean();
@@ -59,10 +50,11 @@ public class MenuItemBeanLoader {
 	}
 
 	/**
-	 * populate the PreparedStatment with data in the menuItem bean
-	 * @param ps preparedStatement with sql string containing at least 3 '?'/placeholders
-	 * @param bean menuItem bean with data
-	 * @return return the passed ps
+	 * load parameters from MenuItemBean into the given PreparedStatement
+	 * @param ps
+	 * @param bean
+	 * @param paramIndex
+	 * @throws SQLException
 	 */
 	public void loadParameters(PreparedStatement ps, MenuItemBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getName());

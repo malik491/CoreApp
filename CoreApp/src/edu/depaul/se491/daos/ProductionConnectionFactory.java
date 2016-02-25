@@ -1,5 +1,7 @@
 /**
+ * Production Connection Factory
  * 
+ * Uses Tomcat's connections pool. Configuration is read from WebContent/MENT-INF/context.xml
  */
 package edu.depaul.se491.daos;
 
@@ -32,8 +34,6 @@ public class ProductionConnectionFactory implements ConnectionFactory {
 			}
 		}
 	}
-	
-	
 	
 	/**
 	 * return a production connection factory instance 

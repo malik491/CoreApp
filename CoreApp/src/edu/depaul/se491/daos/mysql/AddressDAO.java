@@ -1,6 +1,3 @@
-/**
- * Address Data Access Object (DAO)
- */
 package edu.depaul.se491.daos.mysql;
 
 import java.sql.Connection;
@@ -12,32 +9,36 @@ import com.mysql.jdbc.Statement;
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.AddressBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
+ * Address Data Access Object (DAO)
+ * 
  * @author Malik
- *
  */
 public class AddressDAO {
 	private ConnectionFactory connFactory;
 	private AddressBeanLoader loader;
 	
+	/**
+	 * construct AddressDAO
+	 * @param daoFactory
+	 * @param connFactory
+	 */
 	public  AddressDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.loader = new AddressBeanLoader();
 	}
 	
 	/**
-	 * return address associated with the given id
-	 * Null is returned if there are no address for the given id
+	 * return address with the given id
 	 * @param addressId
 	 * @return
 	 * @throws SQLException
 	 */
-	public AddressBean get(long addressId) throws DBException {
+	public AddressBean get(long addressId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -53,29 +54,27 @@ public class AddressDAO {
 				address = loader.loadSingle(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return address;
 	}
 	
 	/**
-	 * insert a new address as a part of a database transaction
-	 * @param conn database connection
-	 * @param deliveryAddress address data (except the id). 
-	 * @return address
+	 * insert a new address using the given connection (transaction)
+	 * @param conn
+	 * @param address
+	 * @return
 	 * @throws SQLException
 	 */
-	public AddressBean transactionAdd(final Connection conn, AddressBean address) throws DBException {
+	public AddressBean transactionAdd(final Connection conn, AddressBean address) throws SQLException {
 		PreparedStatement ps = null;
 		AddressBean addedAddr = null;
 		try {
@@ -87,27 +86,25 @@ public class AddressDAO {
 				addedAddr = new AddressBean(DAOUtil.getAutGeneratedKey(ps), address.getLine1(), address.getLine2(), address.getCity(), address.getState(), address.getZipcode());						
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return addedAddr;
 	}
-		
+	
 	/**
-	 * update an existing address as a part of a database transaction
-	 * @param conn database connection
-	 * @param address updated address
-	 * @return true if the address in database is updated
+	 * update address using the given connection (transaction)
+	 * @param conn
+	 * @param address
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionUpdate(final Connection conn, AddressBean address) throws DBException {
+	public boolean transactionUpdate(final Connection conn, AddressBean address) throws SQLException {
 		PreparedStatement ps = null;
 		boolean updated = false;
 		try {
@@ -118,27 +115,25 @@ public class AddressDAO {
 			ps.setLong(paramIndex + UPDATE_COULMNS_COUNT, address.getId());
 			updated = DAOUtil.validUpdate(ps.executeUpdate());			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return updated;
 	}
 	
 	/**
-	 * delete an existing address as a part of a database transaction
-	 * @param conn database connection
-	 * @param addressId 
-	 * @return true if address is deleted
+	 * delete address using the given connection (transaction)
+	 * @param conn
+	 * @param addressId
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionDelete(final Connection conn, long addressId) throws DBException {
+	public boolean transactionDelete(final Connection conn, long addressId) throws SQLException {
 		PreparedStatement ps = null;
 		boolean deleted = false;
 		try {
@@ -146,14 +141,12 @@ public class AddressDAO {
 			ps.setLong(1, addressId);
 			deleted = DAOUtil.validDelete(ps.executeUpdate());
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return deleted;

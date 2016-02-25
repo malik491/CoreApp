@@ -16,6 +16,8 @@ import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.beans.RequestBean;
+import edu.depaul.se491.daos.DAOFactory;
+import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.models.MenuModel;
 import edu.depaul.se491.validators.CredentialsValidator;
 
@@ -25,6 +27,16 @@ import edu.depaul.se491.validators.CredentialsValidator;
  */
 @Path("/menuItem")
 public class MenuService {
+	private static DAOFactory daoFactory;
+	
+	public MenuService() {
+		daoFactory = ProductionDAOFactory.getInstance();
+	}
+
+	public MenuService(DAOFactory factory) {
+		daoFactory = factory;
+	}
+
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -35,7 +47,7 @@ public class MenuService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			MenuModel model = new MenuModel(request.getCredentials());	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
 			MenuItemBean menuItem  = model.read(request.getExtra());
 			if (menuItem == null) {
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -59,7 +71,7 @@ public class MenuService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			MenuModel model = new MenuModel(request.getCredentials());	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
 			MenuItemBean createdMenuItem  = model.create(request.getExtra());
 			if (createdMenuItem == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -84,7 +96,7 @@ public class MenuService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			MenuModel model = new MenuModel(request.getCredentials());	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
 			Boolean updated  = model.update(request.getExtra());
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -108,7 +120,7 @@ public class MenuService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			MenuModel model = new MenuModel(request.getCredentials());	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
 			Boolean deleted  = model.delete(request.getExtra());
 			if (deleted == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -131,7 +143,7 @@ public class MenuService {
 		boolean isValid = isValidRequest(request, true);
 		
 		if (isValid) {	
-			MenuModel model = new MenuModel(request.getCredentials());	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
 			List<MenuItemBean> menuIitems  = model.readAll();
 			if (menuIitems == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());

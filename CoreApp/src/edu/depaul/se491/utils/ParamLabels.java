@@ -1,6 +1,11 @@
 package edu.depaul.se491.utils;
 
-public abstract class ParamLabels {
+/**
+ * utility for parameter labels (externalized strings)
+ * @author Malik
+ *
+ */
+public class ParamLabels {
 
 	public static final class MenuItem {
 		public static final String MENU_ITEM_BEAN = "menuItemBean";  			// use this label to mean a menu item bean
@@ -13,7 +18,6 @@ public abstract class ParamLabels {
 		public static final String DESC = "mItemDesc";	
 		public static final String ITEM_CATEGORY = "mItemCategory";
 	}
-	
 	
 	public static final class Account {
 		public static final String ACCOUNT_BEAN = "accountBean";
@@ -49,7 +53,6 @@ public abstract class ParamLabels {
 		public static final String STATE = "addrState";
 		public static final String ZIP_CODE = "addrZipCode";
 	}
-	
 	
 	public static final class Order {
 		public static final String ORDER_BEAN = "orderBean";

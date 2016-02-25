@@ -60,6 +60,7 @@ public class PaymentValidatorTest {
 		
 		payment.setTransactionConfirmation("1029-384-7560-1892"); // just right
 		assertTrue(validator.validate(payment,false));
+
 	}
 
 	@Test

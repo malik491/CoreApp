@@ -2,7 +2,12 @@ package edu.depaul.se491.utils;
 
 import java.time.Year;
 
-public abstract class ParamValues {
+/**
+ * utility for parameter (min-max) values.
+ * 
+ * @author Malik
+ */
+public class ParamValues {
 	
 	public static final class MenuItem {
 		public static final double MIN_PRICE = 0; /*MySQL Decimal(5,2) ---.--*/

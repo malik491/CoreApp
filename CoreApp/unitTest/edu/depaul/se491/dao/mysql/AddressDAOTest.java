@@ -10,7 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.depaul.se491.beans.AddressBean;
+import edu.depaul.se491.daos.BadConnection;
 import edu.depaul.se491.daos.ConnectionFactory;
+import edu.depaul.se491.daos.ExceptionConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 import edu.depaul.se491.daos.TestDAOFactory;
 import edu.depaul.se491.daos.mysql.AddressDAO;
@@ -70,7 +72,7 @@ public class AddressDAOTest {
 	}
 
 	@Test
-	public void testGet() {
+	public void testGet() throws SQLException {
 		AddressBean address = addressDAO.get(1L);
 		assertNotNull(address);
 		
@@ -84,7 +86,7 @@ public class AddressDAOTest {
 	}
 
 	@Test
-	public void testTransactionAdd(){
+	public void testTransactionAdd() throws SQLException {
 		AddressBean address = new AddressBean(0L, "line 1", null, "Chicago", AddressState.IL, "1234567890");
 		AddressBean addedAddress = null;
 		
@@ -93,15 +95,14 @@ public class AddressDAOTest {
 			con = connFactory.getConnection();
 			addedAddress = addressDAO.transactionAdd(con, address);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionAdd()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
@@ -119,7 +120,7 @@ public class AddressDAOTest {
 	}
 
 	@Test
-	public void testTransactionUpdate() {
+	public void testTransactionUpdate() throws SQLException {
 		AddressBean oldAddress = addressDAO.get(1L);
 		oldAddress.setLine1("updated line 1");
 		oldAddress.setLine2(null);
@@ -133,15 +134,14 @@ public class AddressDAOTest {
 			con = connFactory.getConnection();
 			updated = addressDAO.transactionUpdate(con, oldAddress);
 			
-		} catch (Exception e) {
-			fail("exception in testTransactionUpdate()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
@@ -159,7 +159,7 @@ public class AddressDAOTest {
 	}
 
 	@Test
-	public void testTransactionDelete() {
+	public void testTransactionDelete() throws SQLException {
 		long id = -1L;
 		
 		Connection con = null;
@@ -169,21 +169,47 @@ public class AddressDAOTest {
 			AddressBean newAddress = addressDAO.transactionAdd(con, new AddressBean(0L, "line 1", null, "Chicago", AddressState.IL, "1234567890"));
 			id = newAddress.getId();
 			deleted = addressDAO.transactionDelete(con, id);
-		} catch (Exception e) {
-			fail("exception in testTransactionUpdate()");
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					throw e;
 				}
 			}
 		}
 		
 		assertTrue(deleted);
 		assertNull(addressDAO.get(id));
+	}
+	
+	
+	@Test
+	public void testExceptions() {
+		AddressDAO dao = new TestDAOFactory(new ExceptionConnectionFactory()).getAddressDAO();
+		try {
+			dao.get(1L);
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+
+		try {
+			dao.transactionAdd(new BadConnection(), new AddressBean());
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+		
+		try {
+			dao.transactionDelete(new BadConnection(), 1L);
+			fail("No Exception Thrown");			
+		} catch (SQLException e) {}
+		
+		try {
+			dao.transactionUpdate(new BadConnection(), new AddressBean());
+			fail("No Exception Thrown");
+		} catch (SQLException e) {}
+		
+		assertTrue(true);
 	}
 
 }

@@ -1,6 +1,3 @@
-/**
- * Base class for Delivery and Pickup order beans
- */
 package edu.depaul.se491.beans;
 
 import java.io.Serializable;
@@ -11,8 +8,9 @@ import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
 
 /**
+ * Order Bean
+ * 
  * @author Malik
- *
  */
 @XmlRootElement
 public class OrderBean implements Serializable {
@@ -27,11 +25,14 @@ public class OrderBean implements Serializable {
 	private AddressBean address;
 	private OrderItemBean[] orderItems;
 	
+	/**
+	 * constrcut OrderBean
+	 */
 	public OrderBean() {
 	}
 		
 	/**
-	 * return order id
+	 * return id
 	 * @return
 	 */
 	public long getId() {
@@ -39,7 +40,7 @@ public class OrderBean implements Serializable {
 	}
 
 	/**
-	 * set order id
+	 * set id
 	 * @param id
 	 */
 	public void setId(long id) {
@@ -47,7 +48,7 @@ public class OrderBean implements Serializable {
 	}
 
 	/**
-	 * return the order timestamp (data & time)
+	 * return timestamp
 	 * @return
 	 */
 	public Timestamp getTimestamp() {
@@ -55,7 +56,7 @@ public class OrderBean implements Serializable {
 	}
 
 	/**
-	 * set the order timestamp (data & time)
+	 * set timestamp
 	 * @param timestamp
 	 */
 	public void setTimestamp(Timestamp timestamp) {
@@ -63,7 +64,7 @@ public class OrderBean implements Serializable {
 	}
 
 	/**
-	 * return order confirmation number
+	 * return confirmation
 	 * @return
 	 */
 	public String getConfirmation() {
@@ -71,7 +72,7 @@ public class OrderBean implements Serializable {
 	}
 
 	/**
-	 * set the order confirmation number
+	 * set confirmation
 	 * @param confirmation
 	 */
 	public void setConfirmation(String confirmation) {
@@ -79,7 +80,7 @@ public class OrderBean implements Serializable {
 	}
 	
 	/**
-	 * return order type
+	 * return type
 	 * @return
 	 */
 	public OrderType getType() {
@@ -87,7 +88,7 @@ public class OrderBean implements Serializable {
 	}
 	
 	/**
-	 * return order type
+	 * return type
 	 * @param type
 	 */
 	public void setType(OrderType type) {
@@ -95,7 +96,7 @@ public class OrderBean implements Serializable {
 	}
 	
 	/**
-	 * return order status
+	 * return status
 	 * @return
 	 */
 	public OrderStatus getStatus() {
@@ -103,23 +104,31 @@ public class OrderBean implements Serializable {
 	}
 
 	/**
-	 * set order status
+	 * set status
 	 * @param status
 	 */
 	public void setStatus(OrderStatus status) {
 		this.status = status;
 	}
 
+	/**
+	 * return payment
+	 * @return
+	 */
 	public PaymentBean getPayment() {
 		return payment;
 	}
 
+	/**
+	 * set payment
+	 * @param payment
+	 */
 	public void setPayment(PaymentBean payment) {
 		this.payment = payment;
 	}
 	
 	/**
-	 * return all order items for this order
+	 * return order items
 	 * @return
 	 */
 	public OrderItemBean[] getOrderItems() {
@@ -127,17 +136,25 @@ public class OrderBean implements Serializable {
 	}
 	
 	/**
-	 * set order items for this order
+	 * set order items
 	 * @param items
 	 */
 	public void setOrderItems(OrderItemBean[] orderItems) {
 		this.orderItems = orderItems;
 	}
 
+	/**
+	 * return delivery address
+	 * @return
+	 */
 	public AddressBean getAddress() {
 		return address;
 	}
 
+	/**
+	 * set delivery address
+	 * @param address
+	 */
 	public void setAddress(AddressBean address) {
 		this.address = address;
 	}

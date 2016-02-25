@@ -1,13 +1,17 @@
 package edu.depaul.se491.utils;
 
+/**
+ * utility for parameter lengths (min-max)
+ * 
+ * @author Malik
+ */
+
 public class ParamLengths {
-
-
+	
 	public static final class Order {
 		public static final int MIN_CONFIRMATION = 1;
 
 		public static final int MAX_CONFIRMATION = 50;
-
 	}
 	
 	public static final class Payment {
@@ -23,7 +27,6 @@ public class ParamLengths {
 		public static final int MAX_NUMBER = 19;
 		public static final int MAX_HOLDER_NAME = 100;
 	}
-	
 	
 	public static final class MenuItem {
 		public static final int MIN_DESC = 1; 

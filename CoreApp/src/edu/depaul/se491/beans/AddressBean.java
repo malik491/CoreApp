@@ -1,6 +1,3 @@
-/**
- * Address Bean
- */
 package edu.depaul.se491.beans;
 
 import java.io.Serializable;
@@ -10,8 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import edu.depaul.se491.enums.AddressState;
 
 /**
+ * Address Bean
+ * 
  * @author Malik
- *
  */
 @XmlRootElement
 public class AddressBean implements Serializable {
@@ -23,13 +21,20 @@ public class AddressBean implements Serializable {
 	private AddressState state;
 	
 	/**
-	 * construct an empty address with no id
-	 * line2 defaults to empty string
+	 * construct AddressBean
 	 */
 	public AddressBean() {
 	}
 	
-	
+	/**
+	 * construct AddressBean
+	 * @param id
+	 * @param line1
+	 * @param line2
+	 * @param city
+	 * @param state
+	 * @param zipcode
+	 */
 	public AddressBean(long id, String line1, String line2, String city, AddressState state, String zipcode) {
 		this.id = id;
 		this.line1 = line1;
@@ -38,12 +43,9 @@ public class AddressBean implements Serializable {
 		this.state = state;
 		this.zipcode = zipcode;
 	}
-
-	
-	
 	
 	/**
-	 * return address id
+	 * return id
 	 * @return
 	 */
 	public long getId() {
@@ -51,7 +53,7 @@ public class AddressBean implements Serializable {
 	}
 
 	/**
-	 * set address id
+	 * set id
 	 * @param id
 	 */
 	public void setId(long id) {
@@ -59,8 +61,7 @@ public class AddressBean implements Serializable {
 	}
 
 	/**
-	 * return address first line 
-	 * (buildingNumber street-info)
+	 * return line 1
 	 * @return
 	 */
 	public String getLine1() {
@@ -68,17 +69,15 @@ public class AddressBean implements Serializable {
 	}
 	
 	/**
-	 * set address first line
-	 * (buildingNumber street-info)
-	 * @param street
+	 * set line 1
+	 * @param line1
 	 */
-	public void setLine1(String street) {
-		this.line1 = street;
+	public void setLine1(String line1) {
+		this.line1 = line1;
 	}
 	
 	/**
-	 * return address second line
-	 * (unit/apt number etc)
+	 * return line 2
 	 * @return
 	 */
 	public String getLine2() {
@@ -86,12 +85,11 @@ public class AddressBean implements Serializable {
 	}
 	
 	/**
-	 * set address second line
-	 * (unit/apt number etc)
-	 * @param optionalLine
+	 * set line 2
+	 * @param line2
 	 */
-	public void setLine2(String optionalLine) {
-		this.line2 = optionalLine;
+	public void setLine2(String line2) {
+		this.line2 = line2;
 	}
 	
 	/**
@@ -136,7 +134,6 @@ public class AddressBean implements Serializable {
 	
 	/**
 	 * set zipcode
-	 * use format: ddddd[-dddd]
 	 * @param zipcode
 	 */
 	public void setZipcode(String zipcode) {

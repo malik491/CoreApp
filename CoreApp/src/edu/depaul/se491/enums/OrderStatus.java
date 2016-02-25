@@ -1,5 +1,5 @@
 /**
- * Order status type
+ * Order Status
  */
 package edu.depaul.se491.enums;
 

@@ -1,10 +1,6 @@
-/**
- * Order Model
- * 
- * Class to manipulate orders (create, update, delete, etc)
- */
 package edu.depaul.se491.models;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -15,14 +11,12 @@ import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.beans.PaymentBean;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.enums.OrderItemStatus;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
 import edu.depaul.se491.enums.PaymentType;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.utils.ConfirmationGenerator;
 import edu.depaul.se491.validators.AddressValidator;
 import edu.depaul.se491.validators.CreditCardValidator;
@@ -31,23 +25,26 @@ import edu.depaul.se491.validators.OrderValidator;
 import edu.depaul.se491.validators.PaymentValidator;
 
 /**
+ * Order Model
+ * class to manipulate orders (create, update, delete, etc)
+ * 
  * @author Malik
- *
  */
 public class OrderModel extends BaseModel {
 	
-	public OrderModel(CredentialsBean credentials) {
-		super(ProductionDAOFactory.getInstance(), credentials);
-	}
-	
+	/**
+	 * construct OrderModel
+	 * @param daoFactory
+	 * @param credentials
+	 */
 	public OrderModel(DAOFactory daoFactory, CredentialsBean credentials) {
 		super(daoFactory, credentials);
 	}
 
 	/**
-	 * create new order and return the newly created order (with id) or null
+	 * create new order
 	 * @param bean
-	 * @return
+	 * @return newly created order or null
 	 */
 	public OrderBean create(OrderBean bean) {
 		boolean isValid = isValidOrder(bean, true);
@@ -67,19 +64,19 @@ public class OrderModel extends BaseModel {
 		OrderBean createdOrder = null;
 		if (isValid) {
 			try {
-				bean.setTimestamp(new Timestamp(System.currentTimeMillis()));
-				bean.setConfirmation(ConfirmationGenerator.getOrderConfirmation());
+				OrderBean order = copyOrder(bean);
+				order.setTimestamp(new Timestamp(System.currentTimeMillis()));
+				order.setConfirmation(ConfirmationGenerator.getOrderConfirmation());
 				
-				PaymentBean payment = bean.getPayment();
-				if (payment.getType() == PaymentType.CREDIT_CARD)
+				PaymentBean payment = order.getPayment();
+				if (payment.getType() == PaymentType.CREDIT_CARD) {
 					payment.setTransactionConfirmation(ConfirmationGenerator.getPaymentConfirmation(payment.getCreditCard()));
+				}
 				
-				createdOrder = getDAOFactory().getOrderDAO().add(bean);
-				if (createdOrder == null)
-					setResponseAndMeessageForDBError();
+				createdOrder = getDAOFactory().getOrderDAO().add(order);
 				
-			} catch (DBException e){
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e){
+				setResponseAndMeessageForDBError(e);
 			}
 	}
 		
@@ -87,7 +84,7 @@ public class OrderModel extends BaseModel {
 	}
 
 	/**
-	 * update an existing order
+	 * update order
 	 * @param updatedOrder
 	 * @return
 	 */
@@ -114,8 +111,8 @@ public class OrderModel extends BaseModel {
 			if (updateOrder) {
 				try {
 					updated = getDAOFactory().getOrderDAO().update(updatedOrder);					
-				} catch (DBException e) {
-					setResponseAndMeessageForDBError();
+				} catch (SQLException e) {
+					setResponseAndMeessageForDBError(e);
 				}
 			}
 		}
@@ -123,7 +120,12 @@ public class OrderModel extends BaseModel {
 		return updated;
 	}
 	
-	
+	/**
+	 * update order items status for a given station
+	 * @param updatedOrder
+	 * @param currentStation
+	 * @return
+	 */
 	public Boolean update(OrderBean updatedOrder, MenuItemCategory currentStation) {
 		AccountRole[] allowedRoles = new AccountRole[] {EMPLOYEE};
 		boolean isValid = hasPermission(allowedRoles);
@@ -139,7 +141,7 @@ public class OrderModel extends BaseModel {
 			boolean updateOrder = isValidUpdatedOrderItems(oldOrder.getOrderItems(), updatedOrder.getOrderItems());
 
 			if (updateOrder) {
-				// employee only updates order items status
+				// employee can only update order items status
 				// confirmation, timestamp, and payment don't get updated.
 				
 				updatedOrder.setTimestamp(oldOrder.getTimestamp());
@@ -171,8 +173,8 @@ public class OrderModel extends BaseModel {
 			if (updateOrder) {
 				try {
 					updated = getDAOFactory().getOrderDAO().update(updatedOrder);					
-				} catch (DBException e) {
-					setResponseAndMeessageForDBError();
+				} catch (SQLException e) {
+					setResponseAndMeessageForDBError(e);
 				}
 			}
 		}
@@ -182,11 +184,11 @@ public class OrderModel extends BaseModel {
 
 
 	/**
-	 * delete an existing order
+	 * delete order with the given id
 	 * @param id
 	 * @return
 	 */
-	public Boolean delete(Long id) throws DBException {
+	public Boolean delete(Long id) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
 		boolean isValid = hasPermission(allowedRoles);
 		
@@ -196,8 +198,8 @@ public class OrderModel extends BaseModel {
 		if (isValid) {
 			try {
 				deleted = getDAOFactory().getOrderDAO().delete(id);
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
@@ -205,7 +207,7 @@ public class OrderModel extends BaseModel {
 	}
 	
 	/**
-	 * return order with associated with the given id or null
+	 * return order with the given id
 	 * @param id
 	 * @return
 	 */
@@ -223,8 +225,8 @@ public class OrderModel extends BaseModel {
 					setResponseStatus(Status.NOT_FOUND);
 					setResponseMessage(String.format("No order found (id = %d)", id));
 				}
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
@@ -232,13 +234,12 @@ public class OrderModel extends BaseModel {
 	}
 
 	/**
-	 * return order with associated with the given confirmation number or null
-	 * intended for customer to track their orders
+	 * return order with given confirmation
 	 * @param confirmation
 	 * @return
 	 */
 	public OrderBean read(String confirmation) {
-		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE, CUSTOMER_APP};
+		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, CUSTOMER_APP};
 		boolean isValid = hasPermission(allowedRoles);
 		
 		isValid = isValid? isValidConfirmation(confirmation) : false;
@@ -251,8 +252,8 @@ public class OrderModel extends BaseModel {
 					setResponseStatus(Status.NOT_FOUND);
 					setResponseMessage(String.format("No order found (confirmation = %s)", confirmation));
 				}
-			} catch (DBException e)  {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e)  {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
@@ -260,29 +261,7 @@ public class OrderModel extends BaseModel {
 	}
 	
 	/**
-	 * return all orders with the given status (empty list if there is none)
-	 * @param status
-	 * @return
-	 */
-	public List<OrderBean> readAll(OrderStatus status) {
-		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
-		boolean isValid = hasPermission(allowedRoles);
-		
-		isValid = isValid? isValidStatus(status): false;
-		
-		List<OrderBean> orders = null;
-		if (isValid) {
-			try {
-				orders = getDAOFactory().getOrderDAO().getAllWithStatus(status);
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
-			}
-		}
-		
-		return orders;
-	}
-	/**
-	 * return all orders with the given type (empty list if there is none)
+	 * return all orders or empty list
 	 * @return
 	 */
 	public List<OrderBean> readAll() {
@@ -293,21 +272,52 @@ public class OrderModel extends BaseModel {
 		if (isValid) {
 			try {
 				orders = getDAOFactory().getOrderDAO().getAll();
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		return orders;
 	}
 	
+	/**
+	 * return all orders with the given status or empty list
+	 * @param status
+	 * @return
+	 */
+	public List<OrderBean> readAll(OrderStatus status) {
+		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
+		boolean isValid = hasPermission(allowedRoles);
+		
+		isValid = isValid? isValidStatus(status): false;
+		
+		if (isValid && getLoggedinAccount().getRole() == EMPLOYEE) {
+			// can only read all submitted orders
+			isValid = (status == OrderStatus.SUBMITTED);
+			if (!isValid) {
+				setResponseStatus(Status.UNAUTHORIZED);
+				setResponseMessage("Access Denied (unauthorized)");
+			}
+		}
+		
+		List<OrderBean> orders = null;
+		if (isValid) {
+			try {
+				orders = getDAOFactory().getOrderDAO().getAllWithStatus(status);
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
+			}
+		}
+		
+		return orders;
+	}
 	
 	/**
-	 * return all orders with the given type (empty list if there is none)
+	 * return all orders with the given type or empty list
 	 * @param type
 	 * @return
 	 */
 	public List<OrderBean> readAll(OrderType type) {
-		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
+		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
 		boolean isValid = hasPermission(allowedRoles);
 		
 		isValid = isValid? isValidType(type) : false;
@@ -316,14 +326,13 @@ public class OrderModel extends BaseModel {
 		if (isValid) {
 			try {
 				orders = getDAOFactory().getOrderDAO().getAllWithType(type);
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
 		return orders;
 	}
-	
 	
 	private boolean isValidId(Long id) {
 		boolean isValid = new OrderValidator().validateId(id, false);
@@ -334,7 +343,6 @@ public class OrderModel extends BaseModel {
 		}		
 		return isValid;
 	}
-	
 	
 	private boolean isValidConfirmation(String confirmation) {
 		boolean isValid = new OrderValidator().validateConfirmation(confirmation);
@@ -449,4 +457,19 @@ public class OrderModel extends BaseModel {
 		return isAllReady;
 	}
 
+	
+	private OrderBean copyOrder(OrderBean bean) {
+		OrderBean order = new OrderBean();
+		order.setId(bean.getId());
+		order.setType(bean.getType());
+		order.setStatus(bean.getStatus());
+		order.setConfirmation(bean.getConfirmation());
+		order.setTimestamp(bean.getTimestamp());
+		order.setOrderItems(bean.getOrderItems());
+		
+		PaymentBean payment = bean.getPayment();
+		order.setPayment(new PaymentBean(payment.getId(), payment.getTotal(), payment.getType(), payment.getCreditCard(), payment.getTransactionConfirmation()));
+		order.setAddress(bean.getAddress());
+		return order;
+	}
 }

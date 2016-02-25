@@ -1,16 +1,12 @@
-/**
- * 
- */
 package edu.depaul.se491.utils.dao;
 
 /**
- * a class to hold column names for tables in the database
- * use these labels to get the column data from a row in a ResultSet
- * Like this:
- * 
+ * utility for database labels 
+ * it holds column names for tables.
+ * Usage: 
  * ResultSet rs = .... 
- * int id   = rs.getInt(columnLabel)
- * String s = rs.getString(columnLabel) 
+ * int id   = rs.getInt(DBLabels.table.columnLabel)
+ * String s = rs.getString(DBLabels.table.columnLabel) 
  *
  * @author Malik
  */
@@ -48,7 +44,6 @@ public abstract class DBLabels {
 		public static final String ROLE = "acc_role";
 		public static final String USER_ID = DBLabels.User.ID;
 	}
-	
 	
 	public static final class MenuItem {
 		public static final String TABLE = "menu_items";

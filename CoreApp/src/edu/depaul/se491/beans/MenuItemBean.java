@@ -1,6 +1,3 @@
-/**
- * MeanItem bean
- */
 package edu.depaul.se491.beans;
 
 import java.io.Serializable;
@@ -10,8 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import edu.depaul.se491.enums.MenuItemCategory;
 
 /**
+ * MeanItem Bean
+ * 
  * @author Malik
- *
  */
 @XmlRootElement
 public class MenuItemBean implements Serializable {
@@ -24,13 +22,19 @@ public class MenuItemBean implements Serializable {
 	private MenuItemCategory itemCategory;
 	
 	/**
-	 * construct an empty menu item with no id
-	 * description filed defaults to empty string
+	 * construct MneuItemBean
 	 */
 	public MenuItemBean() {
 	}
 	
-	
+	/**
+	 * construct MneuItemBean
+	 * @param id
+	 * @param name
+	 * @param description
+	 * @param price
+	 * @param itemCategory
+	 */
 	public MenuItemBean(long id, String name, String description, double price, MenuItemCategory itemCategory) {
 		this.id = id;
 		this.name = name;
@@ -40,7 +44,7 @@ public class MenuItemBean implements Serializable {
 	}
 	
 	/**
-	 * return item id
+	 * return id
 	 * @return
 	 */
 	public long getId() {
@@ -48,7 +52,7 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * set item id
+	 * set id
 	 * @param id
 	 */
 	public void setId(long id) {
@@ -56,7 +60,7 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * return item name
+	 * return name
 	 * @return
 	 */
 	public String getName() {
@@ -64,7 +68,7 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * set item name
+	 * set name
 	 * @param name
 	 */
 	public void setName(String name) {
@@ -72,7 +76,7 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * return item description
+	 * return description
 	 * @return
 	 */
 	public String getDescription() {
@@ -80,7 +84,7 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * set item description
+	 * set description
 	 * @param description
 	 */
 	public void setDescription(String description) {
@@ -88,7 +92,7 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * return item price
+	 * return price
 	 * @return
 	 */
 	public double getPrice() {
@@ -96,17 +100,25 @@ public class MenuItemBean implements Serializable {
 	}
 
 	/**
-	 * set item price
+	 * set price
 	 * @param price
 	 */
 	public void setPrice(double price) {
 		this.price = price;
 	}
 
+	/**
+	 * return item category
+	 * @return
+	 */
 	public MenuItemCategory getItemCategory() {
 		return itemCategory;
 	}
 
+	/**
+	 * set item category
+	 * @param itemCategory
+	 */
 	public void setItemCategory(MenuItemCategory itemCategory) {
 		this.itemCategory = itemCategory;
 	}

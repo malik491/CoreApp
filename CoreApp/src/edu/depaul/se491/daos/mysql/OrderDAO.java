@@ -1,7 +1,3 @@
-/**
- * Order Data Access Object (DAO)
- * 
- */
 package edu.depaul.se491.daos.mysql;
 
 import java.sql.Connection;
@@ -18,14 +14,14 @@ import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.OrderBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
+ * Order Data Access Object (DAO)
+ * 
  * @author Malik
- *
  */
 public class OrderDAO {
 	private ConnectionFactory connFactory;
@@ -34,6 +30,11 @@ public class OrderDAO {
 	private OrderItemDAO orderItemDAO;
 	private PaymentDAO paymentDAO;
 	
+	/**
+	 * construct OrderDAO
+	 * @param daoFactory
+	 * @param connFactory
+	 */
 	public OrderDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.addressDAO = daoFactory.getAddressDAO();
@@ -43,45 +44,41 @@ public class OrderDAO {
 	}
 	
 	/**
-	 * return all orders in the database
-	 * Empty list is returned if there are no orders in the database
+	 * return all orders or empty list
 	 * @return
-	 * @throws DBException
+	 * @throws SQLException
 	 */
-	public List<OrderBean> getAll() throws DBException {
+	public List<OrderBean> getAll() throws SQLException {
 		return getMultiple(SELECT_ALL_WITH_ORDER_BY_QUERY, null);
 	}
 	
 	/**
-	 * return all orders with the given order status in the database
-	 * Empty list is returned if there are no orders for the given status in the database
+	 * return all orders with the given status or empty list
 	 * @param status
 	 * @return
-	 * @throws DBException
+	 * @throws SQLException
 	 */
-	public List<OrderBean> getAllWithStatus(final OrderStatus status) throws DBException {
+	public List<OrderBean> getAllWithStatus(final OrderStatus status) throws SQLException {
 		return getMultiple(SELECT_ALL_BY_STATUS_QUERY, status.toString());
 	}
 	
 	/**
-	 * return all orders with the given order type in the database
-	 * Empty list is returned if there are no orders for the given type in the database
+	 * return all orders with the given type or empty list
 	 * @param type
 	 * @return
-	 * @throws DBException
+	 * @throws SQLException
 	 */
-	public List<OrderBean> getAllWithType(final OrderType type) throws DBException {
+	public List<OrderBean> getAllWithType(final OrderType type) throws SQLException {
 		return getMultiple(SELECT_ALL_BY_TYPE_QUERY, type.toString());
 	}
 	
 	/**
-	 * return order associated with the given id
-	 * Null is returned if there are no order for the given id
+	 * return order with the given id or null
 	 * @param orderId
 	 * @return
-	 * @throws DBException
+	 * @throws SQLException
 	 */
-	public OrderBean get(final long orderId) throws DBException {
+	public OrderBean get(final long orderId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -100,30 +97,27 @@ public class OrderDAO {
 			if (order != null)
 				order.setOrderItems(orderItemDAO.getOrderItems(order.getId()));
 			
-		} catch (SQLException | DBException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return order;		
 	}
 	
 	/**
-	 * return order by its confirmation number
-	 * Null is returned if there are no order with the given confirmation number
+	 * return order with the given confirmation or null
 	 * @param orderConfirmation
 	 * @return
-	 * @throws DBException
+	 * @throws SQLException
 	 */
-	public OrderBean get(final String orderConfirmation) throws DBException {
+	public OrderBean get(final String orderConfirmation) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -141,29 +135,27 @@ public class OrderDAO {
 			if (order != null)
 				order.setOrderItems(orderItemDAO.getOrderItems(order.getId()));
 			
-		} catch (SQLException | DBException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return order;		
 	}
-		
+	
 	/**
-	 * add order to the database using the data in the orderBean
-	 * @param order order data (excluding the id)
-	 * @return true if order is added
-	 * @throws DBException
+	 * insert a new order
+	 * @param order
+	 * @return newly added order
+	 * @throws SQLException
 	 */
-	public OrderBean add(final OrderBean order) throws DBException {
+	public OrderBean add(final OrderBean order) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		
@@ -219,31 +211,35 @@ public class OrderDAO {
 				conn.rollback();
 			}			
 
-		} catch (SQLException | DBException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+		} catch (SQLException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.addSuppressed(e);
+					throw e1;
+				}				
+			}
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 				DAOUtil.setAutoCommit(conn, true);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return result;
 	}
 	
-	
-
 	/**
-	 * delete an existing order from the database
-	 * @param order
-	 * @return true if an order is deleted
-	 * @throws DBException
+	 * delete order with given id
+	 * @param orderId
+	 * @return
+	 * @throws SQLException
 	 */
-	public boolean delete(final long orderId) throws DBException {
+	public boolean delete(final long orderId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		boolean deleted = false;
@@ -286,32 +282,35 @@ public class OrderDAO {
 				conn.rollback();
 			}
 			
-		} catch (SQLException | DBException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+		} catch (SQLException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.addSuppressed(e);
+					throw e1;
+				}				
+			}
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 				DAOUtil.setAutoCommit(conn, true);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return deleted;
 	}
 	
-		
 	/**
-	 * Update an existing order with new data in the orderBean.
-	 * It updates all order fields except orderId
-	 * For order items, only quantity is updated.
-	 * @param order updated order
-	 * @return true if order is updated
-	 * @throws DBException
+	 * update order
+	 * @param order
+	 * @return
+	 * @throws SQLException
 	 */
-	public boolean update(final OrderBean order) throws DBException {
+	public boolean update(final OrderBean order) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;		
 		
@@ -402,31 +401,29 @@ public class OrderDAO {
 			} else {
 				conn.rollback();				
 			}
-			
-		} catch (SQLException | DBException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+		} catch (SQLException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.addSuppressed(e);
+					throw e1;
+				}				
+			}
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 				DAOUtil.setAutoCommit(conn, true);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return updated;
 	}
 	
-	/**
-	 * return multiple orders from the database based on the select sqlQuery and parameter value
-	 * @param sqlQuery select query with optional WHERE clause '... [WHERE columnName = ?]'
-	 * @param paramValue param value for the condition in WHERE clause, if present in the sqlQuery
-	 * @return
-	 * @throws DBException
-	 */
-	private List<OrderBean> getMultiple(final String selectSQLQuery, final String paramValue) throws DBException {
+	private List<OrderBean> getMultiple(final String selectSQLQuery, final String paramValue) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -446,17 +443,15 @@ public class OrderDAO {
 			for (OrderBean order: orders)
 				order.setOrderItems(orderItemDAO.getOrderItems(order.getId()));
 			
-		} catch (SQLException | DBException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+		} catch (SQLException e) {
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return orders;

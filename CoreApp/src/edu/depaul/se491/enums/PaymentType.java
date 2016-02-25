@@ -1,5 +1,5 @@
 /**
- * 
+ * Payment Type
  */
 package edu.depaul.se491.enums;
 

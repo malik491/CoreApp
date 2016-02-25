@@ -1,11 +1,7 @@
-/**
- * Menu Model
- * 
- * Class to manipulate Menu (create menu items, update menu items, etc)
- */
 package edu.depaul.se491.models;
 
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.ws.rs.core.Response.Status;
@@ -13,30 +9,30 @@ import javax.ws.rs.core.Response.Status;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.enums.AccountRole;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.validators.MenuItemValidator;
 
 /**
+ * Menu Model
+ * class to manipulate Menu (create menu items, update menu items, etc)
+ * 
  * @author Malik
- *
  */
 public class MenuModel extends BaseModel {
 	
-	public MenuModel(CredentialsBean credentials) {
-		super(ProductionDAOFactory.getInstance(), credentials);
-	}
-	
+	/**
+	 * construct MenuModel
+	 * @param daoFactory DAO factory
+	 * @param credentials of the current model user
+	 */
 	public MenuModel(DAOFactory daoFactory, CredentialsBean credentials) {
 		super(daoFactory, credentials);
 	}
 
 	/**
-	 * create a new menu item and return the newly created menu item (has menu item id)
+	 * create new menuItem
 	 * @param bean
-	 * @return newly created menu item or null
-	 * @throws DBException
+	 * @return newly created menuItem or null
 	 */
 	public MenuItemBean create(MenuItemBean bean) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
@@ -49,11 +45,8 @@ public class MenuModel extends BaseModel {
 		if (isValid) {
 			try {
 				createdMenuItem = getDAOFactory().getMenuItemDAO().add(bean);
-				if (createdMenuItem == null) {
-					setResponseAndMeessageForDBError();
-				}
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
@@ -62,10 +55,9 @@ public class MenuModel extends BaseModel {
 	
 
 	/**
-	 * update an existing menu item
+	 * update a menu item
 	 * @param bean
 	 * @return
-	 * @throws DBException on DB Errors
 	 */
 	public Boolean update(MenuItemBean bean) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
@@ -78,8 +70,8 @@ public class MenuModel extends BaseModel {
 		if (isValid) {
 			try {
 				updated = getDAOFactory().getMenuItemDAO().update(bean);
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		return updated;
@@ -87,10 +79,9 @@ public class MenuModel extends BaseModel {
 	
 
 	/**
-	 * Return a menu item with the given id or null
+	 * return a menu item with the given id
 	 * @param id
 	 * @return
-	 * @throws DBException
 	 */
 	public MenuItemBean read(Long id) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
@@ -106,17 +97,16 @@ public class MenuModel extends BaseModel {
 					setResponseStatus(Status.NOT_FOUND);
 					setResponseMessage("No Menu Item Found");
 				}			
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		return menuItem;
 	}
 	
 	/**
-	 * Return all menu items
+	 * Return all menu items or empty list
 	 * @return
-	 * @throws DBException
 	 */
 	public List<MenuItemBean> readAll() {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE, CUSTOMER_APP};
@@ -126,20 +116,18 @@ public class MenuModel extends BaseModel {
 		if (isValid) {
 			try {
 				menuItemList = getDAOFactory().getMenuItemDAO().getAll();
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		return menuItemList;
 	}	
 
 	/**
-	 * delete an existing menu item
-	 * THIS FUNCTIONALITY IS NOT SUPPORTED FOR NOW SO THIS ALWAYS RETURNS FALSE
+	 * delete a menu item
+	 * NOTE: this is not supported yet (DB design) so it always return false
 	 * @param id
-	 * @return
-	 * @throws ValidationException
-	 * @throws DBException
+	 * @return false, always
 	 */
 	public Boolean delete(Long id) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
@@ -153,13 +141,12 @@ public class MenuModel extends BaseModel {
 			
 			try {
 				deleted = getDAOFactory().getMenuItemDAO().delete(id);
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		return deleted;
 	}
-	
 	
 	private boolean isValidMenuItemId(Long id) {
 		MenuItemValidator validator = new MenuItemValidator();

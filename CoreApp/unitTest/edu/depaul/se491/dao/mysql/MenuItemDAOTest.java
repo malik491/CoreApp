@@ -2,6 +2,7 @@ package edu.depaul.se491.dao.mysql;
 
 import static org.junit.Assert.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.daos.ConnectionFactory;
+import edu.depaul.se491.daos.ExceptionConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 import edu.depaul.se491.daos.TestDAOFactory;
 import edu.depaul.se491.daos.mysql.MenuItemDAO;
@@ -65,18 +67,18 @@ public class MenuItemDAOTest {
 	}
 
 	@Test
-	public void testGetAll() {
+	public void testGetAll() throws SQLException {
 		List<MenuItemBean> items = null;
 		
 		items = menuItemDAO.getAll();
 		assertNotNull(items);
-		assertTrue(items.size() > 1);
-		assertNotNull(items.get(0));
-		assertEquals(1L, items.get(0).getId());		
+		assertEquals(6, items.size());
+		for (MenuItemBean item : items)
+			assertNotNull(item);
 	}
 
 	@Test
-	public void testGet() {
+	public void testGet() throws SQLException {
 		MenuItemBean menuItem = null;
 		
 		menuItem = menuItemDAO.get(1L);
@@ -87,10 +89,13 @@ public class MenuItemDAOTest {
 		assertEquals("cold and refreshing soda", menuItem.getDescription());
 		assertEquals(0, Double.compare(1.99, menuItem.getPrice()));
 		assertEquals(MenuItemCategory.BEVERAGE, menuItem.getItemCategory());
+		
+		// no menu item with id 100
+		assertNull(menuItemDAO.get(100));
 	}
 
 	@Test
-	public void testAdd() {
+	public void testAdd() throws SQLException {
 		MenuItemBean item = new MenuItemBean(0, "new item", "description", 5.01, MenuItemCategory.MAIN);
 		
 		MenuItemBean addedItem = menuItemDAO.add(item);
@@ -106,7 +111,7 @@ public class MenuItemDAOTest {
 	}
 
 	@Test
-	public void testUpdate() {
+	public void testUpdate() throws SQLException {
 		MenuItemBean oldItem = menuItemDAO.get(1L);
 		oldItem.setName("updated name");
 		oldItem.setDescription("updated description");
@@ -128,9 +133,35 @@ public class MenuItemDAOTest {
 	}
 
 	@Test
-	public void testDelete() {
+	public void testDelete() throws SQLException {
 		boolean deleted = menuItemDAO.delete(1L);
 		assertFalse(deleted);
+	}
+	
+	@Test
+	public void testExceptions() {
+		MenuItemDAO dao = new TestDAOFactory(new ExceptionConnectionFactory()).getMenuItemDAO();
+		try {
+			dao.get(1L);
+			fail("No Exception Thrown");
+		} catch (Exception e) {}
+
+		try {
+			dao.add(new MenuItemBean());
+			fail("No Exception Thrown");			
+		} catch (Exception e) {}
+		
+		try {
+			dao.getAll();
+			fail("No Exception Thrown");
+		} catch (Exception e) {}
+		
+		try {
+			dao.update(new MenuItemBean());
+			fail("No Exception Thrown");
+		} catch (Exception e) {}
+		
+		assertTrue(true);
 	}
 
 }

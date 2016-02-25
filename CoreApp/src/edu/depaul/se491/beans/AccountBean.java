@@ -1,6 +1,3 @@
-/**
- * Account Bean
- */
 package edu.depaul.se491.beans;
 
 import java.io.Serializable;
@@ -10,8 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import edu.depaul.se491.enums.AccountRole;
 
 /**
+ * Account Bean
+ * 
  * @author Malik
- *
  */
 @XmlRootElement
 public class AccountBean implements Serializable {
@@ -23,30 +21,42 @@ public class AccountBean implements Serializable {
 	
 
 	/**
-	 * construct an empty Account
+	 * construct AccountBean
 	 */
 	public AccountBean() {
 	}
 	
+	/**
+	 * construct AccountBean
+	 * @param credentials
+	 * @param user
+	 * @param role
+	 */
 	public AccountBean(CredentialsBean credentials, UserBean user, AccountRole role) {
 		this.setCredentials(credentials);
 		this.user = user;
 		this.role = role;
 	}
 	
-
+	/**
+	 * return credentials
+	 * @return
+	 */
 	public CredentialsBean getCredentials() {
 		return credentials;
 	}
 	
-
+	/**
+	 * set credentials
+	 * @param credentials
+	 */
 	public void setCredentials(CredentialsBean credentials) {
 		this.credentials = credentials;
 	}
 	
 
 	/**
-	 * return user associated with this account
+	 * return user
 	 * @return
 	 */
 	public UserBean getUser() {
@@ -54,7 +64,7 @@ public class AccountBean implements Serializable {
 	}
 
 	/**
-	 * set user associated with this account
+	 * set user
 	 * @param user
 	 */
 	public void setUser(UserBean user) {
@@ -62,7 +72,7 @@ public class AccountBean implements Serializable {
 	}
 
 	/**
-	 * return role associated with this account
+	 * return account role
 	 * @return
 	 */
 	public AccountRole getRole() {
@@ -70,7 +80,7 @@ public class AccountBean implements Serializable {
 	}
 
 	/**
-	 * set a role for this account
+	 * set account role
 	 * @param role
 	 */
 	public void setRole(AccountRole role) {

@@ -10,6 +10,13 @@ public class ParamPatternsTest {
 
 	@Test
 	public void test() {
+		assertNotNull(new ParamPatterns());
+		assertNotNull(new ParamPatterns.Address());
+		assertNotNull(new ParamPatterns.Credentials());
+		assertNotNull(new ParamPatterns.CreditCard());
+		assertNotNull(new ParamPatterns.MenuItem());
+		assertNotNull(new ParamPatterns.User());
+		
 		assertNotNull(ParamPatterns.Address.LINE_1);
 		assertNotNull(ParamPatterns.Address.CITY);
 		assertNotNull(ParamPatterns.Address.ZIPCODE);

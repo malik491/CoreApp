@@ -11,7 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.CredentialsBean;
+import edu.depaul.se491.beans.CreditCardBean;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.OrderItemBean;
@@ -19,6 +21,8 @@ import edu.depaul.se491.beans.PaymentBean;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 import edu.depaul.se491.daos.TestDAOFactory;
+import edu.depaul.se491.enums.AddressState;
+import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.enums.OrderItemStatus;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
@@ -35,7 +39,7 @@ public class OrderModelTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		connFactory = TestConnectionFactory.getInstance();
-		daoFactory= new TestDAOFactory(connFactory);
+		daoFactory = new TestDAOFactory(connFactory);
 		dbBuilder = new DBBuilder(connFactory);
 		testDataGen = new TestDataGenerator(connFactory);
 	}
@@ -64,10 +68,9 @@ public class OrderModelTest {
 	}
 
 	@Test
-	public void testOrderModelDAOFactoryCredentialsBean() {
+	public void testOrderModel() {
 		CredentialsBean credentials = new CredentialsBean("manager", "password");
 		OrderModel model = new OrderModel(daoFactory, credentials);
-		
 		assertNotNull(model);
 	}
 
@@ -76,251 +79,305 @@ public class OrderModelTest {
 		OrderItemBean[] items = new OrderItemBean[] {new OrderItemBean(new MenuItemBean(1, null, null, 1.99, null), 1, OrderItemStatus.NOT_READY)};
 		
 		OrderBean order = new OrderBean();
-		order.setType(OrderType.PICKUP);
-		order.setPayment(new PaymentBean(0, 1.99, PaymentType.CASH, null, null));
+		order.setType(OrderType.DELIVERY);
+		order.setPayment(new PaymentBean(0, 1.99, PaymentType.CREDIT_CARD, new CreditCardBean("123456789012", "my name", 5, 2016), null));
 		order.setOrderItems(items);
-
-		// as a manager test creating order with order status:
-		// canceled, prepared, submitted		
+		order.setAddress(new AddressBean(0L, "line 1", "line2", "Chicago", AddressState.IL, "54321"));
+		
+		// manager role
 		CredentialsBean credentials = new CredentialsBean("manager", "password");
 		OrderModel model = new OrderModel(daoFactory, credentials);
+		for (OrderStatus status : OrderStatus.values()) {
+			order.setStatus(status);
+			OrderBean createdOrder = model.create(order);
+			assertNotNull(createdOrder);
+		}
 
-		order.setStatus(OrderStatus.CANCELED);
-		OrderBean createdOrder = model.create(order);
-		assertNotNull(createdOrder);
-
-		order.setStatus(OrderStatus.PREPARED);
-		createdOrder = model.create(order);
-		assertNotNull(createdOrder);
-		
-		order.setStatus(OrderStatus.SUBMITTED);
-		createdOrder = model.create(order);
-		assertNotNull(createdOrder);
-
-		
-		// as employee, test creating order with order status:
-		// canceled, prepared, submitted
-		credentials = new CredentialsBean("employee1", "password");
+		// admin role
+		credentials = new CredentialsBean("admin", "password");
 		model = new OrderModel(daoFactory, credentials);
 		
-		order.setStatus(OrderStatus.CANCELED);
-		createdOrder = model.create(order);
-		assertNull(createdOrder);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		for (OrderStatus status : OrderStatus.values()) {
+			order.setStatus(status);
+			OrderBean createdOrder = model.create(order);
+			assertNull(createdOrder);
+			assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		}
 		
-		order.setStatus(OrderStatus.PREPARED);
-		createdOrder = model.create(order);
-		assertNull(createdOrder);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		// employee & customerApp roles
+		for (String username : new String[]{"employee1", "customerapp"}) {
+			credentials = new CredentialsBean(username, "password");
+			model = new OrderModel(daoFactory, credentials);
+			
+			for (OrderStatus status : OrderStatus.values()) {
+				order.setStatus(status);
+				OrderBean createdOrder = model.create(order);
+				if (status == OrderStatus.SUBMITTED) {
+					assertNotNull(createdOrder);					
+				} else {
+					assertNull(createdOrder);
+					assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());		
+				}
+			}
+		}		
 		
-		order.setStatus(OrderStatus.SUBMITTED);
-		createdOrder = model.create(order);
-		assertNotNull(createdOrder);
-		
-		// as customer, test creating order with order status:
-		// canceled, prepared, submitted
-		credentials = new CredentialsBean("customerapp", "password");
-		model = new OrderModel(daoFactory, credentials);
-
-		order.setStatus(OrderStatus.CANCELED);
-		createdOrder = model.create(order);
-		assertNull(createdOrder);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
-		order.setStatus(OrderStatus.PREPARED);
-		createdOrder = model.create(order);
-		assertNull(createdOrder);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
-		order.setStatus(OrderStatus.SUBMITTED);
-		createdOrder = model.create(order);
-		assertNotNull(createdOrder);
+		// test creating invalid order
+		order.setType(null);
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			credentials = new CredentialsBean(username, "password");
+			model = new OrderModel(daoFactory, credentials);
+			OrderBean createdOrder = model.create(order);
+			assertNull(createdOrder);
+			assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+		}
 	}
 
 	@Test
 	public void testUpdate() {
 		long orderId = 1;
 		
-		// as a manager test updating order to order status:
-		// canceled, prepared, submitted
+		// manager role
 		CredentialsBean credentials = new CredentialsBean("manager", "password");
 		OrderModel model = new OrderModel(daoFactory, credentials);
 		
 		OrderBean oldOrder = model.read(orderId);
 		assertNotNull(oldOrder);
+		oldOrder.setAddress(null);
+		oldOrder.setType(OrderType.PICKUP);
 		
-		oldOrder.setStatus(OrderStatus.CANCELED);
-		Boolean updated = model.update(oldOrder);
-		assertNotNull(updated);
-		assertTrue(updated);
-						
-		oldOrder.setStatus(OrderStatus.PREPARED);
-		updated = model.update(oldOrder);
-		assertNotNull(updated);
-		assertTrue(updated);
+		Boolean updated = null;
 		
-		oldOrder.setStatus(OrderStatus.SUBMITTED);
-		updated = model.update(oldOrder);
-		assertNotNull(updated);
-		assertTrue(updated);
-		
-		// as employee test updating order
-		credentials = new CredentialsBean("employee1", "password");
-		model = new OrderModel(daoFactory, credentials);
+		for (OrderStatus status : OrderStatus.values()) {
+			oldOrder.setStatus(status);
+			updated = model.update(oldOrder);
+			assertNotNull(updated);
+			assertTrue(updated);
+		}
 		
 		
-		oldOrder.setStatus(OrderStatus.CANCELED);
+		// invalid order (null status)
+		oldOrder.setStatus(null);
 		updated = model.update(oldOrder);
 		assertNull(updated);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
+		assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+
 		oldOrder.setStatus(OrderStatus.SUBMITTED);
-		oldOrder.getOrderItems()[0].setStatus(OrderItemStatus.READY);
-		oldOrder.getOrderItems()[1].setStatus(OrderItemStatus.READY);
+
+		// invalid order items (all have zero quantity)
+		for (OrderItemBean item : oldOrder.getOrderItems()) {
+			item.setQuantity(0);
+		}
 		updated = model.update(oldOrder);
-		assertNotNull(updated);
-		assertTrue(updated);
+		assertNull(updated);
+		assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+
 		
-		// all items are ready so order status should be prepared
-		OrderBean updatedOrder = model.read(orderId);
-		assertNotNull(updatedOrder);
-		assertEquals(OrderStatus.PREPARED, updatedOrder.getStatus());
+		// test all other role
+		for (String username : new String[]{"admin", "employee1", "customerapp"}) {
+			credentials = new CredentialsBean(username, "password");
+			model = new OrderModel(daoFactory, credentials);
+			updated = model.update(oldOrder);
+			assertNull(updated);
+			assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		}
 	}
+	
+	@Test
+	public void testEmployeeUpdate() {
+		long orderId = 4;
+		
+		// manager role to read order
+		CredentialsBean credentials = new CredentialsBean("manager", "password");
+		OrderModel model = new OrderModel(daoFactory, credentials);
+		OrderBean oldOrder = model.read(orderId);
+
+		assertNotNull(oldOrder);
+		OrderItemBean[] orderItems = oldOrder.getOrderItems();
+		assertNotNull(orderItems);
+		assertEquals(4, orderItems.length);
+		
+		
+		// test updating order items from different stations
+		credentials = new CredentialsBean("employee1", "password");
+		model = new OrderModel(daoFactory, credentials);
+		Boolean updated = null;
+		
+		for (MenuItemCategory currentFoodStation : MenuItemCategory.values()) {
+			OrderItemBean orderItem = null;
+
+			// find order item for the current station
+			for (OrderItemBean item : orderItems) {
+				if (item.getMenuItem().getItemCategory() == currentFoodStation) {
+					orderItem = item;
+					break;
+				}
+			}
+			
+			assertNotNull(orderItem);
+			
+			// test updating order item status (ready and not_ready)
+			for (OrderItemStatus status : OrderItemStatus.values()) {
+				orderItem.setStatus(status);
+				updated = model.update(oldOrder, currentFoodStation);
+				assertNotNull(updated);
+				assertTrue(updated);
+			}
+		}
+
+		// test updating with invalid order item status
+		OrderItemBean item = oldOrder.getOrderItems()[0];
+		item.setStatus(null);
+		updated = model.update(oldOrder, item.getMenuItem().getItemCategory());
+		assertNull(updated);
+		assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+		
+		
+		// test updating with invalid station
+		item.setStatus(OrderItemStatus.READY);
+		updated = model.update(oldOrder, null);
+		assertNull(updated);
+		assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+		
+		// test all other role
+		item.setStatus(OrderItemStatus.READY);
+		for (String username : new String[]{"admin", "manager", "customerapp"}) {
+			credentials = new CredentialsBean(username, "password");
+			model = new OrderModel(daoFactory, credentials);
+			updated = model.update(oldOrder, MenuItemCategory.MAIN);
+			assertNull(updated);
+			assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		}
+	}
+	
 
 	@Test
 	public void testDelete() {
 		long orderId = 1;
 		
-		// as a manager test updating order to order status:
-		// canceled, prepared, submitted
-		CredentialsBean credentials = new CredentialsBean("manager", "password");
-		OrderModel model = new OrderModel(daoFactory, credentials);
-		
-		Boolean deleted = model.delete(orderId);
-		assertNotNull(deleted);
-		assertTrue(deleted);
-		
-		orderId = 2;
-		credentials = new CredentialsBean("employee1", "password");
-		model = new OrderModel(daoFactory, credentials);
-		deleted = model.delete(orderId);
-		assertNull(deleted);		
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
-		credentials = new CredentialsBean("customerapp", "password");
-		model = new OrderModel(daoFactory, credentials);
-		deleted = model.delete(orderId);
-		assertNull(deleted);		
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			CredentialsBean credentials = new CredentialsBean(username, "password");
+			OrderModel model = new OrderModel(daoFactory, credentials);
+
+			Boolean deleted = model.delete(orderId);
+			
+			// manager role
+			if (username.equals("manager")) {
+				assertNotNull(deleted);
+				assertTrue(deleted);
+				// next order
+				orderId = 2;
+			} else {
+				assertNull(deleted);
+				assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
+			}
+		}
 	}
 
 	@Test
-	public void testReadLong() {
+	public void testReadWithOrderId() {
 		long orderId = 1;
 		
-		CredentialsBean credentials = new CredentialsBean("manager", "password");
-		OrderModel model = new OrderModel(daoFactory, credentials);
-		
-		OrderBean order = model.read(orderId);
-		assertNotNull(order);
-		
-		credentials = new CredentialsBean("employee1", "password");
-		model = new OrderModel(daoFactory, credentials);
-		order = model.read(orderId);
-		assertNotNull(order);
-		
-		credentials = new CredentialsBean("customerapp", "password");
-		model = new OrderModel(daoFactory, credentials);
-		order = model.read(orderId);
-		assertNull(order);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			CredentialsBean credentials = new CredentialsBean(username, "password");
+			OrderModel model = new OrderModel(daoFactory, credentials);
+			OrderBean order = model.read(orderId);
+			
+			if (username.equals("manager") || username.equals("employee1")) {
+				assertNotNull(order);
+				
+				// test invalid id
+				assertNull(model.read(0L));
+				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());	
+
+				// test valid id but no order found
+				assertNull(model.read(100L));
+				assertEquals(Response.Status.NOT_FOUND, model.getResponseStatus());	
+
+			} else {
+				assertNull(order);
+				assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
+			}
+		}
 	}
 
 	@Test
-	public void testReadString() {
+	public void testReadWithOrderConfirmation() {
 		String confirmation = "order-confirmation-123";
 		
-		CredentialsBean credentials = new CredentialsBean("manager", "password");
-		OrderModel model = new OrderModel(daoFactory, credentials);
-		
-		OrderBean order = model.read(confirmation);
-		assertNotNull(order);
-		
-		credentials = new CredentialsBean("employee1", "password");
-		model = new OrderModel(daoFactory, credentials);
-		order = model.read(confirmation);
-		assertNotNull(order);
-		
-		credentials = new CredentialsBean("customerapp", "password");
-		model = new OrderModel(daoFactory, credentials);
-		order = model.read(confirmation);
-		assertNotNull(order);
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			CredentialsBean credentials = new CredentialsBean(username, "password");
+			OrderModel model = new OrderModel(daoFactory, credentials);
+			OrderBean order = model.read(confirmation);
+			
+			if (username.equals("manager") || username.equals("customerapp")) {
+				assertNotNull(order);
+				
+				// test invalid confirmation (empty string)
+				assertNull(model.read(""));
+				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());	
+
+				// test valid confirmation but no order is found
+				assertNull(model.read("confirmation 000"));
+				assertEquals(Response.Status.NOT_FOUND, model.getResponseStatus());	
+				
+			} else {
+				assertNull(order);
+				assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
+			}
+		}
 	}
 
 	@Test
-	public void testReadAllOrderStatus() {
-		CredentialsBean credentials = new CredentialsBean("manager", "password");
-		OrderModel model = new OrderModel(daoFactory, credentials);
-		
-		List<OrderBean> submittedOrders = model.readAll(OrderStatus.SUBMITTED);
-		List<OrderBean> preparedOrders = model.readAll(OrderStatus.PREPARED);
-		List<OrderBean> canceledOrders = model.readAll(OrderStatus.CANCELED);
-		assertNotNull(submittedOrders);
-		assertNotNull(preparedOrders);
-		assertNotNull(canceledOrders);
-		
-		credentials = new CredentialsBean("employee1", "password");
-		model = new OrderModel(daoFactory, credentials);
-		submittedOrders = model.readAll(OrderStatus.SUBMITTED);
-		preparedOrders = model.readAll(OrderStatus.PREPARED);
-		canceledOrders = model.readAll(OrderStatus.CANCELED);
-		assertNotNull(submittedOrders);
-		assertNotNull(preparedOrders);
-		assertNotNull(canceledOrders);
-		
-		credentials = new CredentialsBean("customerapp", "password");
-		model = new OrderModel(daoFactory, credentials);
-		submittedOrders = model.readAll(OrderStatus.SUBMITTED);
-		assertNull(submittedOrders);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
-		preparedOrders = model.readAll(OrderStatus.PREPARED);
-		assertNull(preparedOrders);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
-		canceledOrders = model.readAll(OrderStatus.CANCELED);
-		assertNull(canceledOrders);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+	public void testReadAllOrdersByStatus() {
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			CredentialsBean credentials = new CredentialsBean(username, "password");
+			OrderModel model = new OrderModel(daoFactory, credentials);
+			
+			for (OrderStatus status : OrderStatus.values()) {
+				List<OrderBean> orders = model.readAll(status);
+				if (username.equals("manager") || (username.equals("employee1") && status == OrderStatus.SUBMITTED)) {
+					assertNotNull(orders);
+				} else {
+					assertNull(orders);
+					assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
+				}
+			}
+		}
 	}
 
 	@Test
-	public void testReadAllOrderType() {
-		CredentialsBean credentials = new CredentialsBean("manager", "password");
-		OrderModel model = new OrderModel(daoFactory, credentials);
-		
-		List<OrderBean> pickupOrders = model.readAll(OrderType.PICKUP);
-		List<OrderBean> deliveryOrders = model.readAll(OrderType.DELIVERY);
-		assertNotNull(pickupOrders);
-		assertNotNull(deliveryOrders);
-		
-		
-		credentials = new CredentialsBean("employee1", "password");
-		model = new OrderModel(daoFactory, credentials);
-		pickupOrders = model.readAll(OrderType.PICKUP);
-		deliveryOrders = model.readAll(OrderType.DELIVERY);
-		assertNotNull(pickupOrders);
-		assertNotNull(deliveryOrders);
-		
-		credentials = new CredentialsBean("customerapp", "password");
-		model = new OrderModel(daoFactory, credentials);
-		pickupOrders = model.readAll(OrderType.PICKUP);
-		assertNull(pickupOrders);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-
-		deliveryOrders = model.readAll(OrderType.DELIVERY);
-		assertNull(deliveryOrders);
-		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
-		
+	public void testReadAllOrderByType() {
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			CredentialsBean credentials = new CredentialsBean(username, "password");
+			OrderModel model = new OrderModel(daoFactory, credentials);
+			
+			for (OrderType type : OrderType.values()) {
+				List<OrderBean> orders = model.readAll(type);
+				if (username.equals("manager")) {
+					assertNotNull(orders);
+				} else {
+					assertNull(orders);
+					assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
+				}
+			}
+		}
 	}
-
+	
+	@Test
+	public void testReadAll() {
+		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
+			CredentialsBean credentials = new CredentialsBean(username, "password");
+			OrderModel model = new OrderModel(daoFactory, credentials);
+			
+			for (OrderType type : OrderType.values()) {
+				List<OrderBean> orders = model.readAll(type);
+				if (username.equals("manager")) {
+					assertNotNull(orders);
+				} else {
+					assertNull(orders);
+					assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
+				}
+			}
+		}
+	}
 }

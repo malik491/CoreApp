@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response.Status;
 
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.RequestBean;
+import edu.depaul.se491.daos.DAOFactory;
+import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
@@ -29,6 +31,16 @@ import edu.depaul.se491.validators.CredentialsValidator;
  */
 @Path("/order")
 public class OrderService {
+	private static DAOFactory daoFactory;
+	
+	public OrderService() {
+		daoFactory = ProductionDAOFactory.getInstance();
+	}
+
+	public OrderService(DAOFactory factory) {
+		daoFactory = factory;
+	}
+	
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -39,7 +51,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			OrderBean order = model.read(request.getExtra());
 			if (order == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -61,7 +73,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			OrderBean order = model.read(request.getExtra());
 			if (order == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -83,7 +95,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			OrderBean createdOrder = model.create(request.getExtra());
 			if (createdOrder == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -105,7 +117,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			Boolean updated = model.update(request.getExtra());
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -127,7 +139,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			Boolean updated = model.update(request.getExtra(), MenuItemCategory.MAIN);
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -149,7 +161,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			Boolean updated = model.update(request.getExtra(), MenuItemCategory.SIDE);
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -172,7 +184,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			Boolean updated = model.update(request.getExtra(), MenuItemCategory.BEVERAGE);
 			if (updated == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -194,7 +206,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			Boolean deleted = model.delete(request.getExtra());
 			if (deleted == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -216,7 +228,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, true);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			List<OrderBean> orders = model.readAll();
 			if (orders == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -238,7 +250,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			List<OrderBean> orders = model.readAll(request.getExtra());
 			if (orders == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
@@ -260,7 +272,7 @@ public class OrderService {
 		boolean isValid = isValidRequest(request, false);
 		
 		if (isValid) {	
-			OrderModel model = new OrderModel(request.getCredentials());
+			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
 			List<OrderBean> orders = model.readAll(request.getExtra());
 			if (orders == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());

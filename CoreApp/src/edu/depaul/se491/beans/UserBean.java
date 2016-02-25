@@ -1,6 +1,3 @@
-/**
- * User Bean
- */
 package edu.depaul.se491.beans;
 
 import java.io.Serializable;
@@ -8,8 +5,9 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * User Bean
+ * 
  * @author Malik
- *
  */
 @XmlRootElement
 public class UserBean implements Serializable {
@@ -21,12 +19,20 @@ public class UserBean implements Serializable {
 	private AddressBean address;
 	
 	/**
-	 * construct an empty user
-	 * phone field defaults to empty string
+	 * construct UserBean
 	 */
 	public UserBean() {
 	}
 	
+	/**
+	 * construct UserBean
+	 * @param id
+	 * @param firstName
+	 * @param lastName
+	 * @param email
+	 * @param phone
+	 * @param address
+	 */
 	public UserBean(long id, String firstName, String lastName, String email, String phone, AddressBean address) {
 		this.id = id;
 		this.firstName = firstName;
@@ -36,9 +42,8 @@ public class UserBean implements Serializable {
 		this.address = address;
 	}
 	
-	
 	/**
-	 * return user id
+	 * return id
 	 * @return
 	 */
 	public long getId() {
@@ -47,7 +52,7 @@ public class UserBean implements Serializable {
 
 	
 	/**
-	 * set user id
+	 * set id
 	 * @param id
 	 */
 	public void setId(long id) {
@@ -113,7 +118,6 @@ public class UserBean implements Serializable {
 
 	/**
 	 * set phone number
-	 * use the format: ddd-ddd-dddd
 	 * @param phone
 	 */
 	public void setPhone(String phone) {
@@ -121,7 +125,7 @@ public class UserBean implements Serializable {
 	}
 
 	/**
-	 * return user address
+	 * return address
 	 * @return
 	 */
 	public AddressBean getAddress() {
@@ -129,7 +133,7 @@ public class UserBean implements Serializable {
 	}
 
 	/**
-	 * set user address
+	 * set address
 	 * @param address
 	 */
 	public void setAddress(AddressBean address) {

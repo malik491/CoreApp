@@ -1,6 +1,3 @@
-/**
- * Loader for Address bean
- */
 package edu.depaul.se491.loaders;
 
 import java.sql.PreparedStatement;
@@ -11,20 +8,17 @@ import edu.depaul.se491.enums.AddressState;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
- * Address Bean loader
- * - populate a preparedStatment using data store in an Address bean
- * - populate/recreate a new Address bean using data in a ResultSet
+ * AddressBean Loader
  * 
  * @author Malik
  */
 public class AddressBeanLoader {
 	
 	/**
-	 * return an account bean using the ResultSet (a single row)
-	 * THIS METHOD SHOULD BE CALLED ONLY WHEN (rs.next() is true before the call).
-	 * It expects a ResultSet its cursor pointing at a row
-	 * @param rs a ResultSet containing account data from the database
-	 * @return account bean object containing the data from an account in the database
+	 * return a single AddressBean in the result-set
+	 * @param rs
+	 * @return
+	 * @throws SQLException
 	 */
 	public AddressBean loadSingle(ResultSet rs) throws SQLException {
 		AddressBean bean = new AddressBean();		
@@ -40,10 +34,11 @@ public class AddressBeanLoader {
 	}
 
 	/**
-	 * populate the PreparedStatment with data in the address bean
-	 * @param ps preparedStatement with sql string containing at least 5 '?'/placeholders
-	 * @param bean address bean with data
-	 * @return return the passed ps
+	 * load parameters from the AddressBean into the given PrepareStatement
+	 * @param ps
+	 * @param bean
+	 * @param paramIndex
+	 * @throws SQLException
 	 */
 	public void loadParameters(PreparedStatement ps, AddressBean bean, int paramIndex) throws SQLException {		
 		ps.setString(paramIndex++, bean.getLine1());

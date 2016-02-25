@@ -1,6 +1,3 @@
-/**
- * utility class for DAO objects and SQLException
- */
 package edu.depaul.se491.utils.dao;
 
 import java.sql.Connection;
@@ -9,15 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 /**
+ * utility class for DAO class
+ * 
  * @author Malik
- *
  */
 public abstract class DAOUtil {
 
 	/**
-	 * return the auto genersated key
+	 * return auto generated key
 	 * @param ps
 	 * @return
 	 * @throws SQLException
@@ -31,44 +28,83 @@ public abstract class DAOUtil {
 		return newId;
 	}
 	
+	/**
+	 * return true if 1 row is affected
+	 * @param affectedRows
+	 * @return
+	 */
 	public static boolean validUpdate(int affectedRows) {
-		return affectedRows == ZERO_ROW_AFFECTED || affectedRows == ONE_ROW_AFFECTED;
+		return affectedRows == ONE_ROW_AFFECTED;
 	}
 	
+	/**
+	 * return true if 1 row is affected
+	 * @param affectedRows
+	 * @return
+	 */
 	public static boolean validInsert(int affectedRows) {
 		return affectedRows == ONE_ROW_AFFECTED;
 	}
 	
+	/**
+	 * return true if 1 row is affected
+	 * @param affectedRows
+	 * @return
+	 */
 	public static boolean validDelete(int affectedRows) {
 		return affectedRows == ONE_ROW_AFFECTED;
 	}
 	
+	/**
+	 * close connection (null safe)
+	 * @param c
+	 * @throws SQLException
+	 */
 	public static void close(Connection c) throws SQLException {
 		if (c != null)
 			c.close();
 	}
 
+	/**
+	 * close preparedStatement (null safe)
+	 * @param ps
+	 * @throws SQLException
+	 */
 	public static void close(PreparedStatement ps) throws SQLException {
 		if (ps != null)
 			ps.close();
 	}
 
+	/**
+	 * close Statement (null safe)
+	 * @param s
+	 * @throws SQLException
+	 */
 	public static void close(Statement s) throws SQLException {
 		if (s != null)
 			s.close();
 	}
 	
+	/**
+	 * close ResultSet (null safe)
+	 * @param rs
+	 * @throws SQLException
+	 */
 	public static void close(ResultSet rs) throws SQLException {
 		if (rs != null)
 			rs.close();
 	}
 	
+	/**
+	 * set autoCommit for a connection (null safe)
+	 * @param c
+	 * @param value
+	 * @throws SQLException
+	 */
 	public static void setAutoCommit(Connection c, boolean value) throws SQLException {
 		if (c != null)
 			c.setAutoCommit(value);
 	}
 	
-	public static final int ONE_ROW_AFFECTED = 1;
-	public static final int ZERO_ROW_AFFECTED = 0;
-	public static final String GENERIC_BD_ERROR_MSG = "Database Error Occured. Contact admin for details";
+	private static final int ONE_ROW_AFFECTED = 1;
 }

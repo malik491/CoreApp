@@ -7,9 +7,16 @@ import org.junit.Test;
 import edu.depaul.se491.utils.ParamLabels;
 
 public class ParamLabelsTest {
+	
+	@Test
+	public void testParamLabels() {
+		assertNotNull(new ParamLabels());
+	}
 
 	@Test
 	public void testOrderLabels() {
+		assertNotNull(new ParamLabels.Order());
+				
 		assertNotNull(ParamLabels.Order.ORDER_BEAN);
 		assertNotNull(ParamLabels.Order.ORDER_BEAN_LIST);
 		assertNotNull(ParamLabels.Order.ID);
@@ -20,6 +27,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testOrderItemLabels() {
+		assertNotNull(new ParamLabels.OrderItem());
+		
 		assertNotNull(ParamLabels.OrderItem.MENU_ITEM);
 		assertNotNull(ParamLabels.OrderItem.ORDER_ITEM);
 		assertNotNull(ParamLabels.OrderItem.QUANTITY);
@@ -28,6 +37,8 @@ public class ParamLabelsTest {
 
 	@Test
 	public void testMenuItemLabels() {
+		assertNotNull(new ParamLabels.MenuItem());
+		
 		assertNotNull(ParamLabels.MenuItem.MENU_ITEM_BEAN);
 		assertNotNull(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST);
 		assertNotNull(ParamLabels.MenuItem.ID);
@@ -39,6 +50,8 @@ public class ParamLabelsTest {
 
 	@Test
 	public void testAccountLabels() {
+		assertNotNull(new ParamLabels.Account());
+		
 		assertNotNull(ParamLabels.Account.ACCOUNT_BEAN);
 		assertNotNull(ParamLabels.Account.ACCOUNT_BEAN_LIST);
 		assertNotNull(ParamLabels.Account.ROLE);
@@ -46,6 +59,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testCredentialsLabels() {
+		assertNotNull(new ParamLabels.Credentials());
+		
 		assertNotNull(ParamLabels.Credentials.CREDENTIALS_BEAN);
 		assertNotNull(ParamLabels.Credentials.USERNAME);
 		assertNotNull(ParamLabels.Credentials.PASSWORD);
@@ -53,6 +68,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testCreditCardLabels() {
+		assertNotNull(new ParamLabels.CreditCard());
+		
 		assertNotNull(ParamLabels.CreditCard.CRIDET_CARD_BEAN);
 		assertNotNull(ParamLabels.CreditCard.NUMBER);
 		assertNotNull(ParamLabels.CreditCard.HOLDER_NAME);
@@ -62,6 +79,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testPaymentLabels() {
+		assertNotNull(new ParamLabels.Payment());
+		
 		assertNotNull(ParamLabels.Payment.PAYMENT_BEAN);
 		assertNotNull(ParamLabels.Payment.ID);
 		assertNotNull(ParamLabels.Payment.TYPE);
@@ -71,6 +90,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testAddressLabels() {
+		assertNotNull(new ParamLabels.Address());
+		
 		assertNotNull(ParamLabels.Address.ADDRESS_BEAN);
 		assertNotNull(ParamLabels.Address.ID);
 		assertNotNull(ParamLabels.Address.LINE_1);
@@ -82,6 +103,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testUserLabels() {
+		assertNotNull(new ParamLabels.User());
+		
 		assertNotNull(ParamLabels.User.USER_BEAN);
 		assertNotNull(ParamLabels.User.ID);
 		assertNotNull(ParamLabels.User.F_NAME);
@@ -92,6 +115,8 @@ public class ParamLabelsTest {
 	
 	@Test
 	public void testJSPLabels() {
+		assertNotNull(new ParamLabels.JspMsg());
+				
 		assertNotNull(ParamLabels.JspMsg.MSG);
 	}
 }

@@ -1,6 +1,3 @@
-/**
- * Account Data Access Object (DAO)
- */
 package edu.depaul.se491.daos.mysql;
 
 import java.sql.Connection;
@@ -14,35 +11,38 @@ import edu.depaul.se491.beans.UserBean;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
 import edu.depaul.se491.enums.AccountRole;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.AccountBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
- * AccountDAO to access/modify account data in the database
+ * Account Data Access Object (DAO)
+ * 
  * @author Malik
- *
  */
 public class AccountDAO {
 	private ConnectionFactory connFactory;
 	private AccountBeanLoader loader;
 	private UserDAO userDAO;
 	
+	/**
+	 * construct AccountDAO
+	 * @param daoFactory
+	 * @param connFactory
+	 */
 	public  AccountDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.loader = new AccountBeanLoader();
 		this.userDAO = daoFactory.getUserDAO();
 	}
 	
-	
 	/**
-	 * return all accounts in the database
-	 * Empty list is returned if there are no addresses in the database
+	 * return all accounts with the given role (or empty list)
+	 * @param role
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<AccountBean> getAllByRole(AccountRole role) throws DBException {
+	public List<AccountBean> getAllByRole(AccountRole role) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -57,29 +57,26 @@ public class AccountDAO {
 			accounts = loader.loadList(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return accounts;
 	}
 	
 	/**
-	 * return account associated with the given username
-	 * Null is returned if there are no account for the given username
+	 * return account with the given username or null
 	 * @param username
 	 * @return
 	 * @throws SQLException
 	 */
-	public AccountBean get(String username) throws DBException {
+	public AccountBean get(String username) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -95,31 +92,29 @@ public class AccountDAO {
 				account = loader.loadSingle(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return account;
 	}
 	
 	/**
-	 * add account to the database using the data in the accountBean
-	 * @param account account data
-	 * @return true if account is added
+	 * insert a new account
+	 * @param account
+	 * @return newly inserted account
 	 * @throws SQLException
 	 */
-	public AccountBean add(AccountBean account) throws DBException {
+	public AccountBean add(AccountBean account) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
-		AccountBean addedAccount = null;
+		AccountBean result = null;
 		
 		try {
 			boolean added = false;
@@ -134,6 +129,7 @@ public class AccountDAO {
 			UserBean addedUser = userDAO.transactionAdd(conn, account.getUser());
 			added = addedUser != null;
 			
+			AccountBean addedAccount = null;
 			if (added) {
 				// copy old data, set new user (user with id)
 				addedAccount = new AccountBean(account.getCredentials(), account.getUser(), account.getRole());
@@ -147,16 +143,21 @@ public class AccountDAO {
 			if (added) {
 				// commit the transaction
 				conn.commit();
+				result = addedAccount;
 			} else {
 				// rollback
 				conn.rollback();
-				addedUser = null;
 			}			
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.addSuppressed(e);
+					throw e1;
+				}				
+			}
 			throw e;
 		} finally {
 			try {
@@ -164,20 +165,19 @@ public class AccountDAO {
 				DAOUtil.setAutoCommit(conn, true);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
-		return addedAccount;
+		return result;
 	}
 	
 	/**
-	 * update an existing account with new data in the accountBean
-	 * @param account updated account data
-	 * @return true if account is updated
+	 * update account
+	 * @param account
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean update(AccountBean account) throws DBException {
+	public boolean update(AccountBean account) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		boolean updated = false;
@@ -209,9 +209,14 @@ public class AccountDAO {
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.addSuppressed(e);
+					throw e1;
+				}				
+			}
 			throw e;
 		} finally {
 			try {
@@ -219,20 +224,19 @@ public class AccountDAO {
 				DAOUtil.setAutoCommit(conn, true);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return updated;
 	}
 	
 	/**
-	 * delete an existing account from the database
-	 * @param account account to delete
-	 * @return true if account is delete
+	 * delete account with the given username
+	 * @param username
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean delete(final String username) throws DBException {
+	public boolean delete(final String username) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		boolean deleted = false;
@@ -266,9 +270,14 @@ public class AccountDAO {
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.addSuppressed(e);
+					throw e1;
+				}				
+			}
 			throw e;
 		} finally {
 			try {
@@ -276,8 +285,7 @@ public class AccountDAO {
 				DAOUtil.setAutoCommit(conn, true);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return deleted;

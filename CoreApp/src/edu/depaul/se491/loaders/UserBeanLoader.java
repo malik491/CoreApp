@@ -1,6 +1,3 @@
-/**
- * Loader for User bean
- */
 package edu.depaul.se491.loaders;
 
 import java.sql.PreparedStatement;
@@ -9,27 +6,26 @@ import java.sql.SQLException;
 import edu.depaul.se491.beans.UserBean;
 import edu.depaul.se491.utils.dao.DBLabels;
 
-
 /**
- * User Bean loader
- * - populate a preparedStatment using data store in a User bean
- * - populate/recreate a new User bean using data in a ResultSet
+ * UserBean Loader
  * 
  * @author Malik
  */
 public class UserBeanLoader {
 	private AddressBeanLoader loader;
 	
+	/**
+	 * construct UserBeanLoader
+	 */
 	public UserBeanLoader() {
 		loader = new AddressBeanLoader(); 
 	}
 
 	/**
-	 * return a User bean using the ResultSet (a single row)
-	 * THIS METHOD SHOULD BE CALLED ONLY WHEN (rs.next() is true before the call).
-	 * It expects a ResultSet its cursor pointing at a row
-	 * @param rs a ResultSet containing User data from the database
-	 * @return User bean object containing the data for a user in the database
+	 * return a single UserBean in the result-set
+	 * @param rs
+	 * @return
+	 * @throws SQLException
 	 */
 	public UserBean loadSingle(ResultSet rs) throws SQLException {
 		UserBean bean = new UserBean();
@@ -45,10 +41,11 @@ public class UserBeanLoader {
 	}
 
 	/**
-	 * populate the PreparedStatment with data in the User bean
-	 * @param ps preparedStatement with sql string containing at least 5 '?'/placeholders
-	 * @param bean user bean with data
-	 * @return return the passed ps
+	 * load parameters from UserBean into the given PreparedStatement
+	 * @param ps
+	 * @param bean
+	 * @param paramIndex
+	 * @throws SQLException
 	 */
 	public void loadParameters(PreparedStatement ps, UserBean bean, int paramIndex) throws SQLException {
 		ps.setString(paramIndex++, bean.getFirstName());

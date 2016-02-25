@@ -1,6 +1,3 @@
-/**
- * User Data Access Object (DAO)
- */
 package edu.depaul.se491.daos.mysql;
 
 import java.sql.Connection;
@@ -13,20 +10,25 @@ import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.beans.UserBean;
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.loaders.UserBeanLoader;
 import edu.depaul.se491.utils.dao.DAOUtil;
 import edu.depaul.se491.utils.dao.DBLabels;
 
 /**
+ * User Data Access Object (DAO)
+ * 
  * @author Malik
- *
  */
 public class UserDAO {
 	private ConnectionFactory connFactory;
 	private UserBeanLoader loader;
 	private AddressDAO addressDAO;
 
+	/**
+	 * constrcut UserDAO
+	 * @param daoFactory
+	 * @param connFactory
+	 */
 	public UserDAO(DAOFactory daoFactory, ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.addressDAO = daoFactory.getAddressDAO();
@@ -34,13 +36,12 @@ public class UserDAO {
 	}
 	
 	/**
-	 * return user associated with the given email
-	 * Null is returned if there are no user for the given id
-	 * @param email user email
-	 * @return User or Null
+	 * return user by id
+	 * @param id
+	 * @return
 	 * @throws SQLException
 	 */
-	public UserBean get(long id) throws DBException {
+	public UserBean get(long id) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -56,29 +57,27 @@ public class UserDAO {
 				user = loader.loadSingle(rs);
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+			throw e;
 		} finally {
 			try {
 				DAOUtil.close(rs);
 				DAOUtil.close(ps);
 				DAOUtil.close(conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return user;
 	}
 	
 	/**
-	 * insert a new user (including user address) as a part of a database transaction
-	 * @param conn connection
-	 * @param user user data. 
-	 * @return inserted user or Null
+	 * insert a new user using the given connection (transaction)
+	 * @param conn
+	 * @param user
+	 * @return newly added user
 	 * @throws SQLException
 	 */
-	public UserBean transactionAdd(Connection conn, final UserBean user) throws DBException {
+	public UserBean transactionAdd(Connection conn, final UserBean user) throws SQLException {
 		PreparedStatement ps = null;
 		UserBean addedUser = null;
 		try {
@@ -103,28 +102,25 @@ public class UserDAO {
 			}
 						
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
 			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return addedUser;
 	}
 
 	/**
-	 * update an existing user as a part of database transaction
-	 * @param user updated user
-	 * @return true if user is updated
+	 * update a user using the given connection (transaction)
+	 * @param conn
+	 * @param user
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionUpdate(Connection conn, final UserBean user) throws DBException {
+	public boolean transactionUpdate(Connection conn, final UserBean user) throws SQLException {
 		PreparedStatement ps = null;
 		boolean updated = false;
 		try {
@@ -138,29 +134,25 @@ public class UserDAO {
 				updated = DAOUtil.validUpdate(ps.executeUpdate());
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
 			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return updated;
 	}
 	
 	/**
-	 * delete an existing user as a part of database transaction
+	 * delete user using the given connection (transaction)
 	 * @param conn
 	 * @param user
-	 * @return true if user is deleted
+	 * @return
 	 * @throws SQLException
 	 */
-	public boolean transactionDelete(Connection conn, UserBean user) throws DBException {
+	public boolean transactionDelete(Connection conn, UserBean user) throws SQLException {
 		PreparedStatement ps = null;
 		boolean deleted = false;
 		try {
@@ -173,16 +165,12 @@ public class UserDAO {
 				deleted = addressDAO.transactionDelete(conn, user.getAddress().getId());	
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
-		} catch (DBException e) {
 			throw e;
 		} finally {
 			try {
 				DAOUtil.close(ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DBException(DAOUtil.GENERIC_BD_ERROR_MSG);
+				throw e;
 			}
 		}
 		return deleted;

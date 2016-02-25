@@ -1,10 +1,6 @@
-/**
- * Account Model
- * 
- * Class to manipulate Accounts (create, update, etc)
- */
 package edu.depaul.se491.models;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,34 +9,33 @@ import javax.ws.rs.core.Response.Status;
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.daos.ProductionDAOFactory;
 import edu.depaul.se491.daos.mysql.AccountDAO;
 import edu.depaul.se491.enums.AccountRole;
-import edu.depaul.se491.exceptions.DBException;
 import edu.depaul.se491.validators.AccountValidator;
 import edu.depaul.se491.validators.AddressValidator;
 import edu.depaul.se491.validators.CredentialsValidator;
 import edu.depaul.se491.validators.UserValidator;
 
 /**
+ * Account Model
+ * 
  * @author Malik
- *
  */
 public class AccountModel extends BaseModel {
 	
-	public AccountModel(CredentialsBean credentials) {
-		super(ProductionDAOFactory.getInstance(), credentials);
-	}
-	
+	/**
+	 * construct AccountModel
+	 * @param daoFactory DAO factory
+	 * @param credentials of the current model user
+	 */
 	public AccountModel(DAOFactory daoFactory, CredentialsBean credentials) {
 		super(daoFactory, credentials);
 	}
 	
 	/**
-	 * create a new account and return it or null
+	 * create new account 
 	 * @param bean
-	 * @return
-	 * @throws DBException
+	 * @return newly created account or null
 	 */
 	public AccountBean create(AccountBean bean) {
 		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER};
@@ -64,14 +59,19 @@ public class AccountModel extends BaseModel {
 					} else {
 						createdAccount = getDAOFactory().getAccountDAO().add(bean);						
 					}
-				} catch (DBException e) {
-					setResponseAndMeessageForDBError();
+				} catch (SQLException e) {
+					setResponseAndMeessageForDBError(e);
 				}
 			}
 		}
 		return createdAccount;
 	}
 
+	/**
+	 * update account
+	 * @param bean
+	 * @return
+	 */
 	public Boolean update(AccountBean bean) {
 		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER, EMPLOYEE};
 		boolean isValid = hasPermission(allowedRoles);
@@ -81,21 +81,20 @@ public class AccountModel extends BaseModel {
 		AccountBean oldAccount = null;
 		if (isValid) {
 			isValid = false;
-			try {
-				oldAccount = getDAOFactory().getAccountDAO().get(bean.getCredentials().getUsername());
-
+			
+			oldAccount = read(bean.getCredentials().getUsername());
+			isValid = (oldAccount != null);
+				
+			if (isValid) {
 				// updated user & address must have same id as the save ones
 				isValid  = bean.getUser().getId() == oldAccount.getUser().getId();
 				isValid &= bean.getUser().getAddress().getId() == oldAccount.getUser().getAddress().getId();
-	
+				
 				if (!isValid) {
 					setResponseStatus(Status.BAD_REQUEST);
-					setResponseMessage("Invalid user id or address id");
+					setResponseMessage("Invalid account data (user id or address id)");
 				}
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
 			}
-						
 		}
 		
 		if (isValid) {
@@ -124,15 +123,19 @@ public class AccountModel extends BaseModel {
 		if (isValid) {
 			try {
 				updated = getDAOFactory().getAccountDAO().update(bean);
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
 		return updated;
 	}
 	
-	
+	/**
+	 * return account with the given username or null
+	 * @param username
+	 * @return
+	 */
 	public AccountBean read(final String username) {
 		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER, EMPLOYEE};
 		boolean isValid = hasPermission(allowedRoles);
@@ -164,8 +167,8 @@ public class AccountModel extends BaseModel {
 							account = null;
 						}
 					}
-				} catch (DBException e) {
-					setResponseAndMeessageForDBError();
+				} catch (SQLException e) {
+					setResponseAndMeessageForDBError(e);
 				}
 			} else {
 				setResponseStatus(Status.UNAUTHORIZED);
@@ -175,7 +178,11 @@ public class AccountModel extends BaseModel {
 		return account;
 	}
 	
-
+	/**
+	 * delete account with the given username
+	 * @param username
+	 * @return
+	 */
 	public Boolean delete(String username) {
 		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER};
 		boolean isValid = hasPermission(allowedRoles);
@@ -212,14 +219,18 @@ public class AccountModel extends BaseModel {
 					if (canDelete)
 						deleted = getDAOFactory().getAccountDAO().delete(username);		
 				}				
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
 		return deleted;
 	}
 	
+	/**
+	 * return all accounts
+	 * @return
+	 */
 	public List<AccountBean> readAll() {
 		AccountRole[] allowedRoles = new AccountRole[] {ADMIN, MANAGER};
 		boolean isValid = hasPermission(allowedRoles);
@@ -245,14 +256,13 @@ public class AccountModel extends BaseModel {
 				for (AccountRole role: viewableRoles) {
 					accounts.addAll(getDAOFactory().getAccountDAO().getAllByRole(role));
 				}
-			} catch (DBException e) {
-				setResponseAndMeessageForDBError();
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
 			}
 		}
 		
 		return accounts;
 	}
-	
 	
 	private boolean isValidUsername(String username){
 		CredentialsValidator credentialValidator = new CredentialsValidator();
@@ -307,11 +317,11 @@ public class AccountModel extends BaseModel {
 	}
 	
 	/**
-	 * return true/false solely base on account role
+	 * return true/false solely based on account role
 	 * Logged in as:
 	 * 		Admin	: can create admin, manager, or customer_app account
 	 *  	Manager	: can create employee accounts
-	 *  	all other roles: not allowed to created accounts 
+	 *  	all other roles: not allowed to create accounts 
 	 * @param loggedInAs
 	 * @param toBeUpdatedHasRole
 	 * @return
