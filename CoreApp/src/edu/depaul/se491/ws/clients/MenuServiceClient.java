@@ -1,5 +1,6 @@
 package edu.depaul.se491.ws.clients;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -31,17 +32,21 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<Long> request = super.<Long>getRequestBean(credentials, new Long(menuItemId));
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		MenuItemBean responseBean = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean = response.readEntity(MenuItemBean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean = response.readEntity(MenuItemBean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return responseBean;
 	}
 	
@@ -51,16 +56,19 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<MenuItemBean> request = super.<MenuItemBean>getRequestBean(credentials, newMenuItem);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		MenuItemBean responseBean = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean = response.readEntity(MenuItemBean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean = response.readEntity(MenuItemBean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
 		return responseBean;
 	}
 	
@@ -70,17 +78,20 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<MenuItemBean> request = super.<MenuItemBean>getRequestBean(credentials, updatedMenuItem);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean updated = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			updated = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				updated = response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
-		
+				
 		return updated;
 	}
 	
@@ -89,17 +100,21 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, deleteTarget);
 		
 		RequestBean<Long> request = super.<Long>getRequestBean(credentials, new Long(menuItemId));
-		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
+
 		Boolean deleted = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			deleted = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				deleted = response.readEntity(Boolean.class);
+			}
+			response.close();
+
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		response.close();
-		
+				
 		return deleted;
 	}
 	
@@ -110,16 +125,19 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<Object> request = super.<Object>getRequestBean(credentials, null);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		MenuItemBean[] responseBeans = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBeans = response.readEntity(MenuItemBean[].class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBeans = response.readEntity(MenuItemBean[].class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
 		
 		return responseBeans;
 	}

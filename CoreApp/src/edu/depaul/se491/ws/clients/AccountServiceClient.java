@@ -1,5 +1,6 @@
 package edu.depaul.se491.ws.clients;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -29,17 +30,21 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<String> request = super.<String>getRequestBean(credentials, username);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		AccountBean responseBean = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean =  response.readEntity(AccountBean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean =  response.readEntity(AccountBean.class);
+			}			
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
+
 		
 		return responseBean;
 	}
@@ -50,19 +55,22 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<AccountBean> request = super.<AccountBean>getRequestBean(credentials, newAccount);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		AccountBean responseBean = null;
 		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean =  response.readEntity(AccountBean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean =  response.readEntity(AccountBean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		
-		response.close();
-		
+
 		return responseBean;
 	}
 	
@@ -72,17 +80,21 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<AccountBean> request = super.<AccountBean>getRequestBean(credentials, updatedAccount);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean updated = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			updated =  response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				updated =  response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		
 		return updated;
 	}
@@ -93,16 +105,20 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<String> request = super.<String>getRequestBean(credentials, username);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean deleted = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			deleted =  response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				deleted =  response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		response.close();
 		
 		return deleted;
 	}
@@ -114,17 +130,20 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<Object> request = super.<Object>getRequestBean(credentials, null);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		AccountBean[] responseBeans = null;
 		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBeans =  response.readEntity(AccountBean[].class);
-		}
-		
-		response.close();
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBeans =  response.readEntity(AccountBean[].class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
+		}	
 		
 		return responseBeans;
 	}

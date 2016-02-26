@@ -3,6 +3,7 @@
  */
 package edu.depaul.se491.ws.clients;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -38,18 +39,21 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
 		
 		RequestBean<Long> request = super.<Long>getRequestBean(credentials, new Long(orderId));
-		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
+
 		OrderBean responseBean = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean = response.readEntity(OrderBean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean = response.readEntity(OrderBean.class);
+			}
+			response.close();
+				
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return responseBean;
 	}
 
@@ -59,17 +63,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<String> request = super.<String>getRequestBean(credentials, orderConfirmation);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		OrderBean responseBean = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean = response.readEntity(OrderBean.class);
+		try {		
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean = response.readEntity(OrderBean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return responseBean;
 	}
 	
@@ -79,17 +86,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, newOrder);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		OrderBean responseBean = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			responseBean = response.readEntity(OrderBean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				responseBean = response.readEntity(OrderBean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
+
 		return responseBean;
 	}
 	
@@ -98,18 +108,21 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
 		
 		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
-		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
+
 		Boolean updated = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			updated = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				updated = response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
+
 		return updated;
 	}
 	
@@ -119,17 +132,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean updated = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			updated = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				updated = response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return updated;
 	}
 	
@@ -139,37 +155,43 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean updated = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			updated = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				updated = response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return updated;
 	}
 	
-	public Boolean beverageStationupdate(final OrderBean updatedOrder) {
+	public Boolean beverageStationUpdate(final OrderBean updatedOrder) {
 		final String getTarget = serviceBaseUrl + "/update/station/beverage";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
 		
 		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, updatedOrder);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean updated = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			updated = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				updated = response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return updated;
 	}
 	
@@ -180,17 +202,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<Long> request = super.<Long>getRequestBean(credentials, new Long(orderId));
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		Boolean deleted = null;
-		
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			deleted = response.readEntity(Boolean.class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				deleted = response.readEntity(Boolean.class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return deleted;
 	}
 	
@@ -200,16 +225,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<Object> request = super.<Object>getRequestBean(credentials, null);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		OrderBean[] orders = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			orders = response.readEntity(OrderBean[].class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				orders = response.readEntity(OrderBean[].class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return orders;
 	}
 	
@@ -219,16 +248,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<OrderStatus> request = super.<OrderStatus>getRequestBean(credentials, status);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		OrderBean[] orders = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			orders = response.readEntity(OrderBean[].class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				orders = response.readEntity(OrderBean[].class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
 		
-		response.close();
 		return orders;
 	}
 	
@@ -238,16 +271,20 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		
 		RequestBean<OrderType> request = super.<OrderType>getRequestBean(credentials, type);
 		
-		Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-		
 		OrderBean[] orders = null;
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			setResponseMessage(response.readEntity(String.class));
-		} else {
-			orders = response.readEntity(OrderBean[].class);
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				orders = response.readEntity(OrderBean[].class);
+			}
+			response.close();
+			
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
 		}
-		
-		response.close();
+
 		return orders;
 	}
 	

@@ -7,10 +7,10 @@ import javax.ws.rs.core.MediaType;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.beans.RequestBean;
 
-public abstract class BaseWebServiceClient {
+class BaseWebServiceClient {
 	private String responseMessage;
 	
-	protected BaseWebServiceClient() {
+	BaseWebServiceClient() {
 	}
 
 	public String getResponseMessage() {
@@ -34,4 +34,8 @@ public abstract class BaseWebServiceClient {
 	protected void setResponseMessage(String responseMessage) {
 		this.responseMessage = responseMessage;
 	}
+	
+	
+	protected final String WEB_SERVICE_ERROR_MESSAGE = "Web Service Error (web service is down, wrong URL, or I/O exception)";
+	
 }
