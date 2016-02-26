@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import edu.depaul.se491.utils.ParamLabels;
 
+/**
+ * @author Malik
+ */
 public class ParamLabelsTest {
 	
 	@Test

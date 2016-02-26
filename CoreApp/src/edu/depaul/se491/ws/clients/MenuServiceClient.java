@@ -13,19 +13,32 @@ import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.beans.RequestBean;
 
+/**
+ * Menu RESTful Service Client
+ * 
+ * @author Malik
+ */
 public class MenuServiceClient extends BaseWebServiceClient {
 	private final String serviceBaseUrl;
 	private final Client client;
 	private final CredentialsBean credentials;
 	
-	
-	
+	/**
+	 * construct MenuServiceClient
+	 * @param credentials
+	 * @param serviceBaseUrl
+	 */
 	public MenuServiceClient(CredentialsBean credentials, String serviceBaseUrl) {
 		this.client = ClientBuilder.newClient();
 		this.credentials = credentials;
 		this.serviceBaseUrl = serviceBaseUrl;
 	}
 	
+	/**
+	 * return MenuItemBean or null
+	 * @param menuItemId
+	 * @return
+	 */
 	public MenuItemBean get(long menuItemId) {
 		final String getTarget = serviceBaseUrl + "/get";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -50,6 +63,11 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 	
+	/**
+	 * add new MenuItemBean
+	 * @param newMenuItem
+	 * @return newly created menuItemBean or null
+	 */
 	public MenuItemBean post(final MenuItemBean newMenuItem) {
 		final String postTarget = serviceBaseUrl + "/post";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, postTarget);
@@ -72,6 +90,11 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 	
+	/**
+	 * update menu item
+	 * @param updatedMenuItem
+	 * @return Boolean or null
+	 */
 	public Boolean update(final MenuItemBean updatedMenuItem) {
 		final String updateTarget = serviceBaseUrl + "/update";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, updateTarget);
@@ -95,6 +118,11 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
+	/**
+	 * delete menu item
+	 * @param menuItemId
+	 * @return Boolean or null
+	 */
 	public Boolean delete(long menuItemId) {
 		final String deleteTarget = serviceBaseUrl + "/delete";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, deleteTarget);
@@ -118,7 +146,10 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		return deleted;
 	}
 	
-	
+	/**
+	 * return array of MenuItemBean or null
+	 * @return
+	 */
 	public MenuItemBean[] getAll() {
 		final String getAllTarget = serviceBaseUrl + "/get/all";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getAllTarget);

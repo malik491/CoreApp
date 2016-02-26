@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import edu.depaul.se491.utils.ParamLengths;
 
+/**
+ * @author Malik
+ */
 public class ParamLengthsTest {
 
 	@Test

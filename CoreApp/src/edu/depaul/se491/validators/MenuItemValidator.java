@@ -1,6 +1,3 @@
-/**
- * Validator class for menuItem beans
- */
 package edu.depaul.se491.validators;
 
 import edu.depaul.se491.beans.MenuItemBean;
@@ -8,12 +5,18 @@ import edu.depaul.se491.utils.ParamLengths;
 import edu.depaul.se491.utils.ParamValues;
 
 /**
+ * MenuItemBean Validator
+ * 
  * @author Malik
- *
  */
 public class MenuItemValidator extends BeanValidator {
 
-		
+	/**
+	 * 	validate MenuItemBean
+	 * @param bean
+	 * @param isNewMenuItem
+	 * @return
+	 */
 	public boolean validate(MenuItemBean bean, boolean isNewMenuItem) {
 		boolean isValid = isValidObject(bean);
 
@@ -28,6 +31,12 @@ public class MenuItemValidator extends BeanValidator {
 		return isValid;
 	}
 	
+	/**
+	 * validate menu item id
+	 * @param menuItemId
+	 * @param isNewMenuItem
+	 * @return
+	 */
 	public boolean validateId(Long menuItemId, boolean isNewMenuItem) {
 		boolean isValid = isValidObject(menuItemId);
 		

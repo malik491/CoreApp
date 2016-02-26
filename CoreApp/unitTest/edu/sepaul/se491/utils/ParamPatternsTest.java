@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import edu.depaul.se491.utils.ParamPatterns;
 
+/**
+ * @author Malik
+ */
 public class ParamPatternsTest {
 
 	@Test

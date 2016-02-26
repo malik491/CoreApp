@@ -1,6 +1,3 @@
-/**
- * Utility class for executing SQL statements
- */
 package edu.depaul.se491.test;
 
 import java.io.FileNotFoundException;
@@ -13,8 +10,9 @@ import java.util.List;
 import edu.depaul.se491.daos.ConnectionFactory;
 
 /**
+ * Utility class for executing SQL statements
+ * 
  * @author Malik
- *
  */
 public class DBUtil {
 	

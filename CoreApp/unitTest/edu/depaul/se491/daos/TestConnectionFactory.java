@@ -1,7 +1,3 @@
-/**
- *  Database Connection Driver for Testing
- *  package private
- */
 package edu.depaul.se491.daos;
 
 import java.io.IOException;
@@ -15,8 +11,10 @@ import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import edu.depaul.se491.daos.ConnectionFactory;
 
 /**
+ * Connection Factory for testing
+ * (replaces Tomcat's connection pool)
+ * 
  * @author Malik
- *
  */
 public class TestConnectionFactory implements ConnectionFactory {
 	private static ConnectionFactory instance;

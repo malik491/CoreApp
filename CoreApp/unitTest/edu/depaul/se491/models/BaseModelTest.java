@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.models;
 
 import static org.junit.Assert.*;
@@ -24,7 +21,6 @@ import edu.depaul.se491.test.TestDataGenerator;
 
 /**
  * @author Malik
- *
  */
 public class BaseModelTest {
 	private static ConnectionFactory connFactory;
@@ -43,7 +39,7 @@ public class BaseModelTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 		
 		// release and close resources
 		dbBuilder = null;
@@ -60,7 +56,7 @@ public class BaseModelTest {
 		dbBuilder.rebuildAll();
 			
 		// generate test data
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 	}
 	
 	/**

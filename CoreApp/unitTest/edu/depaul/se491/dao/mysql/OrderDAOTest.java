@@ -55,7 +55,7 @@ public class OrderDAOTest {
 	public static void tearDownAfterClass() throws Exception {
 		// rebuild to original state
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 
 		// release resources
 		dbBuilder = null;
@@ -72,7 +72,7 @@ public class OrderDAOTest {
 		dbBuilder.rebuildAll();
 
 		// generate test data
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 	}
 
 	@Test

@@ -1,17 +1,20 @@
-/**
- * Validator class for OrderItem bean
- */
 package edu.depaul.se491.validators;
 
 import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.utils.ParamValues;
 
 /**
+ * OrderItemBean Validator
+ * 
  * @author Malik
- *
  */
 public class OrderItemValidator extends BeanValidator {
 
+	/**
+	 * validate OrderItemBean
+	 * @param bean
+	 * @return
+	 */
 	public boolean validate(OrderItemBean bean) {
 		boolean isValid = isValidObject(bean);
 

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.ws.clients;
 
 import javax.ws.rs.ProcessingException;
@@ -19,21 +16,31 @@ import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.enums.OrderType;
 
 /**
+ * Order RESTful Service Client
+ * 
  * @author Malik
- *
  */
 public class OrderServiceClient extends BaseWebServiceClient {
 	private final String serviceBaseUrl;
 	private final Client client;
 	private final CredentialsBean credentials;
 	
+	/**
+	 * construct OrderServiceClient
+	 * @param credentials
+	 * @param serviceBaseUrl
+	 */
 	public OrderServiceClient(CredentialsBean credentials, String serviceBaseUrl) {
 		this.client = ClientBuilder.newClient();
 		this.credentials = credentials;
 		this.serviceBaseUrl = serviceBaseUrl;
 	}
 	
-	
+	/**
+	 * return order or null
+	 * @param orderId
+	 * @return
+	 */
 	public OrderBean get(final long orderId) {
 		final String getTarget = serviceBaseUrl + "/get/id";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -57,6 +64,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 
+	/**
+	 * return order or null
+	 * @param orderConfirmation
+	 * @return
+	 */
 	public OrderBean get(final String orderConfirmation) {
 		final String getTarget = serviceBaseUrl + "/get/confirmation";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -80,8 +92,13 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 	
+	/**
+	 * add new order
+	 * @param newOrder
+	 * @return newly added order or null
+	 */
 	public OrderBean post(final OrderBean newOrder) {
-		final String getTarget = serviceBaseUrl + "/put";
+		final String getTarget = serviceBaseUrl + "/post";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
 		
 		RequestBean<OrderBean> request = super.<OrderBean>getRequestBean(credentials, newOrder);
@@ -103,6 +120,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 	
+	/**
+	 * update order
+	 * @param updatedOrder
+	 * @return Boolean or null
+	 */
 	public Boolean update(final OrderBean updatedOrder) {
 		final String getTarget = serviceBaseUrl + "/update";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -126,6 +148,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
+	/**
+	 * update order item status
+	 * @param updatedOrder
+	 * @return Boolean or null
+	 */
 	public Boolean mainStationUpdate(final OrderBean updatedOrder) {
 		final String getTarget = serviceBaseUrl + "/update/station/main";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -149,6 +176,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
+	/**
+	 * update order item status
+	 * @param updatedOrder
+	 * @return Boolean or null
+	 */
 	public Boolean sideStationUpdate(final OrderBean updatedOrder) {
 		final String getTarget = serviceBaseUrl + "/update/station/side";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -172,6 +204,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
+	/**
+	 * update order item status
+	 * @param updatedOrder
+	 * @return Boolean or null
+	 */
 	public Boolean beverageStationUpdate(final OrderBean updatedOrder) {
 		final String getTarget = serviceBaseUrl + "/update/station/beverage";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -195,7 +232,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
-	
+	/**
+	 * delete order
+	 * @param orderId
+	 * @return Boolean or null
+	 */
 	public Boolean delete(final long orderId) {
 		final String getTarget = serviceBaseUrl + "/delete";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -219,6 +260,10 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return deleted;
 	}
 	
+	/**
+	 * return array of OrderBean or null
+	 * @return
+	 */
 	public OrderBean[] getAll() {
 		final String getTarget = serviceBaseUrl + "/get/all";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -242,6 +287,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return orders;
 	}
 	
+	/**
+	 * return array of OrderBean or null
+	 * @param status
+	 * @return
+	 */
 	public OrderBean[] getAllWithStatus(final OrderStatus status) {
 		final String getTarget = serviceBaseUrl + "/get/status";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -265,6 +315,11 @@ public class OrderServiceClient extends BaseWebServiceClient {
 		return orders;
 	}
 	
+	/**
+	 * return array of OrderBean or null
+	 * @param type
+	 * @return
+	 */
 	public OrderBean[] getAllWithType(final OrderType type) {
 		final String getTarget = serviceBaseUrl + "/get/type";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);

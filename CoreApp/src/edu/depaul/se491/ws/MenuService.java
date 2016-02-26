@@ -1,6 +1,3 @@
-/**
- * Menu Web Service 
- */
 package edu.depaul.se491.ws;
 
 import java.util.List;
@@ -22,22 +19,35 @@ import edu.depaul.se491.models.MenuModel;
 import edu.depaul.se491.validators.CredentialsValidator;
 
 /**
+ * Menu RESTful Web Service
+ * 
  * @author Malik
- *
  */
 @Path("/menuItem")
 public class MenuService {
 	private static DAOFactory daoFactory;
 	
+	/**
+	 * construct MenuService
+	 * with a production instance DAOFactory
+	 */
 	public MenuService() {
 		daoFactory = ProductionDAOFactory.getInstance();
 	}
 
+	/**
+	 * construct MenuService with a DAOFactory
+	 * @param factory
+	 */
 	public MenuService(DAOFactory factory) {
 		daoFactory = factory;
 	}
 
-	
+	/**
+	 * return a Response with MenuItemBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -61,7 +71,11 @@ public class MenuService {
 		return response;
 	}
 		
-
+	/**
+	 * return a Response with newly added MenuItemBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -84,9 +98,11 @@ public class MenuService {
 		return response;
 	}
 	
-	
-	
-	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -109,8 +125,11 @@ public class MenuService {
 		return response;
 	}
 	
-	
-	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -133,7 +152,11 @@ public class MenuService {
 		return response;
 	}
 	
-	
+	/**
+	 * return a Response with a list of MenuItemBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -156,7 +179,6 @@ public class MenuService {
 		return response;
 	}
 
-	
 	private <T> boolean isValidRequest(RequestBean<T> request, boolean extraCanBeNull) {
 		boolean isValid = false;
 		

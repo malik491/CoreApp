@@ -1,6 +1,3 @@
-/**
- * Class to parse and cache queries ina SQL file
- */
 package edu.depaul.se491.test;
 
 import java.io.BufferedReader;
@@ -13,13 +10,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Class to parse and cache queries in a SQL file
+ * 
  * @author Malik
  */
 public class SQLFileCache {
-	private static SQLFileCache instance; // only one instance to use caching
+	private static SQLFileCache instance;
 	private HashMap<String, List<String>> cache = new HashMap<String, List<String>>(100);
 	
-	
+	/**
+	 * return instance
+	 * @return
+	 */
 	public static SQLFileCache getInstance() {
 		if (instance == null)
 			instance = new SQLFileCache();
@@ -28,6 +30,13 @@ public class SQLFileCache {
 
 	private SQLFileCache() {}
 
+	/**
+	 * parse the given file and return a query list
+	 * @param fileName
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public List<String> getQueries(String fileName) throws FileNotFoundException, IOException {
 		List<String> queries = cache.get(fileName);
 		if (queries == null)

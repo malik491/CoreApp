@@ -1,13 +1,11 @@
-/**
- * Base class for all validator classes
- */
 package edu.depaul.se491.validators;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * Base bean validator
+ * 
  * @author Malik
- *
  */
 class BeanValidator {
 	
@@ -20,7 +18,7 @@ class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	public boolean isValidString(String s, int minLength, int maxLength) {
+	protected boolean isValidString(String s, int minLength, int maxLength) {
 		boolean isValid = StringUtils.isNotBlank(s);
 		isValid &= isValidLength(s, minLength, maxLength);
 
@@ -33,7 +31,7 @@ class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	public boolean isValidNumbericString(String s) {
+	protected boolean isValidNumbericString(String s) {
 		boolean isValid = StringUtils.isNotBlank(s);
 		
 		if (isValid) {
@@ -56,7 +54,7 @@ class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	public boolean isValidId(long id, boolean isNewBean) {
+	protected boolean isValidId(long id, boolean isNewBean) {
 		return isNewBean? (id == 0) : (id > 0);
 	}
 	
@@ -68,7 +66,7 @@ class BeanValidator {
 	 * @param max
 	 * @return
 	 */
-	public boolean isValidValue(double value, double min, double max) {
+	protected boolean isValidValue(double value, double min, double max) {
 		return Double.compare(min, value) <= 0 && Double.compare(value, max) <= 0;
 	}
 
@@ -81,7 +79,7 @@ class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	public boolean isValidValue(int value, int min, int max) {
+	protected boolean isValidValue(int value, int min, int max) {
 		return min <= value && value <= max;		
 	}
 	
@@ -91,7 +89,7 @@ class BeanValidator {
 	 * @param invalidMsg
 	 * @return
 	 */
-	public boolean isValidObject(Object obj) {
+	protected boolean isValidObject(Object obj) {
 		return (obj != null);
 	}
 	
@@ -103,7 +101,7 @@ class BeanValidator {
 	 * @param maxLength
 	 * @return
 	 */
-	public boolean isValidLength(String s, int minLength, int maxLength) {
+	protected boolean isValidLength(String s, int minLength, int maxLength) {
 		return s == null? false : (minLength <= s.length() && s.length() <= maxLength);
 	}
 }

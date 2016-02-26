@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.validators;
 
 import edu.depaul.se491.beans.CreditCardBean;
@@ -8,11 +5,17 @@ import edu.depaul.se491.utils.ParamLengths;
 import edu.depaul.se491.utils.ParamValues;
 
 /**
+ * CreditCardBean Validator
+ * 
  * @author Malik
- *
  */
 public class CreditCardValidator extends BeanValidator {
 
+	/**
+	 * validate CreditCardBean
+	 * @param bean
+	 * @return
+	 */
 	public boolean validate(CreditCardBean bean) {
 		boolean isValid = isValidObject(bean);
 		
@@ -24,8 +27,6 @@ public class CreditCardValidator extends BeanValidator {
 		}
 		return isValid;
 	}
-	
-	
 	
 	private boolean isValidCcNumber(CreditCardBean bean) {
 		boolean isValid  = isValidString(bean.getCcNumber(), ParamLengths.CreditCard.MIN_NUMBER, ParamLengths.CreditCard.MAX_NUMBER);

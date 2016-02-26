@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import edu.depaul.se491.utils.ParamValues;
 
+/**
+ * @author Malik
+ */
 public class ParamValuesTest {
 
 	@Test

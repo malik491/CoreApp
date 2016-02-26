@@ -1,17 +1,21 @@
-/**
- * Validator class for Address bean
- */
 package edu.depaul.se491.validators;
 
 import edu.depaul.se491.beans.AddressBean;
 import edu.depaul.se491.utils.ParamLengths;
 
 /**
+ * AddressBean Validator
+ * 
  * @author Malik
- *
  */
 public class AddressValidator extends BeanValidator {
 
+	/**
+	 * validate address bean
+	 * @param bean
+	 * @param isNewAddress
+	 * @return
+	 */
 	public boolean validate(AddressBean bean, boolean isNewAddress) {
 		boolean isValid = isValidObject(bean);
 
@@ -27,6 +31,12 @@ public class AddressValidator extends BeanValidator {
 		return isValid;
 	}
 	
+	/**
+	 * validate address id
+	 * @param addressId
+	 * @param isNewAddress
+	 * @return
+	 */
 	public boolean validateId(Long addressId, boolean isNewAddress) {
 		boolean isValid = isValidObject(addressId);
 		

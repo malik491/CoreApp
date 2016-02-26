@@ -1,7 +1,3 @@
-/**
- * Build Database
- * 
- */
 package edu.depaul.se491.test;
 
 import java.io.FileNotFoundException;
@@ -10,9 +6,11 @@ import java.sql.SQLException;
 
 import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
+
 /**
+ * Build Database tables
+ * 
  * @author Malik
- *
  */
 public class DBBuilder {
 	private ConnectionFactory connFactory;
@@ -31,22 +29,45 @@ public class DBBuilder {
 		}
 	}
 	
+	/**
+	 * construct DBBuilder
+	 * uses ConnectionFactory for database connections
+	 * @param connFactory
+	 */
 	public DBBuilder(ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 	}
 
+	/**
+	 * drop (if exists) and create database tables
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
 	public void rebuildAll() throws FileNotFoundException, IOException, SQLException {
 		DBBuilder dbBuilder = new DBBuilder(connFactory);
 		dbBuilder.dropTables();
 		dbBuilder.createTables();
 	}
 
-	public void dropTables() throws FileNotFoundException, IOException, SQLException {
+	/**
+	 * drop tables
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private void dropTables() throws FileNotFoundException, IOException, SQLException {
 		String filePath = "sql/dropTables.sql";
 		DBUtil.executeSQLFile(connFactory ,filePath);
 	}
 
-	public void createTables() throws FileNotFoundException, IOException, SQLException {
+	/**
+	 * create tables
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private void createTables() throws FileNotFoundException, IOException, SQLException {
 		String filePath = "sql/createTables.sql";
 		DBUtil.executeSQLFile(connFactory ,filePath);
 	}

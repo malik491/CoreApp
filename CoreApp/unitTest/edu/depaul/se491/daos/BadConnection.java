@@ -19,6 +19,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+/**
+ * Bad Database Connection for testing
+ * @author Malik
+ *
+ */
 public class BadConnection implements Connection {
 
 	@Override

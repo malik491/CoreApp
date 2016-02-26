@@ -1,8 +1,4 @@
-/**
- * Order Web Service 
- */
 package edu.depaul.se491.ws;
-
 
 import java.util.List;
 
@@ -26,22 +22,35 @@ import edu.depaul.se491.models.OrderModel;
 import edu.depaul.se491.validators.CredentialsValidator;
 
 /**
+ * Order RESTful Web Service
+ * 
  * @author Malik
- *
  */
 @Path("/order")
 public class OrderService {
 	private static DAOFactory daoFactory;
 	
+	/**
+	 * construct OrderService
+	 * with a production instance DAOFactory
+	 */
 	public OrderService() {
 		daoFactory = ProductionDAOFactory.getInstance();
 	}
 
+	/**
+	 * construct OrderService with a DAOFactory
+	 * @param factory
+	 */
 	public OrderService(DAOFactory factory) {
 		daoFactory = factory;
 	}
 	
-	
+	/**
+	 * return a Response with OrderBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -64,6 +73,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with OrderBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -86,11 +100,16 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with newly added OrderBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/put")
-	public Response put(RequestBean<OrderBean> request) {
+	@Path("/post")
+	public Response post(RequestBean<OrderBean> request) {
 		Response response = null;
 		boolean isValid = isValidRequest(request, false);
 		
@@ -108,6 +127,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -130,6 +154,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -152,6 +181,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -174,7 +208,11 @@ public class OrderService {
 		return response;
 	}
 
-	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -197,6 +235,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -219,6 +262,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with a list of OrderBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -241,6 +289,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with a list of OrderBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -263,6 +316,11 @@ public class OrderService {
 		return response;
 	}
 	
+	/**
+	 * return a Response with a list of OrderBean or a string message
+	 * @param request
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -285,7 +343,6 @@ public class OrderService {
 		return response;
 	}
 	
-	
 	private <T> boolean isValidRequest(RequestBean<T> request, boolean extraCanBeNull) {
 		boolean isValid = false;
 		
@@ -295,7 +352,6 @@ public class OrderService {
 		
 		return isValid;
 	}
-	
 	
 	private <T> Response getResponse(Response.Status status, T entity) {
 		ResponseBuilder responseBuilder = Response.status(status);

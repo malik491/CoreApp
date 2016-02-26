@@ -22,6 +22,11 @@ import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.test.DBBuilder;
 import edu.depaul.se491.test.TestDataGenerator;
 
+/**
+ * 
+ * @author Malik
+ *
+ */
 public class MenuServiceTest {
 	private static ConnectionFactory connFactory;
 	private static TestDAOFactory daoFactory;
@@ -40,7 +45,7 @@ public class MenuServiceTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 		
 		// release and close resources
 		dbBuilder = null;
@@ -60,7 +65,7 @@ public class MenuServiceTest {
 		dbBuilder.rebuildAll();
 			
 		// generate test data
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 	}
 	
 	@Test
@@ -262,6 +267,7 @@ public class MenuServiceTest {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAll() {
 		// invalid request

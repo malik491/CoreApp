@@ -1,6 +1,3 @@
-/**
- * Validator class for Order bean
- */
 package edu.depaul.se491.validators;
 
 import edu.depaul.se491.beans.OrderBean;
@@ -10,12 +7,18 @@ import edu.depaul.se491.utils.ParamLengths;
 import edu.depaul.se491.utils.ParamValues;
 
 /**
+ * OrderBean Validator
+ * 
  * @author Malik
- *
  */
 public class OrderValidator extends BeanValidator {
 	
-	
+	/**
+	 * validate OrderBean
+	 * @param bean
+	 * @param isNewOrder
+	 * @return
+	 */
 	public boolean validate(OrderBean bean, boolean isNewOrder) {
 		boolean isValid = isValidObject(bean);
 
@@ -39,6 +42,12 @@ public class OrderValidator extends BeanValidator {
 		return isValid;
 	}
 
+	/**
+	 * validate order id
+	 * @param orderId
+	 * @param isNewOrder
+	 * @return
+	 */
 	public boolean validateId(Long orderId, boolean isNewOrder) {
 		boolean isValid = isValidObject(orderId);
 		
@@ -48,6 +57,11 @@ public class OrderValidator extends BeanValidator {
 		return isValid;
 	}
 	
+	/**
+	 * validate order confirmation
+	 * @param confiramtion
+	 * @return
+	 */
 	public boolean validateConfirmation(String confiramtion) {
 		return isValidConfirmation(confiramtion, false);
 	}

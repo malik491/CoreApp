@@ -1,14 +1,11 @@
-/**
- * 
- */
 package edu.depaul.se491.daos;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Database Connection factory that causes Exception for testing
  * @author Malik
- *
  */
 public class ExceptionConnectionFactory implements ConnectionFactory {
 

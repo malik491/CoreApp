@@ -3,9 +3,18 @@ package edu.depaul.se491.validators;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.utils.ParamLengths;
 
+/**
+ * CredentialsBean Validator
+ * 
+ * @author Malik
+ */
 public class CredentialsValidator extends BeanValidator {
 
-	
+	/**
+	 * validate CredentialsBean
+	 * @param bean
+	 * @return
+	 */
 	public boolean validate(CredentialsBean bean) {
 		boolean isValid = isValidObject(bean);
 	
@@ -17,6 +26,11 @@ public class CredentialsValidator extends BeanValidator {
 		return isValid;
 	}
 	
+	/**
+	 * validate username
+	 * @param username
+	 * @return
+	 */
 	public boolean isValidUsername(String username) {
 		return isValidString(username, ParamLengths.Credentials.MIN_USERNAME, ParamLengths.Credentials.MAX_USERNAME);
 	}

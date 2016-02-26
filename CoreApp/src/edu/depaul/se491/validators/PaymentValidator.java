@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.validators;
 
 import edu.depaul.se491.beans.PaymentBean;
@@ -8,13 +5,19 @@ import edu.depaul.se491.enums.PaymentType;
 import edu.depaul.se491.utils.ParamLengths;
 import edu.depaul.se491.utils.ParamValues;
 
-
 /**
+ * PaymentBean Validator
+ * 
  * @author Malik
- *
  */
 public class PaymentValidator extends BeanValidator {
 
+	/**
+	 * validate PaymentBean
+	 * @param bean
+	 * @param isNewPayment
+	 * @return
+	 */
 	public boolean validate(PaymentBean bean, boolean isNewPayment) {
 		boolean isValid = isValidObject(bean);
 		
@@ -27,6 +30,12 @@ public class PaymentValidator extends BeanValidator {
 		return isValid;
 	}
 	
+	/**
+	 * validate payment id
+	 * @param paymentId
+	 * @param isNewPayment
+	 * @return
+	 */
 	public boolean validateId(Long paymentId, boolean isNewPayment) {
 		boolean isValid = isValidObject(paymentId);
 		

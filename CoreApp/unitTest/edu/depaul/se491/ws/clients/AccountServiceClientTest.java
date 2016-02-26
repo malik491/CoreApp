@@ -20,7 +20,6 @@ import edu.depaul.se491.test.TestDataGenerator;
 /**
  * NOTE (Tomcat must be running for this to pass)
  * @author Malik
- *
  */
 public class AccountServiceClientTest {
 	private String serviceBaseURL = "http://localhost/CoreApp/account";
@@ -36,13 +35,13 @@ public class AccountServiceClientTest {
 		testDataGen = new TestDataGenerator(connFactory);
 		
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 		
 		// release and close resources
 		dbBuilder = null;

@@ -41,13 +41,13 @@ public class OrderServiceClientTest {
 		testDataGen = new TestDataGenerator(connFactory);
 		
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 		
 		// release and close resources
 		dbBuilder = null;

@@ -28,6 +28,10 @@ import edu.depaul.se491.enums.PaymentType;
 import edu.depaul.se491.test.DBBuilder;
 import edu.depaul.se491.test.TestDataGenerator;
 
+/**
+ * 
+ * @author Malik
+ */
 public class OrderServiceTest {
 	private static ConnectionFactory connFactory;
 	private static TestDAOFactory daoFactory;
@@ -46,7 +50,7 @@ public class OrderServiceTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		dbBuilder.rebuildAll();
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 		
 		// release and close resources
 		dbBuilder = null;
@@ -66,7 +70,7 @@ public class OrderServiceTest {
 		dbBuilder.rebuildAll();
 			
 		// generate test data
-		testDataGen.generateStandardData();
+		testDataGen.generateData();
 	}
 	
 	@Test
@@ -161,34 +165,34 @@ public class OrderServiceTest {
 	}
 
 	@Test
-	public void testPut() {
+	public void testPost() {
 		// invalid request
-		Response response = service.put(null);
+		Response response = service.post(null);
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 		
 		// invalid request
-		response = service.put(new RequestBean<OrderBean>(null, null));
+		response = service.post(new RequestBean<OrderBean>(null, null));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 		
 		// invalid request
-		response = service.put(new RequestBean<OrderBean>(null, new OrderBean()));
+		response = service.post(new RequestBean<OrderBean>(null, new OrderBean()));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
 		// invalid request
-		response = service.put(new RequestBean<OrderBean>(new CredentialsBean(), new OrderBean()));
+		response = service.post(new RequestBean<OrderBean>(new CredentialsBean(), new OrderBean()));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
 		// invalid request
-		response = service.put(new RequestBean<OrderBean>(new CredentialsBean("customerapp", "password"), null));
+		response = service.post(new RequestBean<OrderBean>(new CredentialsBean("customerapp", "password"), null));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
 		// valid request. bad order data
-		response = service.put(new RequestBean<OrderBean>(new CredentialsBean("customerapp", "password"), new OrderBean()));
+		response = service.post(new RequestBean<OrderBean>(new CredentialsBean("customerapp", "password"), new OrderBean()));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
@@ -200,7 +204,7 @@ public class OrderServiceTest {
 		order.setOrderItems(new OrderItemBean[] {new OrderItemBean(new MenuItemBean(1, null, null, 1.99, null), 1, OrderItemStatus.NOT_READY)});
 		
 		// valid request
-		response = service.put(new RequestBean<OrderBean>(new CredentialsBean("customerapp", "password"), order));
+		response = service.post(new RequestBean<OrderBean>(new CredentialsBean("customerapp", "password"), order));
 		assertNotNull(response);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 		
@@ -486,6 +490,7 @@ public class OrderServiceTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAll() {
 		// invalid request
@@ -519,6 +524,7 @@ public class OrderServiceTest {
 		assertEquals(4, orders.size());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAllByType() {
 		// invalid request
@@ -567,6 +573,7 @@ public class OrderServiceTest {
 		assertEquals(1, orders.size());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAllByStatus() {
 		// invalid request

@@ -13,17 +13,32 @@ import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.beans.RequestBean;
 
+/**
+ * Account RESTful Service Client
+ * 
+ * @author Malik
+ */
 public class AccountServiceClient extends BaseWebServiceClient {
 	private final String serviceBaseUrl;
 	private final Client client;
 	private final CredentialsBean credentials;
 	
+	/**
+	 * construct AccountServiceClient
+	 * @param credentials
+	 * @param serviceBaseUrl
+	 */
 	public AccountServiceClient(CredentialsBean credentials, String serviceBaseUrl) {
 		this.client = ClientBuilder.newClient();
 		this.credentials = credentials;
 		this.serviceBaseUrl = serviceBaseUrl;
 	}
 	
+	/**
+	 * return AccountBean or null
+	 * @param username
+	 * @return
+	 */
 	public AccountBean get(final String username) {
 		final String getTarget = serviceBaseUrl + "/get";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getTarget);
@@ -49,6 +64,11 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 	
+	/**
+	 * add new account
+	 * @param newAccount
+	 * @return newly created account or null
+	 */
 	public AccountBean post(final AccountBean newAccount) {
 		final String postTarget = serviceBaseUrl + "/post";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, postTarget);
@@ -74,6 +94,11 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		return responseBean;
 	}
 	
+	/**
+	 * update account
+	 * @param updatedAccount
+	 * @return boolean or null
+	 */
 	public Boolean update(final AccountBean updatedAccount) {
 		final String updateTarget = serviceBaseUrl + "/update";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, updateTarget);
@@ -99,6 +124,11 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		return updated;
 	}
 	
+	/**
+	 * delete account
+	 * @param username
+	 * @return boolean or null
+	 */
 	public Boolean delete(final String username) {
 		final String deleteTarget = serviceBaseUrl + "/delete";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, deleteTarget);
@@ -123,7 +153,10 @@ public class AccountServiceClient extends BaseWebServiceClient {
 		return deleted;
 	}
 	
-	
+	/**
+	 * return accounts or null
+	 * @return
+	 */
 	public AccountBean[] getAll() {
 		final String getAllTarget = serviceBaseUrl + "/get/all";
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getAllTarget);

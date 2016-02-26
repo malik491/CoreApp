@@ -1,6 +1,3 @@
-/**
- * Populate database with data
- */
 package edu.depaul.se491.test;
 
 import java.io.FileNotFoundException;
@@ -11,8 +8,9 @@ import edu.depaul.se491.daos.ConnectionFactory;
 import edu.depaul.se491.daos.TestConnectionFactory;
 
 /**
+ * Populate database with data
+ * 
  * @author Malik
- *
  */
 public class TestDataGenerator {
 	private ConnectionFactory connFactory;
@@ -23,7 +21,7 @@ public class TestDataGenerator {
 		TestDataGenerator gen = new TestDataGenerator(connFactory);
 		
 		try {
-			gen.generateStandardData();
+			gen.generateData();
 			connFactory.close();
 			System.out.println("Successfully populated database (se491)");
 		} catch (SQLException | IOException e) {
@@ -31,68 +29,82 @@ public class TestDataGenerator {
 			e.printStackTrace();
 		}
 	}
-
 	
+	/**
+	 * construct TestDataGenerator
+	 * Uses ConnectionFactory for database connection
+	 * Uses the following default base path to read SQL files:
+	 * [project home]/sql/test_data/
+	 * @param connFactory
+	 */
 	public TestDataGenerator(ConnectionFactory connFactory) {
 		this.connFactory = connFactory;
 		this.dataDIR = "sql/test_data";
 	}
 
+	/**
+	 * construct TestDataGenerator
+	 * Uses ConnectionFactory for database connection
+	 * Uses the following base path to read SQL files:
+	 * projectHome/sql/test_data/
+	 * @param connFactory
+	 * @param projectHome
+	 */
 	public TestDataGenerator(ConnectionFactory connFactory, String projectHome) {
 		this.connFactory = connFactory;
 		this.dataDIR = projectHome + "/sql/test_data";
 	}
 		
 	/**
-	 * create standard data for testing
+	 * populate database with data in the SQL files for testing
+	 * base folder: [project home]/sql/test_data/
 	 * @throws IOException 
 	 * @throws SQLException 
 	 * @throws FileNotFoundException 
 	 */
-	public void generateStandardData() throws FileNotFoundException, SQLException, IOException {
+	public void generateData() throws FileNotFoundException, SQLException, IOException {
 		// order of method calls matters (Functional Dependency)
 
 		generateMenuItems();
 		
 		generateAddresses();
-		generateUsers();    	// after Addresss
-		generateAccounts(); 	// after Users
+		generateUsers();
+		generateAccounts();
 
 		
 		generatePayments();
-		generateOrders();     	// after Addresses and Payments
-		generateOrderItems(); 	// after Orders and MenuItems
+		generateOrders();
+		generateOrderItems();
 				
 	}	
 	
-	public void generateMenuItems() throws FileNotFoundException, SQLException, IOException {
+	private void generateMenuItems() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/menuItems/insert.sql");
 	}
 
-	public void generateAddresses() throws FileNotFoundException, SQLException, IOException {
+	private void generateAddresses() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/addresses/insert.sql");
 	}
 	
-	public void generateUsers() throws FileNotFoundException, SQLException, IOException {
+	private void generateUsers() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/users/insert.sql");
 	}
 	
-	public void generateAccounts() throws FileNotFoundException, SQLException, IOException {
+	private void generateAccounts() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/accounts/insert.sql");
 	}
 
-	public void generatePayments() throws FileNotFoundException, SQLException, IOException {
+	private void generatePayments() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/payments/insert.sql");
 	}
 
-	public void generateOrders() throws FileNotFoundException, SQLException, IOException {
+	private void generateOrders() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/orders/insert.sql");
 	}
 	
-	public void generateOrderItems() throws FileNotFoundException, SQLException, IOException {
+	private void generateOrderItems() throws FileNotFoundException, SQLException, IOException {
 		executeSQLFile(dataDIR + "/orderItems/insert.sql");
 	}
-	
 	
 	private void executeSQLFile(String filePath) throws FileNotFoundException, SQLException, IOException {
 		DBUtil.executeSQLFile(connFactory, filePath);

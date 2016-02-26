@@ -7,6 +7,9 @@ import org.junit.Test;
 import edu.depaul.se491.beans.CreditCardBean;
 import edu.depaul.se491.utils.ConfirmationGenerator;
 
+/**
+ * @author Malik
+ */
 public class ConfirmationGeneratorTest {
 
 	@Test
