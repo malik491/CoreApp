@@ -29,11 +29,12 @@ public class MenuItemDAO {
 	}
 	
 	/**
-	 * return all menu items or empty list
+	 * return all (hidden or visible) menu items or empty list
+	 * @param isHidden select hidden items?
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<MenuItemBean> getAll() throws SQLException {
+	public List<MenuItemBean> getAll(boolean isHidden) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -42,6 +43,7 @@ public class MenuItemDAO {
 		try {
 			conn = connFactory.getConnection();
 			ps = conn.prepareStatement(SELECT_ALL_SQL);
+			ps.setString(1, isHidden? "TRUE" : "FALSE");
 			
 			rs = ps.executeQuery();
 			menu = loader.loadList(rs);
@@ -174,9 +176,34 @@ public class MenuItemDAO {
 		return false;
 	}
 	
+	public boolean updateIsHidden(long menuItemId, boolean hide) throws SQLException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		boolean updated = false;
+		try {
+			conn = connFactory.getConnection();
+			ps = conn.prepareStatement(UPDATE_HIDDEN_ITEM_SQL);
+			ps.setString(1, (hide? "TRUE" : "FALSE"));
+			ps.setLong(2, menuItemId);
+			
+			updated = DAOUtil.validUpdate(ps.executeUpdate()); 
+			
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			try {
+				DAOUtil.close(ps);
+				DAOUtil.close(conn);
+			} catch (SQLException e) {
+				throw e;
+			}
+		}
+		return updated;
+	}
 	
-	private static final String SELECT_ALL_SQL = String.format("SELECT * FROM %s ORDER BY %s", 
-																DBLabels.MenuItem.TABLE, DBLabels.MenuItem.ID);
+	
+	private static final String SELECT_ALL_SQL = String.format("SELECT * FROM %s WHERE (%s = ?) ORDER BY %s", 
+																DBLabels.MenuItem.TABLE, DBLabels.MenuItem.IS_HIDDENT, DBLabels.MenuItem.ID);
 	
 	private static final String SELECT_BY_ID_SQL = String.format("SELECT * FROM %s WHERE (%s = ?)", 
 																DBLabels.MenuItem.TABLE, DBLabels.MenuItem.ID);
@@ -190,7 +217,11 @@ public class MenuItemDAO {
 																DBLabels.MenuItem.TABLE,  DBLabels.MenuItem.NAME,
 																DBLabels.MenuItem.DESC,  DBLabels.MenuItem.PRICE,
 																DBLabels.MenuItem.CATEGORY, DBLabels.MenuItem.ID);
-			
+	
+	private static final String UPDATE_HIDDEN_ITEM_SQL = String.format("UPDATE %s SET %s=? WHERE (%s = ?)",
+																DBLabels.MenuItem.TABLE,  DBLabels.MenuItem.IS_HIDDENT,
+																DBLabels.MenuItem.ID);
+
 
 	private static final int UPDATE_COLUMNS_COUNT = 4;
 }

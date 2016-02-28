@@ -73,6 +73,7 @@ CREATE TABLE menu_items (
 	m_item_desc			VARCHAR(300) DEFAULT '',
 	m_item_price		DECIMAL(5, 2) DEFAULT 0,
 	m_item_category		ENUM ('BEVERAGE', 'MAIN', 'SIDE') NOT NULL,
+	m_item_is_hidden	ENUM('TRUE', 'FALSE') default 'FALSE',
     
 	PRIMARY KEY (m_item_id)
 );

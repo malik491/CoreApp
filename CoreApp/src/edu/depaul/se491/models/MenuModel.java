@@ -105,23 +105,28 @@ public class MenuModel extends BaseModel {
 	}
 	
 	/**
-	 * Return all menu items or empty list
+	 * Return all visible menu items or empty list
 	 * @return
 	 */
-	public List<MenuItemBean> readAll() {
+	public List<MenuItemBean> readAllVisible() {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE, CUSTOMER_APP};
-		boolean isValid = hasPermission(allowedRoles);
-		
-		List<MenuItemBean> menuItemList = null;
-		if (isValid) {
-			try {
-				menuItemList = getDAOFactory().getMenuItemDAO().getAll();
-			} catch (SQLException e) {
-				setResponseAndMeessageForDBError(e);
-			}
-		}
-		return menuItemList;
-	}	
+		if (hasPermission(allowedRoles))
+			return readAll(false);
+		else
+			return null;
+	}
+	
+	/**
+	 * Return all hidden menu items or empty list
+	 * @return
+	 */
+	public List<MenuItemBean> readAllHidden() {
+		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE, CUSTOMER_APP};
+		if (hasPermission(allowedRoles))
+			return readAll(true);
+		else
+			return null;
+	}
 
 	/**
 	 * delete a menu item
@@ -138,7 +143,6 @@ public class MenuModel extends BaseModel {
 		Boolean deleted = null;
 		if (isValid) {
 			// delete the menu item (always returns false. not supported)
-			
 			try {
 				deleted = getDAOFactory().getMenuItemDAO().delete(id);
 			} catch (SQLException e) {
@@ -146,6 +150,39 @@ public class MenuModel extends BaseModel {
 			}
 		}
 		return deleted;
+	}
+	
+	/**
+	 * Hide/un-Hide a menu item
+	 * @param id
+	 * @param hide hide a menu Item?
+	 * @return false, always
+	 */
+	public Boolean updateIsHidden(Long id, boolean hide) {
+		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
+		boolean isValid = hasPermission(allowedRoles);
+		
+		isValid = isValid? isValidMenuItemId(id) : false; 
+		Boolean updated = null;
+		if (isValid) {
+			try {
+				updated = getDAOFactory().getMenuItemDAO().updateIsHidden(id, hide);
+			} catch (SQLException e) {
+				setResponseAndMeessageForDBError(e);
+			}
+		}
+		return updated;
+	}
+	
+	private List<MenuItemBean> readAll(boolean isHidden) {
+		List<MenuItemBean> menuItemList = null;
+		try {
+			menuItemList = getDAOFactory().getMenuItemDAO().getAll(isHidden);
+		} catch (SQLException e) {
+			setResponseAndMeessageForDBError(e);
+		}
+		return menuItemList;
+		
 	}
 	
 	private boolean isValidMenuItemId(Long id) {

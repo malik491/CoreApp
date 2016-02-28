@@ -70,12 +70,19 @@ public class MenuItemDAOTest {
 	public void testGetAll() throws SQLException {
 		List<MenuItemBean> items = null;
 		
-		items = menuItemDAO.getAll();
+		items = menuItemDAO.getAll(false);
 		assertNotNull(items);
 		assertEquals(6, items.size());
 		for (MenuItemBean item : items)
 			assertNotNull(item);
+		
+		items = menuItemDAO.getAll(true);
+		assertNotNull(items);
+		assertEquals(1, items.size());
+		assertNotNull(items.get(0));
+		
 	}
+	
 
 	@Test
 	public void testGet() throws SQLException {
@@ -101,7 +108,7 @@ public class MenuItemDAOTest {
 		MenuItemBean addedItem = menuItemDAO.add(item);
 		assertNotNull(addedItem);
 		
-		long expectedId = 7L;
+		long expectedId = 8L;
 		assertEquals(expectedId, addedItem.getId());
 		assertEquals(item.getName(), addedItem.getName());
 		assertEquals(item.getDescription(), addedItem.getDescription());
@@ -139,6 +146,15 @@ public class MenuItemDAOTest {
 	}
 	
 	@Test
+	public void testUpdateIsHidden() throws SQLException {
+		boolean updated = menuItemDAO.updateIsHidden(1L, true);
+		assertTrue(updated);
+		
+		updated = menuItemDAO.updateIsHidden(1L, false);
+		assertTrue(updated);
+	}
+	
+	@Test
 	public void testExceptions() {
 		MenuItemDAO dao = new TestDAOFactory(new ExceptionConnectionFactory()).getMenuItemDAO();
 		try {
@@ -152,15 +168,30 @@ public class MenuItemDAOTest {
 		} catch (Exception e) {}
 		
 		try {
-			dao.getAll();
+			dao.getAll(false);
 			fail("No Exception Thrown");
 		} catch (Exception e) {}
 		
+		try {
+			dao.getAll(true);
+			fail("No Exception Thrown");
+		} catch (Exception e) {}
+
 		try {
 			dao.update(new MenuItemBean());
 			fail("No Exception Thrown");
 		} catch (Exception e) {}
 		
+		try {
+			dao.updateIsHidden(1L, true);
+			fail("No Exception Thrown");
+		} catch (Exception e) {}
+
+		try {
+			dao.updateIsHidden(1L, false);
+			fail("No Exception Thrown");
+		} catch (Exception e) {}
+
 		assertTrue(true);
 	}
 

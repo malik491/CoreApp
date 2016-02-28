@@ -159,13 +159,6 @@ public class MenuServiceTest {
 		
 		MenuItemBean createdMenuItem = (MenuItemBean) response.getEntity();
 		assertNotNull(createdMenuItem);
-		
-		long expectedId = 7;
-		assertEquals(expectedId, createdMenuItem.getId());
-		assertEquals(menuItem.getName(), createdMenuItem.getName());
-		assertEquals(menuItem.getDescription(), createdMenuItem.getDescription());
-		assertEquals(0, Double.compare(menuItem.getPrice(), createdMenuItem.getPrice()));
-		assertEquals(menuItem.getItemCategory(), createdMenuItem.getItemCategory());
 	}
 
 	@Test
@@ -266,39 +259,159 @@ public class MenuServiceTest {
 		assertFalse(deleted);
 		
 	}
+	
+	@Test
+	public void testHide() {
+		// invalid request
+		Response response = service.hide(null);
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		// invalid request
+		response = service.hide(new RequestBean<Long>(null, null));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		// invalid request
+		response = service.hide(new RequestBean<Long>(null, new Long(1)));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// invalid request
+		response = service.hide(new RequestBean<Long>(new CredentialsBean(), new Long(1)));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// invalid request
+		response = service.hide(new RequestBean<Long>(new CredentialsBean("manager", "password"), null));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// valid request, invalid id
+		response = service.hide(new RequestBean<Long>(new CredentialsBean("manager", "password"), new Long(0)));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		
+		// valid request
+		response = service.hide(new RequestBean<Long>(new CredentialsBean("manager", "password"), new Long(1)));
+		assertNotNull(response);
+		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		
+		Boolean updated = (Boolean) response.getEntity();
+		assertNotNull(updated);
+		assertTrue(updated);
+	}
+	
+	@Test
+	public void testUnhide() {
+		// invalid request
+		Response response = service.unhide(null);
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		// invalid request
+		response = service.unhide(new RequestBean<Long>(null, null));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		// invalid request
+		response = service.unhide(new RequestBean<Long>(null, new Long(1)));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// invalid request
+		response = service.unhide(new RequestBean<Long>(new CredentialsBean(), new Long(1)));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// invalid request
+		response = service.unhide(new RequestBean<Long>(new CredentialsBean("manager", "password"), null));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// valid request, invalid id
+		response = service.unhide(new RequestBean<Long>(new CredentialsBean("manager", "password"), new Long(0)));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		
+		// valid request
+		response = service.unhide(new RequestBean<Long>(new CredentialsBean("manager", "password"), new Long(7)));
+		assertNotNull(response);
+		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		
+		Boolean updated = (Boolean) response.getEntity();
+		assertNotNull(updated);
+		assertTrue(updated);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testGetAll() {
+	public void testGetAllVisible() {
 		// invalid request
-		Response response = service.getAll(null);
+		Response response = service.getAllVisible(null);
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 		
 		
 		// invalid request
-		response = service.getAll(new RequestBean<Object>(null, null));
+		response = service.getAllVisible(new RequestBean<Object>(null, null));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
 		// invalid request
-		response = service.getAll(new RequestBean<Object>(new CredentialsBean(), null));
+		response = service.getAllVisible(new RequestBean<Object>(new CredentialsBean(), null));
 		assertNotNull(response);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
 		// valid request but unauthorized 
-		response = service.getAll(new RequestBean<Object>(new CredentialsBean("admin", "password"), null));
+		response = service.getAllVisible(new RequestBean<Object>(new CredentialsBean("admin", "password"), null));
 		assertNotNull(response);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
 		// valid request
-		response = service.getAll(new RequestBean<Object>(new CredentialsBean("manager", "password"), null));
+		response = service.getAllVisible(new RequestBean<Object>(new CredentialsBean("manager", "password"), null));
 		assertNotNull(response);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 		
 		List<MenuItemBean> menuItems = (ArrayList<MenuItemBean>) response.getEntity();
 		assertNotNull(menuItems);
 		assertEquals(6, menuItems.size());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGetAllHidden() {
+		// invalid request
+		Response response = service.getAllHidden(null);
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+		
+		
+		// invalid request
+		response = service.getAllHidden(new RequestBean<Object>(null, null));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// invalid request
+		response = service.getAllHidden(new RequestBean<Object>(new CredentialsBean(), null));
+		assertNotNull(response);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+		// valid request but unauthorized 
+		response = service.getAllHidden(new RequestBean<Object>(new CredentialsBean("admin", "password"), null));
+		assertNotNull(response);
+		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+		// valid request
+		response = service.getAllHidden(new RequestBean<Object>(new CredentialsBean("manager", "password"), null));
+		assertNotNull(response);
+		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		
+		List<MenuItemBean> menuItems = (ArrayList<MenuItemBean>) response.getEntity();
+		assertNotNull(menuItems);
+		assertEquals(1, menuItems.size());
 	}
 
 }

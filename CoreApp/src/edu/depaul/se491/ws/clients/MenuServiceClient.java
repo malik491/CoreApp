@@ -147,11 +147,46 @@ public class MenuServiceClient extends BaseWebServiceClient {
 	}
 	
 	/**
-	 * return array of MenuItemBean or null
+	 * hide a menu item
+	 * @param menuItemId
+	 * @return Boolean or null
+	 */
+	public Boolean hideMenuItem(long menuItemId) {
+		return updateIsHidden(menuItemId, true);
+	}
+	
+	/**
+	 * hide a menu item
+	 * @param menuItemId
+	 * @return Boolean or null
+	 */
+	public Boolean unhideMenuItem(long menuItemId) {
+		return updateIsHidden(menuItemId, false);
+	}
+	
+	/**
+	 * return all visible menu items or null
 	 * @return
 	 */
-	public MenuItemBean[] getAll() {
-		final String getAllTarget = serviceBaseUrl + "/get/all";
+	public MenuItemBean[] getAllVisible() {
+		return getAll(false);
+	}
+	
+	/**
+	 * return all hidden menu items or null
+	 * @return
+	 */
+	public MenuItemBean[] getAllHidden() {
+		return getAll(true);
+	}
+	
+	/**
+	 * return all menu items or null
+	 * @param hidden get all hidden menu items
+	 * @return
+	 */
+	private MenuItemBean[] getAll(boolean hidden) {
+		final String getAllTarget = serviceBaseUrl + "/get/all" + (hidden? "/hidden" : "");
 		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, getAllTarget);
 		
 		RequestBean<Object> request = super.<Object>getRequestBean(credentials, null);
@@ -171,5 +206,34 @@ public class MenuServiceClient extends BaseWebServiceClient {
 		}
 		
 		return responseBeans;
+	}
+	
+	/**
+	 * hide / unhide a menu item
+	 * @param menuItemId
+	 * @param hide hide a menu item?
+	 * @return Boolean or null
+	 */
+	public Boolean updateIsHidden(long menuItemId, boolean hide) {
+		final String deleteTarget = serviceBaseUrl + (hide? "/hide" : "/unhide");
+		Invocation.Builder invocationBuilder = getJsonInvocationBuilder(client, deleteTarget);
+		
+		RequestBean<Long> request = super.<Long>getRequestBean(credentials, new Long(menuItemId));
+
+		Boolean deleted = null;
+		try {
+			Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+			if (response.getStatus() != Status.OK.getStatusCode()) {
+				setResponseMessage(response.readEntity(String.class));
+			} else {
+				deleted = response.readEntity(Boolean.class);
+			}
+			response.close();
+
+		} catch (ProcessingException | IllegalStateException e) {
+			setResponseMessage(WEB_SERVICE_ERROR_MESSAGE);
+		}
+				
+		return deleted;
 	}
 }

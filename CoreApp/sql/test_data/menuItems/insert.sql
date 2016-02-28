@@ -4,3 +4,4 @@
 /*id= 4*/ INSERT INTO menu_items (m_item_name, m_item_desc, m_item_price, m_item_category) VALUES ('Small Pizza', 'a slice of pizza of your choice', 3.00, 'MAIN');
 /*id= 5*/ INSERT INTO menu_items (m_item_name, m_item_desc, m_item_price, m_item_category) VALUES ('Pizza', '10 inch pizza of your choice', 10.99, 'MAIN');
 /*id= 6*/ INSERT INTO menu_items (m_item_name, m_item_desc, m_item_price, m_item_category) VALUES ('Apple Pie', 'something sweet', 2.00, 'SIDE');
+/*id= 7*/ INSERT INTO menu_items (m_item_name, m_item_desc, m_item_price, m_item_category, m_item_is_hidden) VALUES ('Ice Tea', 'cold ice tea', 1.50, 'BEVERAGE', 'TRUE');

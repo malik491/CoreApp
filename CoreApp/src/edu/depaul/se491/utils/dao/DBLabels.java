@@ -53,6 +53,7 @@ public abstract class DBLabels {
 		public static final String DESC = "m_item_desc";
 		public static final String PRICE = "m_item_price";
 		public static final String CATEGORY = "m_item_category";
+		public static final String IS_HIDDENT = "m_item_is_hidden";
 	}
 	
 	public static final class Payment {

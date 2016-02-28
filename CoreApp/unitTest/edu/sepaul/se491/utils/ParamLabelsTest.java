@@ -43,12 +43,14 @@ public class ParamLabelsTest {
 		assertNotNull(new ParamLabels.MenuItem());
 		
 		assertNotNull(ParamLabels.MenuItem.MENU_ITEM_BEAN);
-		assertNotNull(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST);
+		assertNotNull(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST);
+		assertNotNull(ParamLabels.MenuItem.HIDDEN_MENU_ITEM_BEAN_LIST);
 		assertNotNull(ParamLabels.MenuItem.ID);
 		assertNotNull(ParamLabels.MenuItem.NAME);
 		assertNotNull(ParamLabels.MenuItem.DESC);
 		assertNotNull(ParamLabels.MenuItem.PRICE);
 		assertNotNull(ParamLabels.MenuItem.ITEM_CATEGORY);
+		assertNotNull(ParamLabels.MenuItem.IS_HIDDEN);
 	}
 
 	@Test

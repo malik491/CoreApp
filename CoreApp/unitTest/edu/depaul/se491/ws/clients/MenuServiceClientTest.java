@@ -117,20 +117,80 @@ public class MenuServiceClientTest {
 		assertFalse(deleted);
 		assertNull(serviceClient.getResponseMessage());
 	}
-
+	
 	@Test
-	public void testGetAll() {
+	public void testHide() {
 		MenuServiceClient serviceClient = new MenuServiceClient(null, serviceBaseURL);
-		assertNull(serviceClient.getAll());
+		assertNull(serviceClient.hideMenuItem(1L));
 		assertNotNull(serviceClient.getResponseMessage());
 		
 		serviceClient = new MenuServiceClient(new CredentialsBean("manager", "password"), serviceBaseURL);
-		MenuItemBean[] items = serviceClient.getAll(); 
-		assertNotNull(items);
-		assertTrue(items.length >= 6);
+		assertNull(serviceClient.hideMenuItem(0L));
+		assertNotNull(serviceClient.getResponseMessage());
+
+		serviceClient = new MenuServiceClient(new CredentialsBean("manager", "password"), serviceBaseURL);
+		Boolean updated = serviceClient.hideMenuItem(1L); 
+		assertNotNull(updated);
+		assertTrue(updated);
+		assertNull(serviceClient.getResponseMessage());
+		
+		// restore (unhide again so it doesn't affect other methods)
+		updated = serviceClient.unhideMenuItem(1L); 
+		assertNotNull(updated);
+		assertTrue(updated);
+		assertNull(serviceClient.getResponseMessage());
+	}
+	
+	@Test
+	public void testUnhide() {
+		MenuServiceClient serviceClient = new MenuServiceClient(null, serviceBaseURL);
+		assertNull(serviceClient.unhideMenuItem(1L));
+		assertNotNull(serviceClient.getResponseMessage());
+		
+		serviceClient = new MenuServiceClient(new CredentialsBean("manager", "password"), serviceBaseURL);
+		assertNull(serviceClient.unhideMenuItem(0L));
+		assertNotNull(serviceClient.getResponseMessage());
+
+		serviceClient = new MenuServiceClient(new CredentialsBean("manager", "password"), serviceBaseURL);
+		Boolean updated = serviceClient.unhideMenuItem(7L); 
+		assertNotNull(updated);
+		assertTrue(updated);
+		assertNull(serviceClient.getResponseMessage());
+		
+		// restore (hide again so it doesn't affect other methods)
+		updated = serviceClient.hideMenuItem(7L); 
+		assertNotNull(updated);
+		assertTrue(updated);
 		assertNull(serviceClient.getResponseMessage());
 	}
 
+	@Test
+	public void testGetAllVisible() {
+		MenuServiceClient serviceClient = new MenuServiceClient(null, serviceBaseURL);
+		assertNull(serviceClient.getAllVisible());
+		assertNotNull(serviceClient.getResponseMessage());
+		
+		serviceClient = new MenuServiceClient(new CredentialsBean("manager", "password"), serviceBaseURL);
+		MenuItemBean[] items = serviceClient.getAllVisible(); 
+		assertNotNull(items);
+		// 6 or 7, depending or whether testPost() is called first or not
+		assertTrue(items.length == 6 || items.length == 7);
+		assertNull(serviceClient.getResponseMessage());
+	}
+
+	@Test
+	public void testGetAllHidden() {
+		MenuServiceClient serviceClient = new MenuServiceClient(null, serviceBaseURL);
+		assertNull(serviceClient.getAllHidden());
+		assertNotNull(serviceClient.getResponseMessage());
+		
+		serviceClient = new MenuServiceClient(new CredentialsBean("manager", "password"), serviceBaseURL);
+		MenuItemBean[] items = serviceClient.getAllHidden(); 
+		assertNotNull(items);
+		assertEquals(1, items.length);
+		assertNull(serviceClient.getResponseMessage());
+	}
+	
 	@Test
 	public void testExceptions() {
 		MenuServiceClient serviceClient = new MenuServiceClient(null, "wrongURL");
@@ -138,6 +198,9 @@ public class MenuServiceClientTest {
 		assertNull(serviceClient.delete(0));
 		assertNull(serviceClient.post(null));
 		assertNull(serviceClient.update(null));
-		assertNull(serviceClient.getAll());
+		assertNull(serviceClient.getAllVisible());
+		assertNull(serviceClient.getAllHidden());
+		assertNull(serviceClient.updateIsHidden(1, true));
+		assertNull(serviceClient.updateIsHidden(1, false));
 	}
 }

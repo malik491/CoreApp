@@ -153,6 +153,60 @@ public class MenuService {
 	}
 	
 	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/hide")
+	public Response hide(RequestBean<Long> request) {
+		Response response = null;
+		boolean isValid = isValidRequest(request, false);
+		
+		if (isValid) {	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
+			Boolean updated  = model.updateIsHidden(request.getExtra(), true);
+			if (updated == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, updated);
+		} else {
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
+		}
+		
+		return response;
+	}
+	
+	/**
+	 * return a Response with Boolean or a string message
+	 * @param request
+	 * @return
+	 */
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/unhide")
+	public Response unhide(RequestBean<Long> request) {
+		Response response = null;
+		boolean isValid = isValidRequest(request, false);
+		
+		if (isValid) {	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
+			Boolean updated  = model.updateIsHidden(request.getExtra(), false);
+			if (updated == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, updated);
+		} else {
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
+		}
+		
+		return response;
+	}
+	
+	/**
 	 * return a Response with a list of MenuItemBean or a string message
 	 * @param request
 	 * @return
@@ -161,13 +215,40 @@ public class MenuService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/get/all")
-	public Response getAll(RequestBean<Object> request) {
+	public Response getAllVisible(RequestBean<Object> request) {
 		Response response = null;
 		boolean isValid = isValidRequest(request, true);
 		
 		if (isValid) {	
 			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
-			List<MenuItemBean> menuIitems  = model.readAll();
+			List<MenuItemBean> menuIitems  = model.readAllVisible();
+			if (menuIitems == null)
+				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
+			else
+				response = getResponse(Status.OK, menuIitems);
+		} else {
+			response = getResponse(Status.BAD_REQUEST, INVALID_RQST_MSG);
+		}
+		
+		return response;
+	}
+	
+	/**
+	 * return a Response with a list of MenuItemBean or a string message
+	 * @param request
+	 * @return
+	 */
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/get/all/hidden")
+	public Response getAllHidden(RequestBean<Object> request) {
+		Response response = null;
+		boolean isValid = isValidRequest(request, true);
+		
+		if (isValid) {	
+			MenuModel model = new MenuModel(daoFactory, request.getCredentials());	
+			List<MenuItemBean> menuIitems  = model.readAllHidden();
 			if (menuIitems == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
 			else

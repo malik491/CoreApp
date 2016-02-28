@@ -8,15 +8,16 @@ package edu.depaul.se491.utils;
 public class ParamLabels {
 
 	public static final class MenuItem {
-		public static final String MENU_ITEM_BEAN = "menuItemBean";  			// use this label to mean a menu item bean
-		public static final String MENU_ITEM_BEAN_LIST = "menuItemList";	// use this label to mean a list of menu item beans
+		public static final String MENU_ITEM_BEAN = "menuItemBean";
+		public static final String VISIBLE_MENU_ITEM_BEAN_LIST = "menuItemList";
+		public static final String HIDDEN_MENU_ITEM_BEAN_LIST = "hiddenMenuItemList";
 		
-		// these for parameter names (jsp html form & servlets)
 		public static final String ID = "mItemId";
 		public static final String NAME = "mItemName";
 		public static final String PRICE = "mItemPrice";
 		public static final String DESC = "mItemDesc";	
 		public static final String ITEM_CATEGORY = "mItemCategory";
+		public static final String IS_HIDDEN = "mItemIsHidden";
 	}
 	
 	public static final class Account {

@@ -67,8 +67,6 @@ public class PaymentValidator extends BeanValidator {
 		    		int max = ParamLengths.Payment.MAX_TRANSACTION_CONFORMATION;
 		    		isValid = isValidString(bean.getTransactionConfirmation(), min, max);
 		    	}
-			} else {
-				isValid = false;
 			}
 		}
 	
