@@ -248,8 +248,6 @@ public class AccountModel extends BaseModel {
 			} else if (loggedInAs == MANAGER) {
 				// employee accounts only
 				viewableRoles = new AccountRole[] {EMPLOYEE};
-			} else {
-				viewableRoles = new AccountRole[0];
 			}
 			
 			try {
