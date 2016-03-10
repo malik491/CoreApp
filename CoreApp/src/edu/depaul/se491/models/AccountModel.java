@@ -331,8 +331,8 @@ public class AccountModel extends BaseModel {
 		
 		if (loggedInAs == ADMIN) {
 		
-			// admin can create admin, manager, or customer_app account 
-			isValid = (toBeCreatedHasRole == ADMIN || toBeCreatedHasRole == MANAGER || toBeCreatedHasRole == CUSTOMER_APP);
+			// admin can create manager, or customer_app account 
+			isValid = (toBeCreatedHasRole == MANAGER || toBeCreatedHasRole == EMPLOYEE || toBeCreatedHasRole == CUSTOMER_APP);
 			if (!isValid)
 				message = String.format("Access Denied (Admin cannot create accounts with '%s' role)", toBeCreatedHasRole);  
 		

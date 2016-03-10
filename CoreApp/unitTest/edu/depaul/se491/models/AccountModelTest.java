@@ -83,19 +83,20 @@ public class AccountModelTest {
 				// valid accounts
 				AccountBean newAdminAccount = new AccountBean(new CredentialsBean("admin100", "password"), user, AccountRole.ADMIN);
 				AccountBean newManagerAccount = new AccountBean(new CredentialsBean("manager100", "password"), user, AccountRole.MANAGER);
+				AccountBean newEmployeeAccount = new AccountBean(new CredentialsBean("employee100", "password"), user, AccountRole.EMPLOYEE);
 				AccountBean newCustomerAccount = new AccountBean(new CredentialsBean("customerapp100", "password"), user, AccountRole.CUSTOMER_APP);
 				
-				assertNotNull(model.create(newAdminAccount));
+				
 				assertNotNull(model.create(newManagerAccount));
+				assertNotNull(model.create(newEmployeeAccount));
 				assertNotNull(model.create(newCustomerAccount));
 				
-				// valid account, creating employee account
-				AccountBean newEmployeeAccount = new AccountBean(new CredentialsBean("employee100", "password"), user, AccountRole.EMPLOYEE);
-				assertNull(model.create(newEmployeeAccount));
+				// creating another admin account
+				assertNull(model.create(newAdminAccount));
 				assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
 				
 				// valid accounts, creating account with existing username
-				AccountBean existingAccount = newAdminAccount;
+				AccountBean existingAccount = newManagerAccount;
 				assertNull(model.create(existingAccount));
 				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
 				

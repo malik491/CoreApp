@@ -34,7 +34,7 @@ public class ParamValuesTest {
 		assertNotNull(new ParamValues.MenuItem());
 		
 		assertEquals(0, Double.compare(0, ParamValues.MenuItem.MIN_PRICE));
-		assertEquals(0, Double.compare(999.9, ParamValues.MenuItem.MAX_PRICE));
+		assertEquals(0, Double.compare(999.99, ParamValues.MenuItem.MAX_PRICE));
 	}
 	
 
