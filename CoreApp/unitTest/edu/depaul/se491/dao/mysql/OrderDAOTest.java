@@ -122,7 +122,7 @@ public class OrderDAOTest {
 	}
 
 	@Test
-	public void testGetLong() throws SQLException {
+	public void testGetByID() throws SQLException {
 		final long orderId = 1;
 		final long expectedPaymentId = 1;
 		final int expectedOrderItemsCount = 2;
@@ -156,7 +156,7 @@ public class OrderDAOTest {
 	}
 
 	@Test
-	public void testGetString() throws SQLException {
+	public void testGetByConfirmation() throws SQLException {
 		final String confirmation = "order-confirmation-101";
 
 		final long expectedOrderId = 4;
@@ -344,6 +344,7 @@ public class OrderDAOTest {
 		assertNotNull(oldDeliveryOrder.getAddress());
 		assertEquals(OrderType.DELIVERY, oldDeliveryOrder.getType());
 
+		
 		// update type to pickup / removing old address
 		oldDeliveryOrder.setType(OrderType.PICKUP);
 		oldDeliveryOrder.setAddress(null);
@@ -358,6 +359,10 @@ public class OrderDAOTest {
 
 		assertEquals(oldDeliveryOrder.getId(), updatedOrder.getId());
 		assertEquals(oldDeliveryOrder.getType(), updatedOrder.getType());
+		
+		
+		
+		
 	}
 
 	@Test

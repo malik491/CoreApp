@@ -70,10 +70,10 @@ class BaseModel {
 	 */
 	public void setResponseAndMeessageForDBError(SQLException e) {
 		if (e != null) {
-			synchronized(System.out) {
-				e.printStackTrace(System.out);
+			synchronized(System.err) {
+				e.printStackTrace(System.err);
 				for (Throwable t : e.getSuppressed()) {
-					t.printStackTrace(System.out);
+					t.printStackTrace(System.err);
 				}
 			}
 		}

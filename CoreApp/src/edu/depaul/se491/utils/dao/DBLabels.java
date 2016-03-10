@@ -10,8 +10,7 @@ package edu.depaul.se491.utils.dao;
  *
  * @author Malik
  */
-public abstract class DBLabels {
-	private DBLabels() {}
+public class DBLabels {
 	
 	public static final class Address {
 		public static final String TABLE = "addresses";

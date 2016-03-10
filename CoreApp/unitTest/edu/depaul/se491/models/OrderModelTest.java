@@ -279,7 +279,7 @@ public class OrderModelTest {
 	}
 
 	@Test
-	public void testReadWithOrderId() {
+	public void testReadByOrderId() {
 		long orderId = 1;
 		
 		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
@@ -306,7 +306,7 @@ public class OrderModelTest {
 	}
 
 	@Test
-	public void testReadWithOrderConfirmation() {
+	public void testReadByConfirmation() {
 		String confirmation = "order-confirmation-123";
 		
 		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
@@ -333,15 +333,21 @@ public class OrderModelTest {
 	}
 
 	@Test
-	public void testReadAllOrdersByStatus() {
+	public void testReadAllByOrderStatus() {
 		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
 			CredentialsBean credentials = new CredentialsBean(username, "password");
 			OrderModel model = new OrderModel(daoFactory, credentials);
 			
 			for (OrderStatus status : OrderStatus.values()) {
-				List<OrderBean> orders = model.readAll(status);
+				List<OrderBean> orders = model.readAllByStatus(status);
 				if (username.equals("manager") || (username.equals("employee1") && status == OrderStatus.SUBMITTED)) {
 					assertNotNull(orders);
+					
+					// test invalid
+					orders = model.readAllByStatus(null);
+					assertNull(orders);
+					assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());	
+					
 				} else {
 					assertNull(orders);
 					assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
@@ -351,15 +357,21 @@ public class OrderModelTest {
 	}
 
 	@Test
-	public void testReadAllOrderByType() {
+	public void testReadAllByOrderType() {
 		for (String username : new String[]{"admin", "manager", "employee1", "customerapp"}) {
 			CredentialsBean credentials = new CredentialsBean(username, "password");
 			OrderModel model = new OrderModel(daoFactory, credentials);
 			
 			for (OrderType type : OrderType.values()) {
-				List<OrderBean> orders = model.readAll(type);
+				List<OrderBean> orders = model.readAllByType(type);
 				if (username.equals("manager")) {
 					assertNotNull(orders);
+					
+					// test invalid
+					orders = model.readAllByType(null);
+					assertNull(orders);
+					assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());	
+					
 				} else {
 					assertNull(orders);
 					assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());	
@@ -375,7 +387,7 @@ public class OrderModelTest {
 			OrderModel model = new OrderModel(daoFactory, credentials);
 			
 			for (OrderType type : OrderType.values()) {
-				List<OrderBean> orders = model.readAll(type);
+				List<OrderBean> orders = model.readAllByType(type);
 				if (username.equals("manager")) {
 					assertNotNull(orders);
 				} else {

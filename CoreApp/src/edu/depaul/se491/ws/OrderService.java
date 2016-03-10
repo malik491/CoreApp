@@ -304,7 +304,7 @@ public class OrderService {
 		
 		if (isValid) {	
 			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
-			List<OrderBean> orders = model.readAll(request.getExtra());
+			List<OrderBean> orders = model.readAllByType(request.getExtra());
 			if (orders == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
 			else
@@ -331,7 +331,7 @@ public class OrderService {
 		
 		if (isValid) {	
 			OrderModel model = new OrderModel(daoFactory, request.getCredentials());
-			List<OrderBean> orders = model.readAll(request.getExtra());
+			List<OrderBean> orders = model.readAllByStatus(request.getExtra());
 			if (orders == null)
 				response = getResponse(model.getResponseStatus(), model.getResponseMessage());
 			else

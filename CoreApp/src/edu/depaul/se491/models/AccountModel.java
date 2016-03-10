@@ -49,18 +49,18 @@ public class AccountModel extends BaseModel {
 			isValid = canCreateOtherAccount(loggedInAs,  bean.getRole()); 
 			
 			if (isValid) {
-				try {
-					AccountDAO dao = getDAOFactory().getAccountDAO();
-					
-					AccountBean accountWithSameUsername = dao.get(bean.getCredentials().getUsername());
-					if (accountWithSameUsername != null) {
-						setResponseStatus(Status.BAD_REQUEST);
-						setResponseMessage("Account username is already taken (try a different username)");
-					} else {
+				AccountBean accountWithSameUsername = read(bean.getCredentials().getUsername());
+				isValid = (accountWithSameUsername == null);
+				
+				if (!isValid) {
+					setResponseStatus(Status.BAD_REQUEST);
+					setResponseMessage("Account username is already taken");
+				} else {
+					try {
 						createdAccount = getDAOFactory().getAccountDAO().add(bean);						
-					}
-				} catch (SQLException e) {
-					setResponseAndMeessageForDBError(e);
+					} catch (SQLException e) {
+						setResponseAndMeessageForDBError(e);
+					}					
 				}
 			}
 		}
@@ -107,7 +107,7 @@ public class AccountModel extends BaseModel {
 			
 			if (isSelf) {
 				// can't change self role
-				isValid = loggedInAccount.getRole() == oldAccount.getRole();
+				isValid = loggedInAccount.getRole() == bean.getRole();
 				if (!isValid) {
 					setResponseStatus(Status.UNAUTHORIZED);
 					setResponseMessage("Access Denied (cannot change own account role)");
@@ -207,21 +207,19 @@ public class AccountModel extends BaseModel {
 		Boolean deleted = null;
 		if (isValid) {
 			// lookup the to-be-deleted account
-			try {
-				AccountBean oldAccount = getDAOFactory().getAccountDAO().get(username);
-				isValid = (oldAccount != null);
+			AccountBean oldAccount = read(username);
+			isValid = (oldAccount != null);
 
-				if (!isValid) {
-					setResponseStatus(Status.NOT_FOUND);
-					setResponseMessage("Account Not Found");
-				} else {
-					boolean canDelete = canDeleteOtherAccount(loggedInAs,  oldAccount.getRole());
-					if (canDelete)
-						deleted = getDAOFactory().getAccountDAO().delete(username);		
-				}				
-			} catch (SQLException e) {
-				setResponseAndMeessageForDBError(e);
-			}
+			if (isValid) {
+				boolean canDelete = canDeleteOtherAccount(loggedInAs,  oldAccount.getRole());
+				if (canDelete) {
+					try {
+						deleted = getDAOFactory().getAccountDAO().delete(username);
+					} catch (SQLException e) {
+						setResponseAndMeessageForDBError(e);
+					}
+				}
+			}				
 		}
 		
 		return deleted;
@@ -325,31 +323,17 @@ public class AccountModel extends BaseModel {
 	 * @return
 	 */
 	private boolean canCreateOtherAccount(AccountRole loggedInAs, AccountRole toBeCreatedHasRole) {
-		String message = "";
-		
 		boolean isValid = false;
 		
 		if (loggedInAs == ADMIN) {
-		
-			// admin can create manager, or customer_app account 
 			isValid = (toBeCreatedHasRole == MANAGER || toBeCreatedHasRole == EMPLOYEE || toBeCreatedHasRole == CUSTOMER_APP);
-			if (!isValid)
-				message = String.format("Access Denied (Admin cannot create accounts with '%s' role)", toBeCreatedHasRole);  
-		
 		} else if (loggedInAs == MANAGER) {
-			// manager can create employee accounts
-		
 			isValid = (toBeCreatedHasRole == EMPLOYEE);
-			if (!isValid)
-				message = String.format("Access Denied (Manager cannot create accounts with '%s' role)", toBeCreatedHasRole);  
-		
-		} else {
-			message = "Access Denied (unauthorized)";
 		}
 		
 		if (!isValid) {
 			setResponseStatus(Status.UNAUTHORIZED);
-			setResponseMessage(message);
+			setResponseMessage("Access Denied (unauthorized)");
 		}
 		
 		
@@ -372,30 +356,17 @@ public class AccountModel extends BaseModel {
 	 * @return
 	 */
 	private boolean canReadOtherAccount(AccountRole loggedInAs, AccountRole toBeReadHasRole) {
-		String message = "";
-		
 		boolean isValid = false;
 		
 		if (loggedInAs == ADMIN) {
-			// admin can't read other admin's account
-		
 			isValid = toBeReadHasRole != ADMIN;
-			if (!isValid)
-				message = String.format("Access Denied (Admin cannot view '%s' accounts", toBeReadHasRole) ;
-		
 		} else if (loggedInAs == MANAGER) {
-		
 			isValid = (toBeReadHasRole == EMPLOYEE);
-			if (!isValid)
-				message = String.format("Access Denied (Manager cannot view '%s' accounts", toBeReadHasRole) ;
-		
-		}  else {
-			message = "Access Denied (unauthorized)";
 		}
 		
 		if (!isValid) {
 			setResponseStatus(Status.UNAUTHORIZED);
-			setResponseMessage(message);
+			setResponseMessage("Access Denied (unauthorized)");
 		}
 		
 		return isValid;		
@@ -412,31 +383,17 @@ public class AccountModel extends BaseModel {
 	 * @return
 	 */
 	private boolean canDeleteOtherAccount(AccountRole loggedInAs, AccountRole toBeDeleteHasRole) {
-		String message = "";
-		
 		boolean isValid = false;
 		
 		if (loggedInAs == ADMIN) {
-			// admin can't delete other admin account but can delete every thing else
-			
 			isValid = (toBeDeleteHasRole != ADMIN);
-			if (!isValid)
-				message = String.format("Access Denied (Admin cannot delete '%s' accounts", toBeDeleteHasRole) ;
-		
 		} else if (loggedInAs == MANAGER) {
-			// manager can delete employee accounts
-		
 			isValid = (toBeDeleteHasRole == EMPLOYEE);
-			if (!isValid)
-				message = String.format("Access Denied (Manager cannot delete '%s' accounts", toBeDeleteHasRole) ;
-		
-		} else {
-			message = "Access Denied (unauthorized)";
 		}
 		
 		if (!isValid) {
 			setResponseStatus(Status.UNAUTHORIZED);
-			setResponseMessage(message);
+			setResponseMessage("Access Denied (unauthorized)");
 		}
 		
 		return isValid;
@@ -453,29 +410,17 @@ public class AccountModel extends BaseModel {
 	 * @return
 	 */
 	private boolean canUpdateOtherAccount(AccountRole loggedInAs, AccountRole toBeUpdatedHasRole) {
-		String message = "";
-		
 		boolean isValid = false;
 		
 		if (loggedInAs == ADMIN) {
-			// admin can't update other admin's account
-		
 			isValid = (toBeUpdatedHasRole != ADMIN);
-			if (!isValid)
-				message = String.format("Access Denied (Admin cannot update '%s' accounts", toBeUpdatedHasRole);
-			
 		} else if (loggedInAs == MANAGER) {
-			
 			isValid = (toBeUpdatedHasRole == EMPLOYEE);
-			if (!isValid)
-				message = String.format("Access Denied (Manager cannot update '%s' accounts", toBeUpdatedHasRole);
-		} else {
-			message = "Access Denied (unauthorized)";
 		}
 		
 		if (!isValid) {
 			setResponseStatus(Status.UNAUTHORIZED);
-			setResponseMessage(message);
+			setResponseMessage("Access Denied (unauthorized)");
 		}
 		
 		return isValid;

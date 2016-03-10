@@ -1,4 +1,4 @@
-package edu.sepaul.se491.utils;
+package edu.depaul.se491.utils;
 
 import static org.junit.Assert.*;
 

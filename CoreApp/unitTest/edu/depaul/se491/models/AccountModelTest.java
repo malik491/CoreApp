@@ -49,7 +49,7 @@ public class AccountModelTest {
 		daoFactory = null;
 		// close connection data source (pool)
 		connFactory.close();
-		
+
 	}
 
 	@Before
@@ -104,6 +104,19 @@ public class AccountModelTest {
 				assertNull(model.create(new AccountBean()));
 				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
 				
+				// invalid credentials
+				assertNull(model.create(new AccountBean(new CredentialsBean(), user, AccountRole.MANAGER)));
+				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+				
+				// invalid user
+				assertNull(model.create(new AccountBean(new CredentialsBean("username", "password"), new UserBean(), AccountRole.MANAGER)));
+				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+				
+				// invalid user address
+				assertNull(model.create(new AccountBean(new CredentialsBean("username", "password"), new UserBean(0, "name", "name", "my@email.com", "1234567890", new AddressBean()), AccountRole.MANAGER)));
+				assertEquals(Response.Status.BAD_REQUEST, model.getResponseStatus());
+				
+				
 			} else if (username.equals("manager")) {
 				// valid accounts
 				AccountBean newAdminAccount = new AccountBean(new CredentialsBean("admin200", "password"), user, AccountRole.ADMIN);
@@ -155,6 +168,7 @@ public class AccountModelTest {
 			}
 						
 		}
+		
 	}
 
 	@Test
@@ -295,7 +309,14 @@ public class AccountModelTest {
 			}
 						
 		}
-	
+		
+		// test updating own role
+		model = new AccountModel(daoFactory, managerAccount.getCredentials());
+		AccountBean copyManagerAccount = new AccountBean(managerAccount.getCredentials(), managerAccount.getUser(), AccountRole.ADMIN);
+		Boolean updated = model.update(copyManagerAccount);
+		assertNull(updated);
+		assertEquals(Response.Status.UNAUTHORIZED, model.getResponseStatus());
+		
 	}
 
 	@Test

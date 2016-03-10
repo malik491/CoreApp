@@ -284,7 +284,7 @@ public class OrderModel extends BaseModel {
 	 * @param status
 	 * @return
 	 */
-	public List<OrderBean> readAll(OrderStatus status) {
+	public List<OrderBean> readAllByStatus(OrderStatus status) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER, EMPLOYEE};
 		boolean isValid = hasPermission(allowedRoles);
 		
@@ -316,7 +316,7 @@ public class OrderModel extends BaseModel {
 	 * @param type
 	 * @return
 	 */
-	public List<OrderBean> readAll(OrderType type) {
+	public List<OrderBean> readAllByType(OrderType type) {
 		AccountRole[] allowedRoles = new AccountRole[] {MANAGER};
 		boolean isValid = hasPermission(allowedRoles);
 		
