@@ -27,8 +27,8 @@ import edu.depaul.se491.test.TestDataGenerator;
  * @author Malik
  *
  */
-public class OrderServiceClientTest {
-	private String serviceBaseURL = "http://localhost/CoreApp/order";
+public class OrderServiceClientTest extends WebServiceClientTest {
+	private String serviceBaseURL = super.BASE_WEB_SERVICES_URL + "/order";
 
 	private static ConnectionFactory connFactory;
 	private static DBBuilder dbBuilder;

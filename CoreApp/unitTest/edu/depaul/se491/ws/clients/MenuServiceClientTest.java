@@ -18,8 +18,8 @@ import edu.depaul.se491.test.TestDataGenerator;
  * NOTE (Tomcat must be running for this to pass)
  * @author Malik
  */
-public class MenuServiceClientTest {
-	private String serviceBaseURL = "http://localhost/CoreApp/menuItem";
+public class MenuServiceClientTest extends WebServiceClientTest {
+	private String serviceBaseURL = super.BASE_WEB_SERVICES_URL + "/menuItem";
 
 	private static ConnectionFactory connFactory;
 	private static DBBuilder dbBuilder;

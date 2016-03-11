@@ -21,8 +21,8 @@ import edu.depaul.se491.test.TestDataGenerator;
  * NOTE (Tomcat must be running for this to pass)
  * @author Malik
  */
-public class AccountServiceClientTest {
-	private String serviceBaseURL = "http://localhost/CoreApp/account";
+public class AccountServiceClientTest extends WebServiceClientTest {
+	private String serviceBaseURL = super.BASE_WEB_SERVICES_URL + "/account";
 
 	private static ConnectionFactory connFactory;
 	private static DBBuilder dbBuilder;

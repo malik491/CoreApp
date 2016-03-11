@@ -42,7 +42,7 @@ public class TestConnectionFactory implements ConnectionFactory {
 		try {
 			// read config file
 			Properties prop = new Properties();
-			String propFileName = "testDBconfig.properties";
+			String propFileName = "testDBConfig.properties";
 			inputStream = TestConnectionFactory.class.getClassLoader().getResourceAsStream(propFileName);
 			
 			if (inputStream != null) {
