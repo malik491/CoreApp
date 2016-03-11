@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.ws.clients;
 
 import java.io.IOException;
@@ -10,8 +7,13 @@ import java.util.Properties;
 import edu.depaul.se491.daos.TestConnectionFactory;
 
 /**
+ * Base class for web service test classes
+ * It reads properties/configuration file for the current web services base URL
+ * http://[hostname]:[port]/[web services app name]
+ * Example: 
+ * http://localhost:8080/coreapp or http://localhost/coreapp
+ * 
  * @author Malik
- *
  */
 class WebServiceClientTest {
 	protected String BASE_WEB_SERVICES_URL = "";
