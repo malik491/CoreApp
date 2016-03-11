@@ -9,7 +9,6 @@ import javax.ws.rs.core.Response.Status;
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.CredentialsBean;
 import edu.depaul.se491.daos.DAOFactory;
-import edu.depaul.se491.daos.mysql.AccountDAO;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.validators.AccountValidator;
 import edu.depaul.se491.validators.AddressValidator;
