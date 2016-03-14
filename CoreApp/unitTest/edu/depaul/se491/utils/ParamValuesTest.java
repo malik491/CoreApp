@@ -23,7 +23,7 @@ public class ParamValuesTest {
 		assertNotNull(new ParamValues.CreditCard());
 		
 		assertEquals(1, ParamValues.CreditCard.MIN_EXP_MONTH);
-		assertEquals((Year.now().getValue() - 20), ParamValues.CreditCard.MIN_EXP_YEAR);
+		assertEquals((Year.now().getValue()), ParamValues.CreditCard.MIN_EXP_YEAR);
 		
 		assertEquals(12, ParamValues.CreditCard.MAX_EXP_MONTH);
 		assertEquals((Year.now().getValue() + 20), ParamValues.CreditCard.MAX_EXP_YEAR);

@@ -37,7 +37,7 @@ public class ParamValues {
 		private static final int CURRENT_YEAR = Year.now().getValue();
 		
 		public static final int MIN_EXP_MONTH = 1;				 /* January = 1*/
-		public static final int MIN_EXP_YEAR = CURRENT_YEAR - 20; /* no standard among CC issuers so use 20 years back */
+		public static final int MIN_EXP_YEAR = CURRENT_YEAR; 	/*current year*/
 
 		
 		public static final int MAX_EXP_MONTH = 12;				 /* December = 12*/
